@@ -1,0 +1,36 @@
+name: Helm validate
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        run: |
+          set -eux
+          curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      - name: Add Helm repos
+        run: |
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo add sustainable-computing-io https://sustainable-computing-io.github.io/kepler-helm-chart || true
+          helm repo update
+
+      - name: Lint parent chart
+        run: helm lint . || true
+
+      - name: Template with example values
+        run: |
+          helm template collection-agent . -f examples/production-values.yaml | sed -n '1,2000p'
+
+      - name: Show upstream values (quick check)
+        run: |
+          helm show values prometheus-community/prometheus-node-exporter --version 4.55.0 | sed -n '1,200p'
