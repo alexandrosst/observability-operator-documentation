@@ -67,7 +67,7 @@ jobs:
       - name: Template with example values
         working-directory: ${{ steps.chartdir.outputs.chart_dir }}
         run: |
-          helm template collection-agent . -f examples/production-values.yaml | sed -n '1,2000p'
+          helm template collection-agent . -f "${GITHUB_WORKSPACE}/examples/production-values.yaml" | sed -n '1,2000p'
 
       - name: Validate dependency charts
         run: |
