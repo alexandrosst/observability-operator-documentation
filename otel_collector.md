@@ -99,6 +99,60 @@ The collector chart should create the following Kubernetes resources:
 - a ServiceAccount for the collector pod
 - RBAC objects when the collector needs cluster reads for Prometheus discovery
 
+## Minimal Template Stubs
+Use these only as syntax references for the chart structure.
+
+```yaml
+# templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.otelCollector.configMapName }}
+data:
+  otel-collector-config.yaml: |
+    receivers: {}
+```
+
+```yaml
+# templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.otelCollector.deploymentName }}
+spec:
+  replicas: {{ .Values.otelCollector.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.otelCollector.deploymentName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.otelCollector.deploymentName }}
+    spec:
+      containers:
+        - name: {{ .Values.otelCollector.deploymentName }}
+          image: "{{ .Values.otelCollector.image.registry }}/{{ .Values.otelCollector.image.name }}:{{ .Values.otelCollector.image.tag }}"
+```
+
+```yaml
+# templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.otelCollector.serviceName }}
+spec:
+  selector:
+    app: {{ .Values.otelCollector.deploymentName }}
+```
+
+```yaml
+# templates/permission.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.otelCollector.serviceAccountName | default "otel-collector" }}
+```
+
 ## Template Responsibilities
 The collector template set should be split by concern:
 - `templates/configmap.yaml` or equivalent: render the OpenTelemetry config file.
