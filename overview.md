@@ -6,10 +6,60 @@ This repository is organized as a knowledge base for an LLM that will later gene
 ## Chart Model
 The top-level Helm chart is the entrypoint. It should install the platform-wide components and wire them together through subchart dependencies and shared values.
 
+The parent chart must stay at the dependency and values layer:
+- it declares external dependencies in `Chart.yaml`
+- it passes values into child charts
+- it does not render collector ConfigMaps, Deployments, Services, or scrape jobs directly
+- it does not duplicate any manifest that belongs to a child chart
+
+The OTel Collector implementation belongs in the local `otel-collector` subchart. If a request changes collector behavior, that change should appear as collector values or collector templates, not as duplicated parent-chart templates.
+
 The dependency model should be explicit:
 - External charts are consumed from published repositories and pinned to exact versions.
 - Local charts are used only for components that need custom behavior, such as the OTel Collector.
 - The parent chart should not duplicate child manifests when a child chart already owns them.
+
+## Helm Structure Skeleton
+Use this file layout as the syntax reference for generated charts:
+
+```text
+observability-operator/
+	Chart.yaml
+	values.yaml
+	templates/
+		_helpers.tpl
+	charts/
+		otel-collector/
+```
+
+If the parent chart declares a dependency named `otel-collector`, install-time overrides must use that exact dependency name as the values prefix. The collector subchart should keep its own canonical values under `otelCollector.*`, while the parent chart is responsible for passing those values down through the dependency boundary.
+
+Use aliases only when the generated chart deliberately needs a different install-time name from the chart name, and keep the alias consistent in `Chart.yaml` and in the values path used by `helm install --set`.
+
+Minimal parent-chart shape:
+
+```yaml
+# Chart.yaml
+apiVersion: v2
+name: observability-operator
+type: application
+version: 0.1.0
+dependencies:
+	- name: kepler
+		version: 0.6.1
+		repository: https://sustainable-computing-io.github.io/kepler-helm-chart
+	- name: otel-collector
+		version: 0.1.0
+		repository: file://../otel-collector
+```
+
+```yaml
+# values.yaml
+otel-collector:
+	otelCollector:
+		clusterName: ""
+		deploymentName: otel-collector
+```
 
 ## Dependency Matrix
 Use this mapping as the canonical relationship between user intent, parent-chart enablement, and collector scrape targets.
@@ -23,7 +73,7 @@ Use this mapping as the canonical relationship between user intent, parent-chart
 | cAdvisor metrics | none | `receivers.prometheus.cadvisor` | Uses Kubernetes node discovery; include block if requested |
 | Backend export | none | `exporters.otlp.host`, `exporters.otlp.port`, `exporters.tls.*` | External telemetry backend; always required |
 
-**Key principle**: Use presence-based configuration. If a user asks for a metric source, add its scrape block to the collector values. If they don't ask for it, omit the block entirely. Do not use enabled flags.
+**Key principle**: Use presence-based configuration. If a user asks for a metric source, add its scrape block to the collector values and, when applicable, add the matching dependency entry in `Chart.yaml`. If they don't ask for it, omit the block entirely. Do not use enabled flags like `kepler.enabled`.
 
 ## LLM Decision Flow
 When a user describes a desired observability setup in natural language, the LLM should:
@@ -41,7 +91,7 @@ When a user describes a desired observability setup in natural language, the LLM
 Examples of user intent that should map to values:
 - “Collect node metrics” should enable the node exporter dependency and the collector scrape target for it.
 - “Collect Kubernetes object state” should enable kube-state-metrics and the corresponding collector scrape target.
-- “Collect energy metrics” should enable Kepler and the corresponding collector scrape target.
+- “Collect energy metrics” should add the Kepler dependency and the corresponding collector scrape target, with the scrape configuration owned by the collector subchart.
 - “Scrape every 10 seconds” should become the collector scrape interval and any compatible component scrape intervals.
 - “Send metrics to my backend” should configure the collector OTLP exporter host, port, and TLS mode.
 
@@ -107,6 +157,8 @@ This controls what **the OTel Collector** actually observes and is independent o
 - **Collector RBAC**: determines which targets the collector's ServiceAccount can discover. Can be cluster-wide or namespace-scoped.
 - **Collector scrape config**: determines which targets the collector actually scrapes. You can filter by namespace or hardcode service DNS names.
 
+Collector scrape configuration belongs to the OTel Collector subchart. The parent chart may surface the values that feed it, but it should not render the collector scrape config itself.
+
 Example: even if the collector has cluster-wide RBAC, you can choose to scrape only the `production` namespace by setting `namespace: "production"` in the scrape target values.
 
 ### Practical Examples
@@ -130,7 +182,7 @@ Example: even if the collector has cluster-wide RBAC, you can choose to scrape o
 Use the same terms across the parent chart, child docs, and generated values.
 
 - Parent chart: `collection-agent` or another top-level bundle name chosen by the user.
-- Collector chart: `otel-collector` or `otel-agent` as the local subchart name.
+- Collector chart: `otel-collector` as the local subchart name.
 - Feature flags: snake_case under `receivers.prometheus.*`.
 - Export settings: structured under `exporters.otlp.*` and `exporters.tls.*`.
 - Resource names: derive from helpers unless the user requests explicit names.
@@ -147,7 +199,7 @@ The LLM should prefer these rules across the repository:
 - avoid hardcoding release names, namespaces, or backend endpoints unless the user asks for fixed values
 - document every non-obvious default so the generated chart is explainable to a reviewer
 - keep one value source of truth for scrape timing, backend export, and feature enablement
-- the parent chart controls **only** the collector's RBAC; component RBAC must be controlled by passing values to each component's dependency, not by the parent chart
+- the parent chart controls **only** dependency wiring, top-level values, and the collector's RBAC; component RBAC must be controlled by passing values to each component's dependency, not by the parent chart
 - if a user asks for namespace-scoped observability and a component does not support namespace-scoped RBAC values, **document this as an assumption** so the user knows they may need manual configuration
 
 ## Prompting Guidance for LLM-User Interaction

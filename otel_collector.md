@@ -8,7 +8,47 @@ This file should be treated as the implementation contract for an LLM that needs
 ## Role In The Parent Chart
 The parent chart should declare the collector as a local dependency and the collector chart should own all collector-specific manifests.
 
+That means the parent chart may pass collector values, but it should not render collector scrape ConfigMaps, Deployments, Services, or pipeline documents itself.
+
 The collector chart should not be treated as a generic upstream chart copy. It is the place for the operator-specific scrape config, pipeline wiring, RBAC, and deployment settings.
+
+## Helm Structure Skeleton
+Use this as the syntax reference for the local collector chart:
+
+```text
+otel-collector/
+  Chart.yaml
+  values.yaml
+  templates/
+    _helpers.tpl
+    configmap.yaml
+    deployment.yaml
+    service.yaml
+    permission.yaml
+```
+
+Keep the canonical collector settings under `otelCollector.*` in the collector chart values. The parent chart should forward those values into the dependency, but the collector chart remains the source of truth for its own templates and resource names.
+
+Minimal collector-chart shape:
+
+```yaml
+# Chart.yaml
+apiVersion: v2
+name: otel-collector
+type: application
+version: 0.1.0
+appVersion: dev
+```
+
+```yaml
+# values.yaml
+otelCollector:
+  clusterName: ""
+  deploymentName: otel-collector
+  replicas: 1
+  configMapName: otel-collector-config-map
+  serviceName: otel-collector-service
+```
 
 ## What The LLM Should Infer From User Requests
 The collector chart is usually the place where natural-language observability requests become actual configuration.
@@ -180,6 +220,11 @@ otelCollector:
     debugExporter: false
     healthCheck: true
 ```
+
+The generated chart should preserve this nesting pattern:
+- parent chart dependency values: `otel-collector.otelCollector.*`
+- collector chart canonical values: `otelCollector.*`
+- resource names derived from helpers rather than hardcoded strings wherever possible
 
 ## Values Resolution Rules
 When generating values from user intent:

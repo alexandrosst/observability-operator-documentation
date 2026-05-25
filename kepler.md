@@ -59,7 +59,7 @@ kepler:
 The LLM should keep the dependency boundary clear:
 - Kepler chart owns the energy exporter deployment and its host-level access setup
 - OTel Collector owns the scrape job that consumes the metrics
-- parent chart owns dependency pinning and enablement flags
+- parent chart owns dependency pinning and dependency wiring, while the collector values decide whether the Kepler scrape target is present
 
 ## RBAC Implications
 Kepler runs cluster-wide and exposes node-level energy metrics.
