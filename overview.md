@@ -36,6 +36,8 @@ If the parent chart declares a dependency named `otel-collector`, install-time o
 
 Use aliases only when the generated chart deliberately needs a different install-time name from the chart name, and keep the alias consistent in `Chart.yaml` and in the values path used by `helm install --set`.
 
+The `_helpers.tpl` file is optional. Include it only if the generated chart needs reusable label, name, or fullname helpers.
+
 Minimal parent-chart shape:
 
 ```yaml

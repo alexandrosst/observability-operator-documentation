@@ -29,6 +29,8 @@ otel-collector/
 
 Keep the canonical collector settings under `otelCollector.*` in the collector chart values. The parent chart should forward those values into the dependency, but the collector chart remains the source of truth for its own templates and resource names.
 
+The `_helpers.tpl` file is optional. Add it only if the collector chart needs reusable naming or labeling helpers.
+
 Minimal collector-chart shape:
 
 ```yaml
