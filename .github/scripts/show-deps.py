@@ -7,6 +7,7 @@ import sys
 import subprocess
 import urllib.parse
 import re
+import argparse
 from pathlib import Path
 
 try:
@@ -16,10 +17,10 @@ except Exception as exc:
     raise
 
 
-def load_chart():
+def load_chart(chart_root: Path):
     for fname in ("Chart.lock", "Chart.yaml"):
         try:
-            with open(fname, "r") as f:
+            with open(chart_root / fname, "r") as f:
                 return yaml.safe_load(f)
         except FileNotFoundError:
             continue
@@ -27,11 +28,17 @@ def load_chart():
 
 
 def main():
-    chart_root = Path.cwd()
-    data = load_chart()
+    parser = argparse.ArgumentParser(description="Validate Helm dependency charts.")
+    parser.add_argument("--chart-dir", default=".", help="Path to the root chart directory")
+    args = parser.parse_args()
+
+    chart_root = Path(args.chart_dir).resolve()
+    if not chart_root.exists():
+        raise SystemExit(f"Chart directory does not exist: {chart_root}")
+
+    data = load_chart(chart_root)
     if not data:
-        print("No Chart.lock or Chart.yaml found; skipping dependency chart validation")
-        return 0
+        raise SystemExit(f"No Chart.lock or Chart.yaml found in {chart_root}")
 
     deps = data.get("dependencies") or []
     if not deps:
