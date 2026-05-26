@@ -112,9 +112,9 @@ collector:
   scrapeInterval: 5s
   evaluationInterval: 5s
 
-  deploymentName: otel-agent
-  serviceName: otel-agent-service
-  configMapName: otel-agent-config-map
+  deploymentName: otel-collector
+  serviceName: otel-collector-service
+  configMapName: otel-collector-config-map
 ```
 
 If optional inputs are not provided, the agent should use the defaults above.
@@ -622,7 +622,7 @@ Example:
 ```yaml
 otelCollector:
   clusterName: my-cluster
-  deploymentName: otel-agent
+  deploymentName: otel-collector
   replicas: 1
 ```
 
