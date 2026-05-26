@@ -15,7 +15,6 @@ on:
 
 jobs:
   validate-helm-chart:
-    name: Validate Helm chart
     runs-on: ubuntu-latest
 
     env:
@@ -23,13 +22,11 @@ jobs:
       RELEASE_NAME: observability-operator
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Helm
-        uses: azure/setup-helm@v4
+      - uses: azure/setup-helm@v4
 
-      - name: Add required Helm repositories
+      - name: Add Helm repositories
         run: |
           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
           helm repo add kepler https://sustainable-computing-io.github.io/kepler-helm-chart
@@ -37,31 +34,22 @@ jobs:
           helm repo update
 
       - name: Update chart dependencies
-        run: |
-          helm dependency update "$CHART_PATH"
+        run: helm dependency update "$CHART_PATH"
 
       - name: Lint chart
-        run: |
-          helm lint "$CHART_PATH"
+        run: helm lint "$CHART_PATH"
 
       - name: Render chart
         run: |
           helm template "$RELEASE_NAME" "$CHART_PATH" \
             --namespace observability \
-            --create-namespace \
             > rendered.yaml
 
-      - name: Show rendered manifests
-        run: |
-          head -n 80 rendered.yaml
-
       - name: Validate rendered Kubernetes manifests
-        uses: yannh/kubeconform-action@v0.6.7
+        uses: docker://ghcr.io/yannh/kubeconform:v0.6.7-alpine
         with:
-          files: rendered.yaml
-          strict: true
-          summary: true
-          ignore-missing-schemas: true
+          entrypoint: /kubeconform
+          args: "-strict -summary -ignore-missing-schemas rendered.yaml"
 
 # name: Helm validate
 
