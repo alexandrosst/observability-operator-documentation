@@ -2,16 +2,11 @@ name: Validate Observability Helm Chart
 
 on:
   pull_request:
-    paths:
-      - "observability_operator_chart/**"
-      - ".github/workflows/helm-validate.yml"
-  push:
     branches:
-      - main
+      - main  # Only run when a PR is trying to merge INTO main
     paths:
       - "observability_operator_chart/**"
       - ".github/workflows/helm-validate.yml"
-  workflow_dispatch:
 
 jobs:
   validate-helm-chart:
@@ -22,7 +17,7 @@ jobs:
       RELEASE_NAME: observability-operator
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4 # Automatically checks out the correct PR branch natively
 
       - uses: azure/setup-helm@v4
 
@@ -51,79 +46,56 @@ jobs:
           entrypoint: /kubeconform
           args: "-strict -summary -ignore-missing-schemas rendered.yaml"
 
-# name: Helm validate
+
+# name: Validate Observability Helm Chart
 
 # on:
-#   push:
-#     branches: [ main, master ]
 #   pull_request:
-#     branches: [ "**" ]
+#     paths:
+#       - "observability_operator_chart/**"
+#       - ".github/workflows/helm-validate.yml"
+#   push:
+#     branches:
+#       - main
+#     paths:
+#       - "observability_operator_chart/**"
+#       - ".github/workflows/helm-validate.yml"
 #   workflow_dispatch:
-#     inputs:
-#       chart_path:
-#         description: Path to the root Helm chart directory
-#         required: false
-#         default: charts/observability-operator
 
 # jobs:
-#   validate:
-#     # Deduplication: skip push-triggered runs created by the bot
-#     if: github.event_name != 'push' || github.actor != 'github-actions[bot]'
+#   validate-helm-chart:
 #     runs-on: ubuntu-latest
 
+#     env:
+#       CHART_PATH: observability_operator_chart/observability_operator
+#       RELEASE_NAME: observability-operator
+
 #     steps:
-#       - name: Checkout
-#         uses: actions/checkout@v4
+#       - uses: actions/checkout@v4
 
-#       - name: Resolve chart directory
-#         id: chartdir
-#         run: |
-#           set -eu
-#           CHART_DIR='${{ github.event.inputs.chart_path }}'
-#           if [ -z "$CHART_DIR" ]; then
-#             CHART_DIR='charts/observability-operator'
-#           fi
+#       - uses: azure/setup-helm@v4
 
-#           if [ ! -f "$CHART_DIR/Chart.yaml" ]; then
-#             FOUND_CHART=$(find . -path '*/Chart.yaml' -not -path './.git/*' | head -n 1 || true)
-#             if [ -n "$FOUND_CHART" ]; then
-#               CHART_DIR=$(dirname "$FOUND_CHART")
-#             else
-#               echo "::error::No Chart.yaml found. Set workflow_dispatch input chart_path to the chart directory."
-#               exit 1
-#             fi
-#           fi
-
-#           echo "chart_dir=$CHART_DIR" >> "$GITHUB_OUTPUT"
-
-#       - name: Install Helm
-#         run: |
-#           set -eux
-#           curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-
-#       - name: Add Helm repos
-#         working-directory: ${{ steps.chartdir.outputs.chart_dir }}
+#       - name: Add Helm repositories
 #         run: |
 #           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-#           helm repo add sustainable-computing-io https://sustainable-computing-io.github.io/kepler-helm-chart || true
+#           helm repo add kepler https://sustainable-computing-io.github.io/kepler-helm-chart
+#           helm repo add fluent https://fluent.github.io/helm-charts
 #           helm repo update
 
 #       - name: Update chart dependencies
-#         working-directory: ${{ steps.chartdir.outputs.chart_dir }}
-#         run: |
-#           helm dependency update .
+#         run: helm dependency update "$CHART_PATH"
 
-#       - name: Lint parent chart
-#         working-directory: ${{ steps.chartdir.outputs.chart_dir }}
-#         run: helm lint .
+#       - name: Lint chart
+#         run: helm lint "$CHART_PATH"
 
-#       - name: Template with example values
-#         working-directory: ${{ steps.chartdir.outputs.chart_dir }}
+#       - name: Render chart
 #         run: |
-#           helm template collection-agent . -f "${GITHUB_WORKSPACE}/examples/production-values.yaml" | sed -n '1,2000p'
+#           helm template "$RELEASE_NAME" "$CHART_PATH" \
+#             --namespace observability \
+#             > rendered.yaml
 
-#       - name: Validate dependency charts
-#         run: |
-#           set -eux
-#           pip3 install pyyaml
-#           python3 .github/scripts/show-deps.py --chart-dir '${{ steps.chartdir.outputs.chart_dir }}'
+#       - name: Validate rendered Kubernetes manifests
+#         uses: docker://ghcr.io/yannh/kubeconform:v0.6.7-alpine
+#         with:
+#           entrypoint: /kubeconform
+#           args: "-strict -summary -ignore-missing-schemas rendered.yaml"
