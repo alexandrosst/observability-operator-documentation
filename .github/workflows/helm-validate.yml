@@ -5,7 +5,7 @@ on:
     branches:
       - main  # Only run when a PR is trying to merge INTO main
     paths:
-      - "observability_operator_chart/**"
+      - "observability_operator_chart**/**"
       - ".github/workflows/helm-validate.yml"
 
 jobs:
