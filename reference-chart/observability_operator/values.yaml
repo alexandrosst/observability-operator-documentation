@@ -1,0 +1,14 @@
+network-metrics-exporter:
+  target_hosts:
+    - cluster: "localhost"
+      host_ip: ["127.0.0.1"]
+    - cluster: "gateway"
+      host_ip: ["147.102.13.200"]
+    - cluster: "custom_cluster"
+      host_ip: ["192.168.1.100"]
+
+prometheus-node-exporter:
+  fullnameOverride: node-exporter
+
+kube-state-metrics:
+  fullnameOverride: kube-state-metrics
