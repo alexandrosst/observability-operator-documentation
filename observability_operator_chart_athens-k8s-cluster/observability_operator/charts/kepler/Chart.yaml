@@ -1,4 +1,4 @@
 apiVersion: v2
 name: kepler
-description: Placeholder chart for kepler dependency.
 version: 0.6.1
+description: Minimal stub for kepler dependency
