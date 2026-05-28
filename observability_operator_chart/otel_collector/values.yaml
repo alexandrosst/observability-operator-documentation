@@ -1,5 +1,5 @@
 otelCollector:
-  clusterName: athens_k3s_cluster
+  clusterName: nuc_ntua_cluster
   deploymentName: otel-collector
   replicas: 1
   configMapName: otel-collector-config-map
@@ -8,11 +8,11 @@ otelCollector:
     registry: otel
     name: opentelemetry-collector
     tag: latest
-  scrapeInterval: 15s
-  evaluationInterval: 15s
+  scrapeInterval: 8s
+  evaluationInterval: 8s
   exporters:
     otlp:
-      host: 192.168.2.105
+      host: 147.102.13.110
       port: 4318
-    tls:
-      insecure: true
+  tls:
+    insecure: true
