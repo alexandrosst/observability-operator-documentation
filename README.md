@@ -2,7 +2,7 @@
 ## Purpose
 This repository defines a specification for an LLM agent that dynamically generates modular Helm charts for Kubernetes observability deployments.
 
-The agent must generate an `observability_operator_chart` according to the user's requested telemetry signals.
+The agent must generate an `observability_operator_chart_<suffix>` according to the user's requested telemetry signals.
 
 The generated chart should:
 - include only the required observability components,
@@ -340,6 +340,13 @@ extensions:
   health_check:
     endpoint: 0.0.0.0:13133
 ```
+
+and:
+
+```yaml
+args: ["--config=/conf/<config-file-name>.yaml"]
+```
+specifying the otel configuration file name.
 
 ---
 
