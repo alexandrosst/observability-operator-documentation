@@ -19,18 +19,15 @@ This specification is intended to reduce unnecessary tool calls and provide a si
 # High-Level Architecture
 
 The generated chart consists of:
-
 1. A parent Helm chart named `observability-operator`
 2. A local sub-chart named `otel-collector`
 3. Optional third-party Helm chart dependencies
 
 The parent chart is responsible for:
-
 * declaring Helm dependencies,
 * orchestrating exporter installation.
 
 The `otel-collector` sub-chart is responsible for:
-
 * OTLP telemetry ingestion,
 * Prometheus scraping,
 * telemetry enrichment,
