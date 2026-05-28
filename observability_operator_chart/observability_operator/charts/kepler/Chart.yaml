@@ -1,0 +1,6 @@
+apiVersion: v2
+name: kepler
+description: Placeholder chart for kepler dependency
+type: application
+version: 0.0.0
+appVersion: ""
