@@ -1,1 +1,1 @@
-# Default values for observability-operator chart.
+# Parent chart values (empty as subcharts are self–contained)

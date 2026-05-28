@@ -1,9 +1,9 @@
 otelCollector:
   clusterName: nuc_ntua_cluster
   deploymentName: otel-collector
-  serviceName: otel-collector-service
-  configMapName: otel-collector-config-map
   replicas: 1
+  configMapName: otel-collector-config-map
+  serviceName: otel-collector-service
   image:
     registry: otel
     name: opentelemetry-collector
