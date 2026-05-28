@@ -1,4 +1,6 @@
 apiVersion: v2
 name: prometheus-node-exporter
+description: Minimal stub chart for Prometheus Node Exporter.
+type: application
 version: 4.55.0
-description: Minimal stub for prometheus-node-exporter dependency
+appVersion: ""

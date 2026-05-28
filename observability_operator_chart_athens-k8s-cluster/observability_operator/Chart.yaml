@@ -1,5 +1,5 @@
 apiVersion: v2
-name: observability-operator
+name: observability-operator-athens-k8s-cluster
 description: A Helm chart for deploying observability components.
 type: application
 version: 0.1.0
@@ -7,4 +7,13 @@ appVersion: dev
 dependencies:
   - name: otel-collector
     version: 0.1.0
-    repository: "file://../otel_collector"
+    repository: "file://./charts/otel-collector"
+  - name: kepler
+    version: 0.6.1
+    repository: "file://./charts/kepler"
+  - name: prometheus-node-exporter
+    version: 4.55.0
+    repository: "file://./charts/prometheus-node-exporter"
+  - name: network-metrics-exporter
+    version: 0.1.0
+    repository: "file://./charts/network-metrics-exporter"

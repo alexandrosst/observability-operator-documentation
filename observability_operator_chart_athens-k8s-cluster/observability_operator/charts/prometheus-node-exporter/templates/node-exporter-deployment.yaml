@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-node-exporter
+  labels:
+    app: prometheus-node-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus-node-exporter
+  template:
+    metadata:
+      labels:
+        app: prometheus-node-exporter
+    spec:
+      containers:
+        - name: node-exporter
+          image: "prom/node-exporter:v1"
+          args: []

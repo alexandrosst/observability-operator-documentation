@@ -1,4 +1,6 @@
 apiVersion: v2
 name: kepler
+description: Minimal stub chart for Kepler dependency.
+type: application
 version: 0.6.1
-description: Minimal stub for kepler dependency
+appVersion: ""
