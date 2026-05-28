@@ -1,9 +1,9 @@
 otelCollector:
   clusterName: nuc_ntua_cluster
   deploymentName: otel-collector
-  replicas: 1
-  configMapName: otel-collector-config-map
   serviceName: otel-collector-service
+  configMapName: otel-collector-config-map
+  replicas: 1
   image:
     registry: otel
     name: opentelemetry-collector
@@ -14,5 +14,5 @@ otelCollector:
     otlp:
       host: 147.102.13.110
       port: 4318
-  tls:
-    insecure: true
+    tls:
+      insecure: true
