@@ -1,6 +1,0 @@
-apiVersion: v2
-name: kepler
-description: Stub chart for kepler dependency
-type: application
-version: 0.6.1
-appVersion: latest
