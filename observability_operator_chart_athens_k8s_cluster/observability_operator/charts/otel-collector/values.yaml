@@ -1,0 +1,35 @@
+otelCollector:
+  clusterName: athens_k8s_cluster
+  deploymentName: otel-collector
+  replicas: 1
+  configMapName: otel-collector-config-map
+  serviceName: otel-collector-service
+  image:
+    registry: otel
+    name: opentelemetry-collector
+    tag: "0.96.1"
+  scrapeInterval: 8s
+  evaluationInterval: 8s
+  exporters:
+    otlp:
+      host: 147.102.13.110
+      port: 4318
+    tls:
+      insecure: true
+  scrapeConfigs:
+    - job_name: kepler
+      kubernetes_sd_configs:
+        - role: pod
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+          regex: "kepler"
+          action: keep
+        - source_labels: [__meta_kubernetes_pod_node_name]
+          target_label: node
+    - job_name: network-latency-agent
+      kubernetes_sd_configs:
+        - role: service
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_service_name]
+          action: keep
+          regex: network-latency-agent-service

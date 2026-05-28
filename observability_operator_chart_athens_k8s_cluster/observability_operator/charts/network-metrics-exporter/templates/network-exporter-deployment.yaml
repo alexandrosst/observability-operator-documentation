@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: network-metrics-exporter
+  labels:
+    app: network-metrics-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: network-metrics-exporter
+  template:
+    metadata:
+      labels:
+        app: network-metrics-exporter
+    spec:
+      containers:
+        - name: network-exporter
+          image: "network-metrics-exporter/network-metrics-exporter:0.1.0"
+          args: []
