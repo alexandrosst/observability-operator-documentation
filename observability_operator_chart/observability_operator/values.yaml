@@ -1,0 +1,12 @@
+otelCollector:
+  clusterName: athens_k8s_cluster
+  exportHost: 147.102.13.108
+  exportPort: 4318
+  exporters:
+    otlp:
+      host: 147.102.13.108
+      port: 4318
+  tls:
+    insecure: true
+kepler:
+  enabled: true
