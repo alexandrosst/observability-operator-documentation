@@ -1,0 +1,18 @@
+otelCollector:
+  clusterName: ntua_athens_k8s_cluster
+  deploymentName: otel-collector
+  replicas: 1
+  configMapName: otel-collector-config-map
+  serviceName: otel-collector-service
+  image:
+    registry: otel
+    name: opentelemetry-collector
+    tag: latest
+  scrapeInterval: 20s
+  evaluationInterval: 20s
+  exporters:
+    otlp:
+      host: otlp-backend.default.svc.cluster.local
+      port: 4318
+  tls:
+    insecure: true
