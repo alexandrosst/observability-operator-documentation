@@ -1,0 +1,4 @@
+apiVersion: v2
+name: network-latency-agent
+description: Placeholder chart for network-latency-agent dependency.
+version: 0.1.0
