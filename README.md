@@ -406,51 +406,6 @@ receivers:
 
 ---
 
-# Reference-chart and LLM clarifications
-
-- **Reference chart purpose:** The `reference-chart/` directory is a full, illustrative Helm chart example. It demonstrates a complete chart output; the agent's generated chart for a user request should be minimal and include only the dependencies required by the requested `signals`.
-
-- **Chart folder vs chart name:** When declaring a local chart dependency use the folder path `file://../otel_collector` and ensure the dependency's `name` in `Chart.yaml` matches the folder or that the dependency reference uses the folder path. Agents should prefer matching folder and chart name to avoid ambiguity.
-
-- **Network metrics (explicit guidance):**
-  - Signal: `networkLatency` maps to the external Helm chart:
-    - name: `network_latency`
-    - alias: `network-metrics-exporter`
-  - Values for the aliased chart must be provided under the alias key in `values.yaml`:
-
-    ```yaml
-    network-metrics-exporter:
-      target_hosts:
-        - cluster: example
-          host_ip: ["10.0.0.1"]
-    ```
-
-  - Collector scrape job name: `network-latency-agent`. If the dependency is present, the agent must add a scrape job that points to the exporter service created by that chart or to configured `target_hosts` via `static_configs`.
-
-- **Container/cadvisor and Kubelet:**
-  - `containerResources` → `cadvisor` scrape job. `cadvisor` typically runs as a DaemonSet and requires node-level access.
-  - Minimal RBAC example for scraping node/cadvisor and kubelet:
-
-    ```yaml
-    apiVersion: rbac.authorization.k8s.io/v1
-    kind: ClusterRole
-    metadata:
-      name: observability-scrape
-    rules:
-      - apiGroups: [""]
-        resources: ["nodes", "nodes/proxy"]
-        verbs: ["get", "list", "watch", "proxy"]
-    ```
-
-- **Alias → values-key resolution:** When a dependency uses `alias`, use the alias as the top-level key in `values.yaml` to override chart values (see `network-metrics-exporter` example).
-
-- **Config filename mapping:** Use `configMapName` to build the file name passed to the collector `--config` arg. Example: if `configMapName: otel-collector-config-map` then `args: ["--config=/conf/otel-collector-config-map.yaml"]`.
-
-This section is intended to help deterministic agent behavior and remove common ambiguities (network metrics and alias/value mapping are common failure modes).
-```
-
----
-
 ## Prometheus Receiver
 
 Include the Prometheus receiver only when Prometheus-compatible exporters are requested.
