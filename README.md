@@ -60,7 +60,7 @@ Rules:
 otel_collector/templates/
 ```
 
-* The parent chart must contain dependency declarations only.
+* The parent chart must contain dependency declarations only in `Chart.yaml`. It can also override some values of the dependent charts in its `values.yaml`.
 
 * The parent chart must always include the local `otel-collector` dependency.
 
