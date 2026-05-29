@@ -1,6 +1,6 @@
 apiVersion: v2
 name: observability-operator
-description: A Helm chart for deploying observability components.
+description: Helm chart for deploying observability components.
 type: application
 version: 0.1.0
 appVersion: dev
@@ -8,3 +8,6 @@ dependencies:
   - name: otel-collector
     version: 0.1.0
     repository: "file://../otel_collector"
+  - name: network-latency
+    version: 0.1.0
+    repository: "https://gitlab.com/api/v4/projects/44429468/packages/helm/stable"
