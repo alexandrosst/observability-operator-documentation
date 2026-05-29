@@ -1,11 +1,5 @@
 otelCollector:
   clusterName: athens_k8s_cluster
-  exporters:
-    otlp:
-      host: "147.102.13.110"
-      port: 4318
-  tls:
-    insecure: true
   deploymentName: otel-collector
   replicas: 1
   configMapName: otel-collector-config-map
@@ -16,3 +10,9 @@ otelCollector:
     tag: latest
   scrapeInterval: 8s
   evaluationInterval: 8s
+  exporters:
+    otlp:
+      host: 147.102.13.110
+      port: 4318
+    tls:
+      insecure: true

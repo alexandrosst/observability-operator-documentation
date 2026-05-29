@@ -1,7 +1,60 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.otelCollector.configMapName }}
+  labels:
+    app: {{ .Values.otelCollector.deploymentName }}
+data:
+  otel-collector-config.yaml: |
+    receivers:
+      prometheus:
+        config:
+          global:
+            scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
+            evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
+          scrape_configs:
+            - job_name: "kepler"
+            - job_name: "node-exporter"
+              kubernetes_sd_configs:
+                - role: pod
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+                  regex: "prometheus-node-exporter"
+                  action: "keep"
+                - source_labels: [__meta_kubernetes_pod_node_name]
+                  target_label: node
+            - job_name: "network-metrics-exporter"
+              kubernetes_sd_configs:
+                - role: service
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_service_name]
+                  action: keep
+                  regex: network-latency-agent-service
+    processors:
+      batch: {}
+      resource:
+        attributes:
+          - key: cluster
+            value: {{ .Values.otelCollector.clusterName }}
+            action: insert
+    exporters:
+      otlp:
+        endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
+        tls:
+          insecure: {{ .Values.otelCollector.exporters.tls.insecure }}
+    service:
+      pipelines:
+        metrics:
+          receivers: [prometheus]
+          processors: [resource, batch]
+          exporters: [otlp]
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.otelCollector.deploymentName }}
+  labels:
+    app: {{ .Values.otelCollector.deploymentName }}
 spec:
   replicas: {{ .Values.otelCollector.replicas }}
   selector:
@@ -15,11 +68,8 @@ spec:
       serviceAccountName: otel-collector-serviceaccount
       containers:
         - name: otel-collector
-          image: "{{ .Values.otelCollector.image.registry }}/{{ .Values.otelCollector.image.name }}:{{ .Values.otelCollector.image.tag }}"
+          image: {{ .Values.otelCollector.image.registry }}/{{ .Values.otelCollector.image.name }}:{{ .Values.otelCollector.image.tag }}
           args: ["--config=/conf/otel-collector-config.yaml"]
-          ports:
-            - containerPort: 4317
-            - containerPort: 4318
           volumeMounts:
             - name: config
               mountPath: /conf
@@ -27,3 +77,20 @@ spec:
         - name: config
           configMap:
             name: {{ .Values.otelCollector.configMapName }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.otelCollector.serviceName }}
+  labels:
+    app: {{ .Values.otelCollector.deploymentName }}
+spec:
+  selector:
+    app: {{ .Values.otelCollector.deploymentName }}
+  ports:
+    - name: otlp-http
+      port: 4318
+      targetPort: 4318
+    - name: otlp-grpc
+      port: 4317
+      targetPort: 4317

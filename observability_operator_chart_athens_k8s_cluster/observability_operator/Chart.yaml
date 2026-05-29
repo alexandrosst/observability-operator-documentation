@@ -1,9 +1,9 @@
 apiVersion: v2
 name: observability-operator
-description: Helm chart for Observability Operator
+description: A Helm chart for deploying observability components.
 type: application
 version: 0.1.0
-appVersion: "1.0"
+appVersion: dev
 dependencies:
   - name: otel-collector
     version: 0.1.0
@@ -14,3 +14,7 @@ dependencies:
   - name: prometheus-node-exporter
     version: 4.55.0
     repository: "https://prometheus-community.github.io/helm-charts"
+  - name: network_latency
+    alias: network-metrics-exporter
+    version: 0.1.0
+    repository: "https://gitlab.com/api/v4/projects/44429468/packages/helm/stable"
