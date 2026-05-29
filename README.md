@@ -325,6 +325,13 @@ Correct:
 Only include the dependency when needed.
 
 For each dependency name defined in the parent chart, we can override some of its values by using its name.
+For example, we can update the target for getting the latency:
+```yaml
+network-metrics-exporter:
+  target_hosts:
+    - cluster: example_target_cluster
+      host_ip: ["10.0.0.1"]
+```
 
 ---
 
