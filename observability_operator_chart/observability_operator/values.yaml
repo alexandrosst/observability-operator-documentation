@@ -14,5 +14,11 @@ otelCollector:
     otlp:
       host: 147.102.13.110
       port: 4318
-  tls:
-    insecure: true
+    tls:
+      insecure: true
+
+network_latency:
+  target_hosts:
+    - cluster: athens_k8s_cluster
+      host_ip:
+        - "147.102.13.200"
