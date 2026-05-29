@@ -1,6 +1,6 @@
 apiVersion: v2
 name: observability-operator
-description: A Helm chart for deploying observability components.
+description: Observability Operator chart
 type: application
 version: 0.1.0
 appVersion: dev
