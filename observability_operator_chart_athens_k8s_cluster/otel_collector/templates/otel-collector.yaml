@@ -1,58 +1,47 @@
+{{- $collector := .Values.otelCollector }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.otelCollector.configMapName }}
-  labels:
-    app: {{ .Values.otelCollector.deploymentName }}
+  name: {{ $collector.configMapName }}
 data:
   otel-collector-config.yaml: |
-    extensions:
-      health_check:
-        endpoint: 0.0.0.0:13133
+    receivers:
+      prometheus:
+        config:
+          global:
+            scrape_interval: {{ $collector.scrapeInterval }}
+            evaluation_interval: {{ $collector.evaluationInterval }}
+          scrape_configs:
+            - job_name: kepler
+              kubernetes_sd_configs:
+                - role: pod
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+                  regex: kepler
+                  action: keep
+                - source_labels: [__meta_kubernetes_pod_node_name]
+                  target_label: node
+            - job_name: node-exporter
+              kubernetes_sd_configs:
+                - role: pod
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+                  regex: prometheus-node-exporter
+                  action: keep
+                - source_labels: [__meta_kubernetes_pod_node_name]
+                  target_label: node
     processors:
       batch: {}
       resource:
         attributes:
           - key: cluster
-            value: {{ .Values.otelCollector.clusterName }}
+            value: {{ $collector.clusterName }}
             action: insert
     exporters:
       otlp:
-        endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
+        endpoint: "{{ $collector.exporters.otlp.host }}:{{ $collector.exporters.otlp.port }}"
         tls:
-          insecure: {{ .Values.otelCollector.exporters.tls.insecure }}
-    receivers:
-      prometheus:
-        config:
-          global:
-            scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
-            evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
-          scrape_configs:
-            - job_name: "kepler"
-              kubernetes_sd_configs:
-                - role: "pod"
-              relabel_configs:
-                - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
-                  regex: "kepler"
-                  action: "keep"
-                - source_labels: [__meta_kubernetes_pod_node_name]
-                  target_label: node
-            - job_name: "node-exporter"
-              kubernetes_sd_configs:
-                - role: "pod"
-              relabel_configs:
-                - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
-                  regex: "prometheus-node-exporter"
-                  action: "keep"
-                - source_labels: [__meta_kubernetes_pod_node_name]
-                  target_label: node
-            - job_name: "network-metrics-exporter"
-              kubernetes_sd_configs:
-                - role: "service"
-              relabel_configs:
-                - source_labels: [__meta_kubernetes_service_name]
-                  action: keep
-                  regex: "network-latency-agent-service"
+          insecure: {{ $collector.exporters.tls.insecure }}
     service:
       pipelines:
         metrics:
@@ -63,21 +52,21 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.otelCollector.deploymentName }}
+  name: {{ $collector.deploymentName }}
 spec:
-  replicas: {{ .Values.otelCollector.replicas }}
+  replicas: {{ $collector.replicas }}
   selector:
     matchLabels:
-      app: {{ .Values.otelCollector.deploymentName }}
+      app: {{ $collector.deploymentName }}
   template:
     metadata:
       labels:
-        app: {{ .Values.otelCollector.deploymentName }}
+        app: {{ $collector.deploymentName }}
     spec:
       serviceAccountName: otel-collector-serviceaccount
       containers:
         - name: otel-collector
-          image: "{{ .Values.otelCollector.image.registry }}/{{ .Values.otelCollector.image.name }}:{{ .Values.otelCollector.image.tag }}"
+          image: "{{ $collector.image.registry }}/{{ $collector.image.name }}:{{ $collector.image.tag }}"
           args: ["--config=/conf/otel-collector-config.yaml"]
           volumeMounts:
             - name: config
@@ -85,4 +74,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: {{ .Values.otelCollector.configMapName }}
+            name: {{ $collector.configMapName }}
+            items:
+              - key: otel-collector-config.yaml
+                path: otel-collector-config.yaml
