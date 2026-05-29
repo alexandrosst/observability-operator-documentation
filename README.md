@@ -262,7 +262,7 @@ Keywords:
 Dependency:
 
 ```yaml
-- name: network_latency
+- name: network-latency
   version: 0.1.0
   repository: "https://gitlab.com/api/v4/projects/44429468/packages/helm/stable"
 ```
