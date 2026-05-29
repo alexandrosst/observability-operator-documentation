@@ -261,15 +261,17 @@ Keywords:
 Dependency:
 
 ```yaml
-- name: network-metrics-exporter
+- name: network_latency
+  alias: network-metrics-exporter
   version: 0.1.0
   repository: "https://gitlab.com/api/v4/projects/44429468/packages/helm/stable"
 ```
 
+
 Collector scrape job:
 
 ```yaml
-job_name: "network-metrics-exporter"
+job_name: "network-latency-agent"
 ```
 
 ---
