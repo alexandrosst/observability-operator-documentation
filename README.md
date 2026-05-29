@@ -262,7 +262,6 @@ Dependency:
 
 ```yaml
 - name: network_latency
-  alias: network-metrics-exporter
   version: 0.1.0
   repository: "https://gitlab.com/api/v4/projects/44429468/packages/helm/stable"
 ```
@@ -327,7 +326,7 @@ Only include the dependency when needed.
 For each dependency name defined in the parent chart, we can override some of its values by using its name.
 For example, we can update the target for getting the latency:
 ```yaml
-network-metrics-exporter:
+network-latency:
   target_hosts:
     - cluster: example_target_cluster
       host_ip: ["10.0.0.1"]
@@ -531,13 +530,13 @@ In the parent chart, we can override its name.
 ## Network Metrics Exporter
 
 ```yaml
-- job_name: "network-metrics-exporter"
+- job_name: "network-latency-agent"
   kubernetes_sd_configs:
     - role: "service"
   relabel_configs:
     - source_labels: [__meta_kubernetes_service_name]
       action: keep
-      regex: network-latency-agent-service
+      regex: network-metrics-exporter-service
 ```
 
 In the parent chart, we can override the target hosts by defining a cluster and its IPs.
