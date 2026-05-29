@@ -4,11 +4,9 @@ metadata:
   name: {{ .Values.otelCollector.configMapName }}
   labels:
     app: {{ .Values.otelCollector.deploymentName }}
+  namespace: {{ .Release.Namespace }}
 data:
   collector.yaml: |
-    extensions:
-      health_check:
-        endpoint: 0.0.0.0:13133
     receivers:
       otlp:
         protocols:
@@ -24,13 +22,18 @@ data:
           scrape_configs:
             - job_name: "kepler"
               kubernetes_sd_configs:
-                - role: pod
+                - role: "pod"
               relabel_configs:
                 - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
                   regex: "kepler"
                   action: keep
                 - source_labels: [__meta_kubernetes_pod_node_name]
                   target_label: node
+    exporters:
+      otlp:
+        endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
+        tls:
+          insecure: {{ .Values.otelCollector.exporters.tls.insecure }}
     processors:
       batch: {}
       resource:
@@ -38,22 +41,19 @@ data:
           - key: cluster
             value: {{ .Values.otelCollector.clusterName }}
             action: insert
-    exporters:
-      otlp:
-        endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
-        tls:
-          insecure: {{ .Values.otelCollector.tls.insecure }}
     service:
       pipelines:
         metrics:
           receivers: [prometheus, otlp]
-          processors: [resource, batch]
           exporters: [otlp]
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.otelCollector.deploymentName }}
+  labels:
+    app: {{ .Values.otelCollector.deploymentName }}
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ .Values.otelCollector.replicas }}
   selector:
@@ -71,15 +71,31 @@ spec:
           args: ["--config=/conf/collector.yaml"]
           ports:
             - containerPort: 4317
+              name: otlp-grpc
             - containerPort: 4318
-            - containerPort: 13133
+              name: otlp-http
           volumeMounts:
-            - name: config
+            - name: collector-config
               mountPath: /conf
       volumes:
-        - name: config
+        - name: collector-config
           configMap:
             name: {{ .Values.otelCollector.configMapName }}
-            items:
-              - key: collector.yaml
-                path: collector.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.otelCollector.serviceName }}
+  labels:
+    app: {{ .Values.otelCollector.deploymentName }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: {{ .Values.otelCollector.deploymentName }}
+  ports:
+    - name: otlp-grpc
+      port: 4317
+      targetPort: 4317
+    - name: otlp-http
+      port: 4318
+      targetPort: 4318

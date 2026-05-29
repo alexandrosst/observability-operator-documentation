@@ -1,2 +1,1 @@
-# Default values for observability-operator
-# Override sub‑chart values via the parent chart if needed.
+{}
