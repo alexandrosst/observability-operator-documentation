@@ -403,12 +403,6 @@ receivers:
 
 - **Reference chart purpose:** The `reference-chart/` directory is a full, illustrative Helm chart example. It demonstrates a complete chart output; the agent's generated chart for a user request should be minimal and include only the dependencies required by the requested `signals`.
 
-- **Values mapping (explicit):**
-  - User input `otlpExportEndpoint.host` → `otelCollector.exporters.otlp.host`
-  - User input `otlpExportEndpoint.port` → `otelCollector.exporters.otlp.port`
-  - User input `tls.insecure` → `otelCollector.exporters.tls.insecure`
-  - If the user supplies top-level fields, the agent MUST map them into `otelCollector.*` according to the above.
-
 - **Chart folder vs chart name:** When declaring a local chart dependency use the folder path `file://../otel_collector` and ensure the dependency's `name` in `Chart.yaml` matches the folder or that the dependency reference uses the folder path. Agents should prefer matching folder and chart name to avoid ambiguity.
 
 - **Network metrics (explicit guidance):**
