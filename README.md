@@ -40,7 +40,7 @@ The `otel-collector` sub-chart is responsible for:
 The agent must generate the following structure.
 
 ```text
-observability_operator_chart/
+observability_operator_chart_<suffix>/
   observability_operator/
     Chart.yaml
     values.yaml
@@ -60,7 +60,8 @@ Rules:
 otel_collector/templates/
 ```
 
-* The parent chart must contain dependency declarations only in `Chart.yaml`. It can also override some values of the dependent charts in its `values.yaml`.
+* The parent chart `observability_operator` must contain dependency declarations only in `Chart.yaml`. 
+In its `values.yaml` file it can contain overrides for its dependencies values if needed, like with network-exporter-metrics.
 
 * The parent chart must always include the local `otel-collector` dependency.
 
