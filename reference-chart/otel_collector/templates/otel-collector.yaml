@@ -11,7 +11,9 @@ data:
       otlp:
         protocols:
           grpc:
-            endpoint: {{ .Values.otelCollector.receivers.otlp }}
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
       prometheus:
         config:
           global:
@@ -86,7 +88,7 @@ data:
       debug:
         verbosity: detailed
       otlp:
-        endpoint: {{ .Values.otelCollector.exporters.otlp.ip }}:{{ .Values.otelCollector.exporters.otlp.port }}
+        endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
         tls:
           insecure: {{ .Values.otelCollector.exporters.tls.insecure }}
     processors:
