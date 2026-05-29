@@ -8,11 +8,11 @@ otelCollector:
     registry: otel
     name: opentelemetry-collector
     tag: latest
-  scrapeInterval: 5s
-  evaluationInterval: 5s
+  scrapeInterval: 8s
+  evaluationInterval: 8s
   exporters:
     otlp:
-      host: 147.102.13.108
+      host: 147.102.13.110
       port: 4318
-    tls:
-      insecure: true
+  tls:
+    insecure: true
