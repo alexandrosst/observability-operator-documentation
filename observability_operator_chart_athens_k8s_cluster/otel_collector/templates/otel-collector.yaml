@@ -2,6 +2,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Values.otelCollector.configMapName }}
+  labels:
+    app: {{ .Values.otelCollector.deploymentName }}
 data:
   otel-collector-config.yaml: |
     extensions:
@@ -32,7 +34,7 @@ data:
               relabel_configs:
                 - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
                   regex: "kepler"
-                  action: keep
+                  action: "keep"
                 - source_labels: [__meta_kubernetes_pod_node_name]
                   target_label: node
             - job_name: "node-exporter"
@@ -41,7 +43,7 @@ data:
               relabel_configs:
                 - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
                   regex: "prometheus-node-exporter"
-                  action: keep
+                  action: "keep"
                 - source_labels: [__meta_kubernetes_pod_node_name]
                   target_label: node
             - job_name: "network-metrics-exporter"
@@ -76,10 +78,7 @@ spec:
       containers:
         - name: otel-collector
           image: "{{ .Values.otelCollector.image.registry }}/{{ .Values.otelCollector.image.name }}:{{ .Values.otelCollector.image.tag }}"
-          args: ["--config=/conf/{{ .Values.otelCollector.configMapName }}.yaml"]
-          ports:
-            - containerPort: 4317
-            - containerPort: 4318
+          args: ["--config=/conf/otel-collector-config.yaml"]
           volumeMounts:
             - name: config
               mountPath: /conf
