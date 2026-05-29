@@ -1,7 +1,1 @@
-kepler: {}
-prometheus-node-exporter: {}
-network-metrics-exporter:
-  target_hosts:
-    - cluster: athens_k8s_cluster
-      host_ip:
-        - "147.102.13.200"
+# No overrides needed for parent chart
