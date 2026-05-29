@@ -322,6 +322,8 @@ Correct:
 
 Only include the dependency when needed.
 
+For each dependency name defined in the parent chart, we can override some of its values by using its name.
+
 ---
 
 # OpenTelemetry Collector Generation Rules
@@ -452,6 +454,8 @@ The agent must not invent alternative discovery rules unless the user explicitly
       target_label: node
 ```
 
+In the parent chart, we can override its name.
+
 ---
 
 ## cAdvisor
@@ -512,12 +516,14 @@ The agent must not invent alternative discovery rules unless the user explicitly
       regex: kube-state-metrics
 ```
 
+In the parent chart, we can override its name.
+
 ---
 
-## Network Latency Agent
+## Network Metrics Exporter
 
 ```yaml
-- job_name: "network-latency-agent"
+- job_name: "network-metrics-exporter"
   kubernetes_sd_configs:
     - role: "service"
   relabel_configs:
@@ -525,6 +531,8 @@ The agent must not invent alternative discovery rules unless the user explicitly
       action: keep
       regex: network-latency-agent-service
 ```
+
+In the parent chart, we can override the target hosts by defining a cluster and its IPs.
 
 ---
 
