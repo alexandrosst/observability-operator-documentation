@@ -1,0 +1,2 @@
+# Default values for otel-collector chart
+# Override via parent chart if needed
