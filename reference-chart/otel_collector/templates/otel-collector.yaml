@@ -130,7 +130,7 @@ spec:
       labels:
         app: {{ .Values.otelCollector.deploymentName }}
     spec:
-      serviceAccountName: collection-agent-serviceaccount
+      serviceAccountName: otel-collector-serviceaccount
       containers:
         - name: {{ .Values.otelCollector.deploymentName }}
           image: "{{ .Values.otelCollector.image.registry }}/{{ .Values.otelCollector.image.name }}:{{ .Values.otelCollector.image.tag }}"

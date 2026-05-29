@@ -17,7 +17,7 @@ otelCollector:
 
   exporters:
     otlp:
-      host: observability-backend.default.svc.cluster.local
+      ip: <destination-otel-collector-service-ip>
       port: 4318
 
     tls:
