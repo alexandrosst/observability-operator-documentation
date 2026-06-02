@@ -6,7 +6,7 @@ version: 0.1.0
 appVersion: dev
 dependencies:
   - name: kube-state-metrics
-    version: 7.3.0
+    version: 7.4.0
     repository: "https://prometheus-community.github.io/helm-charts"
   - name: prometheus-node-exporter
     version: 4.55.0
@@ -20,3 +20,6 @@ dependencies:
   - name: otel-collector
     version: 0.1.0
     repository: "file://../otel_collector"
+  - name: fluent-bit
+    version: 0.57.6
+    repository: "https://fluent.github.io/helm-charts"

@@ -9,7 +9,7 @@ otelCollector:
 
   image:
     registry: otel
-    name: opentelemetry-collector
+    name: opentelemetry-collector-contrib
     tag: latest
 
   scrapeInterval: 5s
@@ -17,11 +17,24 @@ otelCollector:
 
   exporters:
     otlp:
-      host: 127.0.0.1
+      ip: 127.0.0.1
       port: 4318
-
     tls:
       insecure: true
+
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [otlp]
+      processors: [resource, batch]
+    metrics:
+      receivers: [otlp, prometheus]
+      exporters: [otlp]
+      processors: [resource, batch]
+    logs:
+      receivers: [otlp, k8s_events]
+      exporters: [otlp]
+      processors: [resource, batch]
 
   ports:
     otlp-grpc:
