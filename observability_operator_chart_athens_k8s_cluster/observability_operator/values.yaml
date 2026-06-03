@@ -1,11 +1,16 @@
-# Values for the observability operator chart
 otelCollector:
   clusterName: athens_k8s_cluster
   exporters:
     otlp:
-      host: "147.102.13.108"
+      host: 147.102.13.108
       port: 4318
   scrapeInterval: 12s
   evaluationInterval: 12s
-  tls:
-    insecure: true
+  replicas: 1
+  deploymentName: otel-collector
+  serviceName: otel-collector-service
+  configMapName: otel-collector-config-map
+kepler:
+  fullnameOverride: kepler
+prometheus-node-exporter:
+  fullnameOverride: node-exporter
