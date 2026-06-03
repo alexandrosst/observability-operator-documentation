@@ -2,8 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.otelCollector.deploymentName }}
-  labels:
-    app: {{ .Values.otelCollector.deploymentName }}
 spec:
   replicas: {{ .Values.otelCollector.replicas }}
   selector:
@@ -18,10 +16,11 @@ spec:
       containers:
         - name: otel-collector
           image: "{{ .Values.otelCollector.image.registry }}/{{ .Values.otelCollector.image.name }}:{{ .Values.otelCollector.image.tag }}"
-          args:
-            - "--config=/conf/otel-collector-config.yaml"
+          args: ["--config=/conf/otel-collector-config.yaml"]
           ports:
+            - containerPort: 4317
             - containerPort: 4318
+            - containerPort: 13133
           volumeMounts:
             - name: config
               mountPath: /conf
