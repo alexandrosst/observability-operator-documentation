@@ -1,2 +1,11 @@
-kepler:
-  fullnameOverride: kepler
+# Values for the observability operator chart
+otelCollector:
+  clusterName: athens_k8s_cluster
+  exporters:
+    otlp:
+      host: "147.102.13.108"
+      port: 4318
+  scrapeInterval: 12s
+  evaluationInterval: 12s
+  tls:
+    insecure: true
