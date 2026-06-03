@@ -1,5 +1,2 @@
-network-latency:
-  target_hosts:
-    - cluster: athens_k8s_cluster
-      host_ip:
-        - "147.102.13.200"
+kepler:
+  fullnameOverride: kepler
