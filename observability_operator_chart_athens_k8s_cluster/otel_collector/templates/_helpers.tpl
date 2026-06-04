@@ -1,7 +1,15 @@
 {{- define "otel-collector.fullname" -}}
-{{ .Release.Name }}-otel-collector
+{{- printf "%s-%s" .Release.Name "otel-collector" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "otel-collector.chart" -}}
-{{ .Chart.Name }}
+{{- define "otel-collector.name" -}}
+otel-collector
+{{- end -}}
+
+{{- define "otel-collector.labels" -}}
+helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+app.kubernetes.io/name: {{ include "otel-collector.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/version: {{ .Chart.AppVersion }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
