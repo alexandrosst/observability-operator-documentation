@@ -233,13 +233,20 @@ job_name: "network-latency"
 ---
 
 ## Logs
-Keywords:
-- kubernetes logs
+There are 2 types of logs.
+## Application Logs
+Application logs are emitted directly by the application using the OTLP protocol. Only the `otlp` receiver is needed to be enabled in the `otel_collector` sub-chart. No Fluent Bit. No tailing. No systemd. No containerd scraping.
+
+## System Logs
+System logs include:
+- Kubernetes system component logs
+- kubelet logs
 - node logs
 - cluster logs
 - system logs
 - containerd logs
 - non-application logs
+- journald lgos
 
 Dependency to be added in the `Chart.yaml` file of the parent `observability_operator` chart:
 ```yaml
@@ -249,6 +256,9 @@ Dependency to be added in the `Chart.yaml` file of the parent `observability_ope
 ```
 
 In the `values.yaml` file of the parent `observability_operator` chart, we must put some configuration for it, specifying inputs.
+
+## Kubernetes Events Logs
+When kubernetes events logs are requested, just the `k8s_events` receiver is needed to be added in the `otel_collector` sub-chart.
 
 ---
 
