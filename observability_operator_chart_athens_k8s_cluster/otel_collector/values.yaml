@@ -1,18 +1,18 @@
 otelCollector:
   clusterName: athens_k8s_cluster
   deploymentName: otel-collector
-  serviceName: otel-collector-service
-  configMapName: otel-collector-config-map
   replicas: 1
+  configMapName: otel-collector-config-map
+  serviceName: otel-collector-service
   image:
     registry: otel
     name: opentelemetry-collector-contrib
     tag: latest
-  scrapeInterval: 12s
-  evaluationInterval: 12s
+  scrapeInterval: 15s
+  evaluationInterval: 5s
   exporters:
     otlp:
-      host: 147.102.13.108
+      host: otel-gateway-service.default.svc
       port: 4318
     tls:
       insecure: true

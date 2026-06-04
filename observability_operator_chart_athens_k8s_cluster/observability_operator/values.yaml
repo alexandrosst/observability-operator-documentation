@@ -1,4 +1,1 @@
-kepler:
-  fullnameOverride: kepler
-prometheus-node-exporter:
-  fullnameOverride: node-exporter
+# Parent chart values - empty for now
