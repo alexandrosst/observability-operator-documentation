@@ -9,8 +9,10 @@ otelCollector:
     name: opentelemetry-collector-contrib
     tag: latest
   scrapeInterval: 8s
-  evaluationInterval: 8s
+  evaluationInterval: 5s
   exporters:
     otlp:
       host: 147.102.13.108
       port: 4318
+      tls:
+        insecure: true
