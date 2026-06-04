@@ -1,9 +1,9 @@
 apiVersion: v2
 name: observability-operator
-description: A Helm chart for deploying observability components.
+description: Helm chart for observability operator.
 type: application
 version: 0.1.0
-appVersion: dev
+appVersion: "1.0"
 dependencies:
   - name: otel-collector
     version: 0.1.0
@@ -11,6 +11,3 @@ dependencies:
   - name: prometheus-node-exporter
     version: 4.55.0
     repository: "https://prometheus-community.github.io/helm-charts"
-  - name: fluent-bit
-    version: 0.57.6
-    repository: "https://fluent.github.io/helm-charts"

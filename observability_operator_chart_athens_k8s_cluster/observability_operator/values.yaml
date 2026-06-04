@@ -1,8 +1,2 @@
-otelCollector:
-  clusterName: athens_k8s_cluster
-  exportEndpoint:
-    host: 147.102.13.108
-    port: 4318
-  scrapeInterval: 8s
-  evaluationInterval: 8s
-fluent-bit: {}
+prometheus-node-exporter:
+  fullnameOverride: node-exporter

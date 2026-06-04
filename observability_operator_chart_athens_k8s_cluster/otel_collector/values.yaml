@@ -14,5 +14,3 @@ otelCollector:
     otlp:
       host: 147.102.13.108
       port: 4318
-      tls:
-        insecure: true
