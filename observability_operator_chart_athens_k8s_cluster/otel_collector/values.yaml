@@ -2,7 +2,7 @@ otelCollector:
   clusterName: athens_k8s_cluster
   deploymentName: otel-collector
   replicas: 1
-  configMapName: otel-collector-config
+  configMapName: otel-collector-config-map
   serviceName: otel-collector-service
   image:
     registry: otel
