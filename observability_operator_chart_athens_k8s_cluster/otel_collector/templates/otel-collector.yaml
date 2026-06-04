@@ -3,23 +3,20 @@ kind: ConfigMap
 metadata:
   name: {{ .Values.otelCollector.configMapName }}
 data:
-  collector.yaml: |
+  otel-collector-config.yaml: |
     extensions:
       health_check:
         endpoint: 0.0.0.0:13133
-    processors:
-      batch: {}
-      resource:
-        attributes:
-          - key: cluster
-            value: {{ .Values.otelCollector.clusterName }}
-            action: insert
-    exporters:
-      otlp:
-        endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
-        tls:
-          insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure | default false }}
     receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+      k8s_events:
+        auth_type: serviceAccount
+        namespaces: []
       prometheus:
         config:
           global:
@@ -35,9 +32,18 @@ data:
                   action: "keep"
                 - source_labels: [__meta_kubernetes_pod_node_name]
                   target_label: node
-      k8s_events:
-        auth_type: serviceAccount
-        namespaces: []
+    processors:
+      batch: {}
+      resource:
+        attributes:
+          - key: cluster
+            value: {{ .Values.otelCollector.clusterName }}
+            action: insert
+    exporters:
+      otlp:
+        endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
+        tls:
+          insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure | default true }}
     service:
       pipelines:
         metrics:
@@ -67,10 +73,7 @@ spec:
       containers:
         - name: otel-collector
           image: "{{ .Values.otelCollector.image.registry }}/{{ .Values.otelCollector.image.name }}:{{ .Values.otelCollector.image.tag }}"
-          args: ["--config=/conf/collector.yaml"]
-          ports:
-            - containerPort: 4317
-            - containerPort: 4318
+          args: ["--config=/conf/otel-collector-config.yaml"]
           volumeMounts:
             - name: config
               mountPath: /conf
