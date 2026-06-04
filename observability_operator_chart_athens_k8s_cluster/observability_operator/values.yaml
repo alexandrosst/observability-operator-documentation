@@ -1,1 +1,2 @@
-# No specific overrides required for this deployment
+# Default values for the observability-operator chart.
+# No additional overrides are required for this minimal deployment.

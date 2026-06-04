@@ -2,8 +2,11 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Values.otelCollector.configMapName }}
+  labels:
+    app: {{ .Values.otelCollector.deploymentName }}
+  namespace: {{ .Release.Namespace }}
 data:
-  collector.yaml: |
+  otel-collector-config.yaml: |
     extensions:
       health_check:
         endpoint: 0.0.0.0:13133
@@ -34,7 +37,7 @@ data:
       resource:
         attributes:
           - key: cluster
-            value: "{{ .Values.otelCollector.clusterName }}"
+            value: {{ .Values.otelCollector.clusterName }}
             action: insert
     exporters:
       otlp:
@@ -45,17 +48,20 @@ data:
       pipelines:
         metrics:
           receivers: [prometheus]
-          processors: [resource, batch]
+          processors: [batch, resource]
           exporters: [otlp]
         logs:
           receivers: [otlp]
-          processors: [resource, batch]
+          processors: [batch, resource]
           exporters: [otlp]
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.otelCollector.deploymentName }}
+  labels:
+    app: {{ .Values.otelCollector.deploymentName }}
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ .Values.otelCollector.replicas }}
   selector:
@@ -70,7 +76,10 @@ spec:
       containers:
         - name: otel-collector
           image: "{{ .Values.otelCollector.image.registry }}/{{ .Values.otelCollector.image.name }}:{{ .Values.otelCollector.image.tag }}"
-          args: ["--config=/conf/collector.yaml"]
+          args: ["--config=/conf/otel-collector-config.yaml"]
+          ports:
+            - containerPort: 4317
+            - containerPort: 4318
           volumeMounts:
             - name: config
               mountPath: /conf
