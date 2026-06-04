@@ -1,3 +1,3 @@
 {{- define "otel-collector.fullname" -}}
-{{- printf "%s-%s" .Release.Name "otel-collector" | trunc 63 | trimSuffix "-" -}}
+{{ printf "%s-%s" .Release.Name "otel-collector" }}
 {{- end -}}
