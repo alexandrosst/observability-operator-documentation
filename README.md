@@ -80,7 +80,7 @@ The user may also provide the srcape interval for metrics `scrapeInterval`.
 
 Some optional otel collector configuration is the following:
 ```yaml
-collector:
+otelCollector:
   image:
     registry: otel
     name: opentelemetry-collector-contrib
@@ -316,6 +316,7 @@ processors:
         value: {{ .Values.otelCollector.clusterName }}
         action: insert
 ```
+Ensure that `.Values.otelCollector.clusterName` exists.
 
 ---
 
