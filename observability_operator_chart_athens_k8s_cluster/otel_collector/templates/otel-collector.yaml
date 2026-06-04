@@ -1,17 +1,17 @@
-{{- $fullName := include "otel-collector.fullname" . -}}
+{{- $collector := .Values.otelCollector -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ $fullName }}-config-map
+  name: {{ $collector.configMapName }}
   labels:
-    app.kubernetes.io/name: {{ include "otel-collector.name" . }}
-    helm.sh/chart: {{ include "otel-collector.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/version: {{ .Chart.AppVersion }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app: {{ $collector.deploymentName }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation
+    "helm.sh/hook-weight": "-5"
 
 data:
-  collector-config.yaml: |
+  otel-collector-config.yaml: |
     extensions:
       health_check:
         endpoint: 0.0.0.0:13133
@@ -19,98 +19,65 @@ data:
       prometheus:
         config:
           global:
-            scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
-            evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
+            scrape_interval: {{ $collector.scrapeInterval }}
+            evaluation_interval: {{ $collector.evaluationInterval }}
           scrape_configs:
-            - job_name: "kepler"
+{{- range $job := $collector.prometheusJobs }}
+            - job_name: "{{ $job.job_name }}"
               kubernetes_sd_configs:
-                - role: "pod"
+                - role: "{{ $job.kubernetes_sd_configs[0].role }}"
               relabel_configs:
-                - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
-                  regex: "kepler"
-                  action: "keep"
-                - source_labels: [__meta_kubernetes_pod_node_name]
-                  target_label: node
+{{- range $rc := $job.relabel_configs }}
+                - source_labels: [{{ (index $rc "source_labels") | join ", " }}]
+{{- if $rc.regex }}                  regex: "{{ $rc.regex }}"{{ end }}
+{{- if $rc.action }}                  action: "{{ $rc.action }}"{{ end }}
+{{- if $rc.target_label }}                  target_label: "{{ $rc.target_label }}"{{ end }}
+{{- end }}
+{{- end }}
     processors:
       batch: {}
       resource:
         attributes:
           - key: cluster
-            value: {{ .Values.otelCollector.clusterName }}
+            value: {{ $collector.clusterName }}
             action: insert
     exporters:
       otlp:
-        endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
+        endpoint: {{ $collector.exporters.otlp.host }}:{{ $collector.exporters.otlp.port }}
         tls:
-          insecure: {{ .Values.otelCollector.exporters.tls.insecure }}
+          insecure: {{ $collector.exporters.otlp.tls.insecure }}
     service:
       pipelines:
         metrics:
           receivers: [prometheus]
           processors: [resource,batch]
           exporters: [otlp]
-    args: ["--config=/conf/collector-config.yaml"]
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $fullName }}
+  name: {{ $collector.deploymentName }}
   labels:
-    app.kubernetes.io/name: {{ include "otel-collector.name" . }}
-    helm.sh/chart: {{ include "otel-collector.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/version: {{ .Chart.AppVersion }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app: {{ $collector.deploymentName }}
 spec:
-  replicas: {{ .Values.otelCollector.replicas }}
+  replicas: {{ $collector.replicas }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "otel-collector.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      app: {{ $collector.deploymentName }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "otel-collector.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        app: {{ $collector.deploymentName }}
     spec:
-      serviceAccountName: {{ $fullName }}-serviceaccount
+      serviceAccountName: otel-collector-serviceaccount
       containers:
-        - name: {{ $fullName }}
-          image: "{{ .Values.otelCollector.image.registry }}/{{ .Values.otelCollector.image.name }}:{{ .Values.otelCollector.image.tag }}"
-          args: {{ .Values.args | default (list "--config=/conf/collector-config.yaml") | toJson }}
-          ports:
-            - name: otlp-grpc
-              containerPort: 4317
-            - name: otlp-http
-              containerPort: 4318
-            - name: health-check
-              containerPort: 13133
+        - name: otel-collector
+          image: {{ $collector.image.registry }}/{{ $collector.image.name }}:{{ $collector.image.tag }}
+          args: ["--config=/conf/otel-collector-config.yaml"]
           volumeMounts:
             - name: config
               mountPath: /conf
       volumes:
         - name: config
           configMap:
-            name: {{ $fullName }}-config-map
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ $fullName }}-service
-  labels:
-    app.kubernetes.io/name: {{ include "otel-collector.name" . }}
-    helm.sh/chart: {{ include "otel-collector.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-spec:
-  type: ClusterIP
-  ports:
-    - name: otlp-grpc
-      port: 4317
-      targetPort: otlp-grpc
-    - name: otlp-http
-      port: 4318
-      targetPort: otlp-http
-  selector:
-    app.kubernetes.io/name: {{ include "otel-collector.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+            name: {{ $collector.configMapName }}
