@@ -328,7 +328,7 @@ exporters:
     tls:
       insecure: true
 ```
-
+**Mind the tls position under the `otlp` exporter!**
 ---
 
 ## otlp receiver
