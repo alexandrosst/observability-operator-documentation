@@ -316,7 +316,7 @@ exporters:
   otlp:
     endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
     tls:
-      insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure }}
+      insecure: true
 ```
 
 ---
