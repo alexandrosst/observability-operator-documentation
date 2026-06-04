@@ -907,7 +907,7 @@ otelCollector:
       host: observability-backend.default.svc.cluster.local
       port: 4318
       tls:
-        insecure: true
+        insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure | default true }}
 ```
 
 ---
