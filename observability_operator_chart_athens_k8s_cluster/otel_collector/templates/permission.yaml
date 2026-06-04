@@ -8,7 +8,7 @@ kind: ClusterRole
 metadata:
   name: otel-collector-clusterrole
 rules:
-- apiGroups: ["" ]
+- apiGroups: [""]
   resources:
   - pods
   - nodes
