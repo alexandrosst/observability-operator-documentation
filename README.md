@@ -88,9 +88,6 @@ collector:
 
   replicas: 1
 
-  tls:
-    insecure: true
-
   scrapeInterval: 5s
   evaluationInterval: 5s
 
@@ -319,7 +316,7 @@ exporters:
   otlp:
     endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
     tls:
-      insecure: {{ .Values.otelCollector.exporters.tls.insecure }}
+      insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure }}
 ```
 
 ---

@@ -19,8 +19,8 @@ otelCollector:
     otlp:
       ip: 127.0.0.1
       port: 4318
-    tls:
-      insecure: true
+      tls:
+        insecure: true
 
   pipelines:
     traces:
