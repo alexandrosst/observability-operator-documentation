@@ -25,13 +25,22 @@ data:
 {{- range $job := $collector.prometheusJobs }}
             - job_name: "{{ $job.job_name }}"
               kubernetes_sd_configs:
-                - role: "{{ $job.kubernetes_sd_configs[0].role }}"
+                - role: "{{ (index $job.kubernetes_sd_configs 0).role }}"
               relabel_configs:
 {{- range $rc := $job.relabel_configs }}
-                - source_labels: [{{ (index $rc "source_labels") | join ", " }}]
-{{- if $rc.regex }}                  regex: "{{ $rc.regex }}"{{ end }}
-{{- if $rc.action }}                  action: "{{ $rc.action }}"{{ end }}
-{{- if $rc.target_label }}                  target_label: "{{ $rc.target_label }}"{{ end }}
+                - source_labels:
+{{- range $sl := (index $rc "source_labels") }}
+                    - "{{ $sl }}"
+{{- end }}
+{{- if $rc.regex }}
+                  regex: "{{ $rc.regex }}"
+{{- end }}
+{{- if $rc.action }}
+                  action: "{{ $rc.action }}"
+{{- end }}
+{{- if $rc.target_label }}
+                  target_label: "{{ $rc.target_label }}"
+{{- end }}
 {{- end }}
 {{- end }}
     processors:
@@ -49,9 +58,13 @@ data:
     service:
       pipelines:
         metrics:
-          receivers: [prometheus]
-          processors: [resource,batch]
-          exporters: [otlp]
+          receivers:
+            - prometheus
+          processors:
+            - resource
+            - batch
+          exporters:
+            - otlp
 ---
 apiVersion: apps/v1
 kind: Deployment
