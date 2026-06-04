@@ -320,15 +320,15 @@ processors:
 ---
 
 ## otlp exporter
-The `otlp` exporter is needed, specifying the (ip, port) endpoint for sending the telemetry. The configuration file should include:
+The `otlp` exporter is needed, specifying the (ip, port) endpoint for sending the telemetry. TLS settings must always be nested under the OTLP exporter and must always come from `.Values`. The configuration file should include:
 ```yaml
 exporters:
   otlp:
     endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
     tls:
-      insecure: true
+      insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure | default false }}
 ```
-**Mind the tls position under the `otlp` exporter!**
+
 ---
 
 ## otlp receiver
