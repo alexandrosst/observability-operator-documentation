@@ -1,9 +1,9 @@
 apiVersion: v2
 name: observability-operator
-description: Helm chart for deploying observability components.
+description: Observability Operator chart
 type: application
 version: 0.1.0
-appVersion: dev
+appVersion: "1.0.0"
 dependencies:
   - name: otel-collector
     version: 0.1.0
@@ -11,6 +11,3 @@ dependencies:
   - name: kepler
     version: 0.6.1
     repository: "https://sustainable-computing-io.github.io/kepler-helm-chart"
-  - name: fluent-bit
-    version: 0.57.6
-    repository: "https://fluent.github.io/helm-charts"

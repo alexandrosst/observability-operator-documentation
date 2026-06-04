@@ -1,10 +1,12 @@
-{{- if .Values.otelCollector }}
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Values.otelCollector.configMapName }}
   labels:
-    app: {{ .Values.otelCollector.deploymentName }}
+    app: {{ .Release.Name }}
+    component: otel-collector
+
 data:
   collector-config.yaml: |
     extensions:
@@ -23,7 +25,15 @@ data:
             scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
             evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
           scrape_configs:
-{{ toYaml .Values.otelCollector.prometheusJobs | indent 12 }}
+            - job_name: "kepler"
+              kubernetes_sd_configs:
+                - role: "pod"
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+                  regex: "kepler"
+                  action: "keep"
+                - source_labels: [__meta_kubernetes_pod_node_name]
+                  target_label: node
     processors:
       batch: {}
       resource:
@@ -51,29 +61,33 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.otelCollector.deploymentName }}
+  labels:
+    app: {{ .Release.Name }}
+    component: otel-collector
 spec:
   replicas: {{ .Values.otelCollector.replicas }}
   selector:
     matchLabels:
-      app: {{ .Values.otelCollector.deploymentName }}
+      app: {{ .Release.Name }}
+      component: otel-collector
   template:
     metadata:
       labels:
-        app: {{ .Values.otelCollector.deploymentName }}
+        app: {{ .Release.Name }}
+        component: otel-collector
     spec:
       serviceAccountName: otel-collector-serviceaccount
       containers:
         - name: otel-collector
-          image: "{{ .Values.otelCollector.image.registry }}/{{ .Values.otelCollector.image.name }}:{{ .Values.otelCollector.image.tag }}"
+          image: {{ .Values.otelCollector.image.registry }}/{{ .Values.otelCollector.image.name }}:{{ .Values.otelCollector.image.tag }}
           args: ["--config=/conf/collector-config.yaml"]
-          ports:
-            - containerPort: 4317
-            - containerPort: 4318
           volumeMounts:
-            - name: config-volume
+            - name: collector-config
               mountPath: /conf
       volumes:
-        - name: config-volume
+        - name: collector-config
           configMap:
             name: {{ .Values.otelCollector.configMapName }}
-{{- end }}
+            items:
+              - key: collector-config.yaml
+                path: collector-config.yaml
