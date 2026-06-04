@@ -78,15 +78,18 @@ signals:
 
 The user may also provide the srcape interval for metrics `scrapeInterval`.
 
-Some pptional otel collector configuration is the following:
+Some optional otel collector configuration is the following:
 ```yaml
 collector:
   image:
     registry: otel
-    name: opentelemetry-collector
+    name: opentelemetry-collector-contrib
     tag: latest
 
   replicas: 1
+
+  tls:
+    insecure: true
 
   scrapeInterval: 5s
   evaluationInterval: 5s
@@ -234,13 +237,12 @@ job_name: "network-latency"
 
 ## Logs
 Keywords:
-- container logs
-- pod logs
-- Kubernetes logs
+- kubernetes logs
 - node logs
 - cluster logs
 - system logs
 - containerd logs
+- non-application logs
 
 Dependency to be added in the `Chart.yaml` file of the parent `observability_operator` chart:
 ```yaml
@@ -250,8 +252,6 @@ Dependency to be added in the `Chart.yaml` file of the parent `observability_ope
 ```
 
 In the `values.yaml` file of the parent `observability_operator` chart, we must put some configuration for it, specifying inputs.
-
-Logs pipeline in `otel_collector` sub-chart should exist only when non-application logs are requested.
 
 ---
 
