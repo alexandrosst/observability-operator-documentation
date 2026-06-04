@@ -51,7 +51,7 @@ data:
           processors: [resource,batch]
           exporters: [otlp]
         logs:
-          receivers: [k8s_events]
+          receivers: [otlp,k8s_events]
           processors: [resource,batch]
           exporters: [otlp]
 ---
