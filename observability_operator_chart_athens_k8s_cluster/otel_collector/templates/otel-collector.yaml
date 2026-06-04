@@ -23,6 +23,12 @@ data:
               relabel_configs:
 {{ toYaml .relabel_configs | indent 16 }}
 {{- end }}
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
     processors:
       batch: {}
       resource:
@@ -39,5 +45,9 @@ data:
       pipelines:
         metrics:
           receivers: [prometheus]
+          processors: [batch,resource]
+          exporters: [otlp]
+        logs:
+          receivers: [otlp]
           processors: [batch,resource]
           exporters: [otlp]
