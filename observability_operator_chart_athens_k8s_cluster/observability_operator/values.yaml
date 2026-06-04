@@ -1,1 +1,2 @@
-# No overrides needed for this minimal chart
+kepler: {}
+otel-collector: {}
