@@ -4,6 +4,7 @@ metadata:
   name: {{ .Values.otelCollector.configMapName }}
   labels:
     app.kubernetes.io/name: {{ .Values.otelCollector.deploymentName }}
+
 data:
   collector-config.yaml: |
     extensions:
