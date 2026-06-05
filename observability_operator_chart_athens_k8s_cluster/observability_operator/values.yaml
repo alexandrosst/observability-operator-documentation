@@ -1,1 +1,2 @@
-# Parent chart values (empty - can be extended as needed)
+# Parent chart values (optional overrides for dependencies)
+# Currently no overrides are required.
