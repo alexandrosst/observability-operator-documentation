@@ -54,7 +54,7 @@ data:
     service:
       pipelines:
         metrics:
-          receivers: [prometheus]
+          receivers: [prometheus, otlp]
           processors: [batch,resource]
           exporters: [otlp]
         logs:
