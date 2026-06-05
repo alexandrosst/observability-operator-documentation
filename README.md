@@ -727,7 +727,7 @@ without errors.
 
 # Reference Chart
 
-The repository also includes a:
+The repository also includes an example chart:
 
 ```text
 reference-chart/
