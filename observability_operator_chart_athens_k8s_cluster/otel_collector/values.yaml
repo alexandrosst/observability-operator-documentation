@@ -1,9 +1,9 @@
 otelCollector:
   clusterName: athens_k8s_cluster
   deploymentName: otel-collector
-  replicas: 1
-  configMapName: otel-collector-config-map
   serviceName: otel-collector-service
+  configMapName: otel-collector-config-map
+  replicas: 1
   image:
     registry: otel
     name: opentelemetry-collector-contrib

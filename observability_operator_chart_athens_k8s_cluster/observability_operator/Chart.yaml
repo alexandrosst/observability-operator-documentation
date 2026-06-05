@@ -4,7 +4,6 @@ description: A Helm chart for deploying observability components.
 type: application
 version: 0.1.0
 appVersion: dev
-
 dependencies:
   - name: otel-collector
     version: 0.1.0

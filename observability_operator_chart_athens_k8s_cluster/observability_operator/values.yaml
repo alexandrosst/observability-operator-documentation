@@ -1,2 +1,2 @@
-# Values for observability-operator parent chart
-# No overrides required for this minimal chart
+# Parent chart values - no overrides needed for this minimal chart
+kepler: {}
