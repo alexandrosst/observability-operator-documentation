@@ -1,1 +1,4 @@
-# No custom values needed for parent chart
+network-latency:
+  target_hosts:
+    - cluster: "{{ .Values.otelCollector.clusterName }}"
+      host_ip: ["147.102.13.200"]
