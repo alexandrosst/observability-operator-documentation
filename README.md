@@ -231,7 +231,7 @@ job_name: "network-latency"
 ```
 
 ## Application Metrics
-Application metrics are emitted directly by the application using the OTLP protocol. Only the `otlp` receiver is needed to be enabled in the `otel_collector` sub-chart.
+Application metrics are emitted directly by the application using the OTLP protocol. Only the `otlp` receiver is needed to be included in the metrics pipeline of the `otel_collector` sub-chart. 
 
 
 ---
@@ -239,7 +239,7 @@ Application metrics are emitted directly by the application using the OTLP proto
 ## Logs
 There are 2 types of logs.
 ## Application Logs
-Application logs are emitted directly by the application using the OTLP protocol. Only the `otlp` receiver is needed to be enabled in the `otel_collector` sub-chart. No Fluent Bit. No tailing. No systemd. No containerd scraping.
+Application logs are emitted directly by the application using the OTLP protocol. Only the `otlp` receiver is needed to be enabled in the logs `otel_collector` sub-chart. No Fluent Bit. No tailing. No systemd. No containerd scraping.
 
 ## System Logs
 System logs include:
