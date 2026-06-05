@@ -230,6 +230,10 @@ Scrape job name to be added in `otel_collector` sub-chart:
 job_name: "network-latency"
 ```
 
+## Application Metrics
+Application metrics are emitted directly by the application using the OTLP protocol. Only the `otlp` receiver is needed to be enabled in the `otel_collector` sub-chart.
+
+
 ---
 
 ## Logs
