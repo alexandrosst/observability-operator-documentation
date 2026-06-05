@@ -1,9 +1,9 @@
 otelCollector:
   clusterName: athens_k8s_cluster
   deploymentName: otel-collector
-  replicas: 1
-  configMapName: otel-collector-config-map
   serviceName: otel-collector-service
+  configMapName: otel-collector-config-map
+  replicas: 1
   image:
     registry: otel
     name: opentelemetry-collector-contrib
@@ -16,23 +16,3 @@ otelCollector:
       port: 4318
       tls:
         insecure: true
-  # Prometheus scrape jobs for enabled dependencies
-  prometheusJobs:
-    - job_name: kepler
-      kubernetes_sd_configs:
-        - role: pod
-      relabel_configs:
-        - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
-          regex: "kepler"
-          action: keep
-        - source_labels: [__meta_kubernetes_pod_node_name]
-          target_label: node
-    - job_name: node-exporter
-      kubernetes_sd_configs:
-        - role: pod
-      relabel_configs:
-        - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
-          regex: "prometheus-node-exporter"
-          action: keep
-        - source_labels: [__meta_kubernetes_pod_node_name]
-          target_label: node

@@ -1,12 +1,9 @@
-{{- $collector := .Values.otelCollector -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ $collector.configMapName }}
-  labels:
-    app: {{ $collector.deploymentName }}
+  name: {{ .Values.otelCollector.configMapName }}
 data:
-  collector.yaml: |
+  otel-collector-config.yaml: |
     extensions:
       health_check:
         endpoint: 0.0.0.0:13133
@@ -17,31 +14,43 @@ data:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
-      k8s_events:
-        auth_type: serviceAccount
-        namespaces: []
+      k8s_events: {}
       prometheus:
         config:
           global:
-            scrape_interval: {{ $collector.scrapeInterval }}
-            evaluation_interval: {{ $collector.evaluationInterval }}
+            scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
+            evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
           scrape_configs:
-{{- range $job := $collector.prometheusJobs }}
-            - job_name: {{ $job.job_name }}
-{{ toYaml $job | indent 14 }}
-{{- end }}
+            - job_name: kepler
+              kubernetes_sd_configs:
+                - role: pod
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+                  regex: kepler
+                  action: keep
+                - source_labels: [__meta_kubernetes_pod_node_name]
+                  target_label: node
+            - job_name: node-exporter
+              kubernetes_sd_configs:
+                - role: pod
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+                  regex: prometheus-node-exporter
+                  action: keep
+                - source_labels: [__meta_kubernetes_pod_node_name]
+                  target_label: node
     processors:
       batch: {}
       resource:
         attributes:
           - key: cluster
-            value: {{ $collector.clusterName }}
+            value: {{ .Values.otelCollector.clusterName }}
             action: insert
     exporters:
       otlp:
-        endpoint: {{ $collector.exporters.otlp.host }}:{{ $collector.exporters.otlp.port }}
+        endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
         tls:
-          insecure: {{ $collector.exporters.otlp.tls.insecure }}
+          insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure }}
     service:
       pipelines:
         metrics:
@@ -52,30 +61,56 @@ data:
           receivers: [otlp,k8s_events]
           processors: [batch,resource]
           exporters: [otlp]
+        traces:
+          receivers: [otlp]
+          processors: [batch,resource]
+          exporters: [otlp]
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $collector.deploymentName }}
+  name: {{ .Values.otelCollector.deploymentName }}
 spec:
-  replicas: {{ $collector.replicas }}
+  replicas: {{ .Values.otelCollector.replicas }}
   selector:
     matchLabels:
-      app: {{ $collector.deploymentName }}
+      app: {{ .Values.otelCollector.deploymentName }}
   template:
     metadata:
       labels:
-        app: {{ $collector.deploymentName }}
+        app: {{ .Values.otelCollector.deploymentName }}
     spec:
       serviceAccountName: otel-collector-serviceaccount
       containers:
         - name: otel-collector
-          image: {{ $collector.image.registry }}/{{ $collector.image.name }}:{{ $collector.image.tag }}
-          args: ["--config=/conf/collector.yaml"]
+          image: "{{ .Values.otelCollector.image.registry }}/{{ .Values.otelCollector.image.name }}:{{ .Values.otelCollector.image.tag }}"
+          args: ["--config=/conf/otel-collector-config.yaml"]
+          ports:
+            - containerPort: 4317
+            - containerPort: 4318
+            - containerPort: 13133
           volumeMounts:
-            - name: collector-config
+            - name: config
               mountPath: /conf
       volumes:
-        - name: collector-config
+        - name: config
           configMap:
-            name: {{ $collector.configMapName }}
+            name: {{ .Values.otelCollector.configMapName }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.otelCollector.serviceName }}
+spec:
+  selector:
+    app: {{ .Values.otelCollector.deploymentName }}
+  ports:
+    - name: otlp-grpc
+      port: 4317
+      targetPort: 4317
+    - name: otlp-http
+      port: 4318
+      targetPort: 4318
+    - name: health
+      port: 13133
+      targetPort: 13133
