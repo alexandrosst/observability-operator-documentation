@@ -704,6 +704,7 @@ otel_collector/
 - omitted dependencies must not have scrape jobs
 - `otlp` exporter endpoint comes from user input
 - cluster resource attribute exists through its `resource` processor
+- include all the necessary manifests e.g. Service, Config Map, Deployment.
 
 ---
 
