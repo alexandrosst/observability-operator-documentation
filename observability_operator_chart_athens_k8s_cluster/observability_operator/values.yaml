@@ -1,17 +1,1 @@
-otelCollector:
-  clusterName: athens_k8s_cluster
-  exporters:
-    otlp:
-      host: "147.102.13.108"
-      port: 4318
-      tls:
-        insecure: true
-  scrapeInterval: 5s
-  evaluationInterval: 5s
-  deploymentName: otel-collector
-  serviceName: otel-collector-service
-  configMapName: otel-collector-config-map
-kepler:
-  fullnameOverride: kepler
-prometheus-node-exporter:
-  fullnameOverride: node-exporter
+# No custom values needed for parent chart
