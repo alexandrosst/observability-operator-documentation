@@ -300,7 +300,7 @@ and:
 ```yaml
 args: ["--config=/conf/<config-file-name>.yaml"]
 ```
-specifying the otel configuration file name.
+specifying the otel configuration file name. This name must match the configuration file name in the Config Map of the `otel_collector` sub-chart.
 
 ---
 
