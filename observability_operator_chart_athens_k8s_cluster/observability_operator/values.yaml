@@ -1,4 +1,24 @@
+otelCollector:
+  clusterName: athens_k8s_cluster
+  deploymentName: otel-collector
+  serviceName: otel-collector-service
+  configMapName: otel-collector-config-map
+  replicas: 1
+  image:
+    registry: otel
+    name: opentelemetry-collector-contrib
+    tag: latest
+  scrapeInterval: 10s
+  evaluationInterval: 10s
+  exporters:
+    otlp:
+      host: 147.102.13.108
+      port: 4318
+      tls:
+        insecure: true
+
 network-latency:
   target_hosts:
-    - cluster: "{{ .Values.otelCollector.clusterName }}"
-      host_ip: ["147.102.13.200"]
+    - cluster: athens_k8s_cluster
+      host_ip:
+        - "147.102.13.200"
