@@ -249,7 +249,7 @@ System logs include:
 - system logs
 - containerd logs
 - non-application logs
-- journald lgos
+- journald logs
 
 Dependency to be added in the `Chart.yaml` file of the parent `observability_operator` chart:
 ```yaml
