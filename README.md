@@ -231,8 +231,7 @@ job_name: "network-latency"
 ```
 
 ## Application Metrics
-Application metrics are emitted directly by the application using the OTLP protocol. Only the `otlp` receiver is needed to be included in the metrics pipeline of the `otel_collector` sub-chart. 
-
+Application metrics are custom metrics exported using the OTLP Protocol. The `otlp` receiver is needed to be defined and included in the metrics pipeline of the `otel_collector` sub-chart.
 
 ---
 
