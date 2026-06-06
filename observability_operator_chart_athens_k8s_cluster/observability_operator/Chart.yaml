@@ -1,9 +1,7 @@
 apiVersion: v2
-name: observability-operator
-description: Observability Operator Helm chart
-type: application
+name: observability_operator
 version: 0.1.0
-appVersion: dev
+type: application
 dependencies:
   - name: otel-collector
     version: 0.1.0

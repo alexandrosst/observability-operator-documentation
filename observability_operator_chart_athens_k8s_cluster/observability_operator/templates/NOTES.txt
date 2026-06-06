@@ -1,1 +1,4 @@
-Observability Operator chart deployed.
+{{- if .Release.IsUpgrade }}
+{{- else if .Release.IsInstall }}
+Observability Operator chart installed.
+{{- end }}
