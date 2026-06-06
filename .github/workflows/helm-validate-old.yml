@@ -1,4 +1,4 @@
-name: 2. Validate Observability Helm Chart
+name: Validate Observability Helm Chart
 
 on:
   pull_request:
@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Dynamically detect whichever chart folder the agent pushed
+      # Dynamically detect the chart folder
       - name: Detect chart folder
         id: detect
         run: |

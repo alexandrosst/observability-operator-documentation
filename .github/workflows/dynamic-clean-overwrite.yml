@@ -1,0 +1,62 @@
+name: 1. Dynamic Clean Feature Branch Overwrite
+
+on:
+  push:
+    branches:
+      - feature/observability-operator-chart
+    paths-ignore:
+      - ".github/**"
+
+jobs:
+  dynamic-clean-and-overwrite:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository (last 2 commits)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect and purge modified folder
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          PREVIOUS_COMMIT=$(git rev-parse HEAD~1)
+          CURRENT_COMMIT=$(git rev-parse HEAD)
+
+          # Detect the top-level folder the agent modified
+          CHANGED_FOLDER=$(git diff-tree --no-commit-id --name-only -r $PREVIOUS_COMMIT $CURRENT_COMMIT \
+            | awk -F/ '{print $1}' | uniq | head -n 1)
+
+          if [ -z "$CHANGED_FOLDER" ] || [ "$CHANGED_FOLDER" = "." ]; then
+            echo "No specific top-level folder detected. Skipping purge."
+            exit 0
+          fi
+
+          echo "Target folder: $CHANGED_FOLDER"
+
+          # 1. Backup the agent's new files
+          mkdir -p /tmp/dynamic_backup
+          cp -r "$CHANGED_FOLDER"/* /tmp/dynamic_backup/
+
+          # 2. Revert the folder to the previous commit so Git tracks deletions cleanly
+          git checkout $PREVIOUS_COMMIT -- "$CHANGED_FOLDER"/
+
+          # 3. Purge the old version entirely from Git tracking
+          git rm -rf "$CHANGED_FOLDER"/
+          rm -rf "$CHANGED_FOLDER"/
+
+          # 4. Restore the agent's new files into the now-empty directory
+          mkdir -p "$CHANGED_FOLDER"
+          cp -r /tmp/dynamic_backup/* "$CHANGED_FOLDER"/
+
+          # 5. Amend the agent's commit and force push (rewrites, no ghost files)
+          git add "$CHANGED_FOLDER"/
+          if ! git diff --staged --quiet; then
+            git commit --amend --no-edit
+            git push origin HEAD:${{ github.ref }} --force
+          else
+            echo "Folder is already clean. No action needed."
+          fi

@@ -1,0 +1,61 @@
+name: 3. Force Main Branch Overwrite for ArgoCD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "observability_operator_chart*/**"
+
+jobs:
+  force-overwrite-main:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main branch (last 2 commits)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect changed chart folder
+        id: detect
+        run: |
+          PREVIOUS_COMMIT=$(git rev-parse HEAD~1)
+          CURRENT_COMMIT=$(git rev-parse HEAD)
+
+          # Mirror workflow ①: detect top-level folder from the merge commit diff
+          CHANGED_FOLDER=$(git diff-tree --no-commit-id --name-only -r $PREVIOUS_COMMIT $CURRENT_COMMIT \
+            | awk -F/ '{print $1}' | uniq | head -n 1)
+
+          if [ -z "$CHANGED_FOLDER" ] || [ "$CHANGED_FOLDER" = "." ]; then
+            echo "No specific top-level folder detected. Skipping."
+            exit 0
+          fi
+
+          echo "Detected changed folder: $CHANGED_FOLDER"
+          echo "chart_folder=$CHANGED_FOLDER" >> $GITHUB_OUTPUT
+
+      - name: Overwrite main folder with feature branch state
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          FOLDER="${{ steps.detect.outputs.chart_folder }}"
+
+          # 1. Wipe the folder from main's Git tracking entirely
+          git rm -rf "$FOLDER"/ || true
+          rm -rf "$FOLDER"/ || true
+
+          # 2. Pull the exact folder state from the agent's feature branch
+          git fetch origin feature/observability-operator-chart
+          git checkout origin/feature/observability-operator-chart -- "$FOLDER"/
+
+          # 3. Stage, commit, and push to main
+          git add "$FOLDER"/
+          if ! git diff --staged --quiet; then
+            git commit -m "automated gitops: force-overwrote $FOLDER to eliminate ghost files"
+            git push origin main
+          else
+            echo "Main is already identical to the feature branch. No action needed."
+          fi
