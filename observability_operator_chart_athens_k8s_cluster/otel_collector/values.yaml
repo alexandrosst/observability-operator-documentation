@@ -5,15 +5,30 @@ otelCollector:
   exporters:
     otlp:
       host: "147.102.13.108"
-      port: 4318
+      port: 4317
       tls:
         insecure: true
   configMapName: otel-collector-config
   deploymentName: otel-collector
   serviceName: otel-collector
-  serviceAccountName: otel-collector-sa
   replicas: 1
   image:
     registry: otel
     name: opentelemetry-collector-contrib
-    tag: "0.98.0"
+    tag: latest
+  ports:
+    otlp-grpc:
+      port: 4317
+      targetPort: 4317
+    otlp-http:
+      port: 4318
+      targetPort: 4318
+  pipelines:
+    metrics:
+      receivers: [prometheus, otlp]
+      exporters: [otlp]
+      processors: [resource, batch]
+    logs:
+      receivers: [otlp]
+      exporters: [otlp]
+      processors: [resource, batch]
