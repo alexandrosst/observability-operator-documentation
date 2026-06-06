@@ -1,3 +1,7 @@
+kepler:
+  fullnameOverride: kepler
+prometheus-node-exporter:
+  fullnameOverride: node-exporter
 otelCollector:
   clusterName: athens_k8s_cluster
   scrapeInterval: 8s
@@ -6,7 +10,7 @@ otelCollector:
     otlp:
       host: 147.102.13.108
       port: 4318
-kepler:
-  fullnameOverride: kepler
-prometheus-node-exporter:
-  fullnameOverride: node-exporter
+      tls:
+        insecure: true
+serviceAccount:
+  name: ""
