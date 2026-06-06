@@ -1,36 +1,3 @@
-otelCollector:
-  clusterName: "athens_k8s_cluster"
-  scrapeInterval: 8s
-  evaluationInterval: 5s
-  exporters:
-    otlp:
-      host: "147.102.13.108"
-      port: 4317
-      tls:
-        insecure: true
-  configMapName: otel-collector-config
-  deploymentName: otel-collector
-  serviceName: otel-collector
-  replicas: 1
-  image:
-    registry: otel
-    name: opentelemetry-collector-contrib
-    tag: "0.98.0"
-  pipelines:
-    metrics:
-      receivers:
-        - prometheus
-        - otlp
-      exporters:
-        - otlp
-      processors:
-        - resource
-        - batch
-    logs:
-      receivers:
-        - otlp
-      exporters:
-        - otlp
-      processors:
-        - resource
-        - batch
+# Default values for otel-collector.
+# This file is intentionally left minimal because all configuration
+# is supplied via the parent chart's values under `otelCollector`.

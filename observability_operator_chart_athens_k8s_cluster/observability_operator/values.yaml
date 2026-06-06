@@ -26,3 +26,12 @@ otelCollector:
     otlp-http:
       port: 4318
       targetPort: 4318
+  pipelines:
+    metrics:
+      receivers: ["prometheus", "otlp"]
+      exporters: ["otlp"]
+      processors: ["resource", "batch"]
+    logs:
+      receivers: ["otlp"]
+      exporters: ["otlp"]
+      processors: ["resource", "batch"]
