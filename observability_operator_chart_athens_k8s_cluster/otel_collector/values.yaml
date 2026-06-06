@@ -8,12 +8,12 @@ otelCollector:
     name: otel-collector
     tag: latest
   ports:
-    otlp-grpc:
+    otlpGrpc:
       port: 4317
       targetPort: 4317
-    otlp-http:
+    otlpHttp:
       port: 4318
       targetPort: 4318
-    health-check:
+    healthCheck:
       port: 13133
       targetPort: 13133
