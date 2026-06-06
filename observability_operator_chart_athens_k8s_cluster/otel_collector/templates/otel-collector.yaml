@@ -99,9 +99,9 @@ spec:
           image: "{{ .Values.otelCollector.image.registry }}/{{ .Values.otelCollector.image.name }}:{{ .Values.otelCollector.image.tag }}"
           args: ["--config=/conf/otel-collector-config.yaml"]
           ports:
-            - containerPort: 4317
+            - containerPort: {{ .Values.otelCollector.ports.otlpGrpc.port }}
               name: otlp-grpc
-            - containerPort: 4318
+            - containerPort: {{ .Values.otelCollector.ports.otlpHttp.port }}
               name: otlp-http
           volumeMounts:
             - name: config
@@ -121,13 +121,13 @@ spec:
   ports:
     - name: otlp-grpc
       protocol: TCP
-      port: {{ .Values.otelCollector.ports.otlp-grpc.port }}
-      targetPort: {{ .Values.otelCollector.ports.otlp-grpc.targetPort }}
+      port: {{ .Values.otelCollector.ports.otlpGrpc.port }}
+      targetPort: {{ .Values.otelCollector.ports.otlpGrpc.targetPort }}
     - name: otlp-http
       protocol: TCP
-      port: {{ .Values.otelCollector.ports.otlp-http.port }}
-      targetPort: {{ .Values.otelCollector.ports.otlp-http.targetPort }}
+      port: {{ .Values.otelCollector.ports.otlpHttp.port }}
+      targetPort: {{ .Values.otelCollector.ports.otlpHttp.targetPort }}
     - name: health-check
       protocol: TCP
-      port: {{ .Values.otelCollector.ports.health-check.port }}
-      targetPort: {{ .Values.otelCollector.ports.health-check.targetPort }}
+      port: {{ .Values.otelCollector.ports.healthCheck.port }}
+      targetPort: {{ .Values.otelCollector.ports.healthCheck.targetPort }}
