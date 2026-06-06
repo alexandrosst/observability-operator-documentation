@@ -7,6 +7,9 @@ on:
     paths:
       - "observability_operator_chart*/**"
 
+permissions:
+  contents: write
+
 jobs:
   force-overwrite-main:
     if: github.actor != 'github-actions[bot]'
@@ -24,8 +27,7 @@ jobs:
           PREVIOUS_COMMIT=$(git rev-parse HEAD~1)
           CURRENT_COMMIT=$(git rev-parse HEAD)
 
-          # Mirror workflow ①: detect top-level folder from the merge commit diff
-          CHANGED_FOLDER=$(git diff-tree --no-commit-id --name-only -r $PREVIOUS_COMMIT $CURRENT_COMMIT \
+          CHANGED_FOLDER=$(git diff-tree --no-commit-id --name-only -r "$PREVIOUS_COMMIT" "$CURRENT_COMMIT" \
             | awk -F/ '{print $1}' | uniq | head -n 1)
 
           if [ -z "$CHANGED_FOLDER" ] || [ "$CHANGED_FOLDER" = "." ]; then
@@ -36,20 +38,26 @@ jobs:
           echo "Detected changed folder: $CHANGED_FOLDER"
           echo "chart_folder=$CHANGED_FOLDER" >> $GITHUB_OUTPUT
 
-      - name: Overwrite main folder with feature branch state
+      - name: Overwrite main folder from merge commit
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
           FOLDER="${{ steps.detect.outputs.chart_folder }}"
 
+          if [ -z "$FOLDER" ]; then
+            echo "No folder detected. Skipping."
+            exit 0
+          fi
+
           # 1. Wipe the folder from main's Git tracking entirely
           git rm -rf "$FOLDER"/ || true
           rm -rf "$FOLDER"/ || true
 
-          # 2. Pull the exact folder state from the agent's feature branch
-          git fetch origin feature/observability-operator-chart
-          git checkout origin/feature/observability-operator-chart -- "$FOLDER"/
+          # 2. Restore the folder exactly as it exists in the current merge commit
+          #    (HEAD on main after the PR merge) — avoids dependency on the
+          #    feature branch still existing after merge.
+          git checkout HEAD -- "$FOLDER"/
 
           # 3. Stage, commit, and push to main
           git add "$FOLDER"/
@@ -57,5 +65,5 @@ jobs:
             git commit -m "automated gitops: force-overwrote $FOLDER to eliminate ghost files"
             git push origin main
           else
-            echo "Main is already identical to the feature branch. No action needed."
+            echo "Main is already clean. No action needed."
           fi
