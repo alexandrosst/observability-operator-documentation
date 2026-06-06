@@ -1,8 +1,8 @@
 otelCollector:
-  clusterName: ""
-  scrapeInterval: 5s
+  clusterName: athens_k8s_cluster
+  scrapeInterval: 8s
   evaluationInterval: 5s
   exporters:
     otlp:
-      host: ""
+      host: 147.102.13.108
       port: 4318
