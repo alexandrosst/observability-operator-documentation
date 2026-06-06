@@ -3,7 +3,6 @@ name: observability_operator
 description: Observability Operator for athens_k8s_cluster
 type: application
 version: 0.1.0
-appVersion: dev
 dependencies:
   - name: otel-collector
     version: 0.1.0

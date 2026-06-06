@@ -15,20 +15,22 @@ otelCollector:
   image:
     registry: otel
     name: opentelemetry-collector-contrib
-    tag: latest
-  ports:
-    otlpGrpc:
-      port: 4317
-      targetPort: 4317
-    otlpHttp:
-      port: 4318
-      targetPort: 4318
+    tag: "0.98.0"
   pipelines:
     metrics:
-      receivers: [prometheus, otlp]
-      exporters: [otlp]
-      processors: [resource, batch]
+      receivers:
+        - prometheus
+        - otlp
+      exporters:
+        - otlp
+      processors:
+        - resource
+        - batch
     logs:
-      receivers: [otlp]
-      exporters: [otlp]
-      processors: [resource, batch]
+      receivers:
+        - otlp
+      exporters:
+        - otlp
+      processors:
+        - resource
+        - batch

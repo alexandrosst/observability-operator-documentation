@@ -8,17 +8,15 @@ kind: ClusterRole
 metadata:
   name: otel-collector-clusterrole
 rules:
-  - apiGroups: [""]
-    resources:
-      - pods
-      - nodes
-      - services
-      - endpoints
-      - events
-    verbs:
-      - get
-      - list
-      - watch
+- apiGroups: ["" ]
+  resources:
+  - pods
+  - nodes
+  - nodes/proxy
+  - services
+  - endpoints
+  - events
+  verbs: ["get", "list", "watch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -29,6 +27,6 @@ roleRef:
   kind: ClusterRole
   name: otel-collector-clusterrole
 subjects:
-  - kind: ServiceAccount
-    name: otel-collector-serviceaccount
-    namespace: {{ .Release.Namespace }}
+- kind: ServiceAccount
+  name: otel-collector-serviceaccount
+  namespace: {{ .Release.Namespace }}
