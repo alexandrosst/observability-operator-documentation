@@ -1,0 +1,9 @@
+otelCollector:
+  scrapeInterval: 5s
+  evaluationInterval: 5s
+  exporters:
+    otlp:
+      host: ""
+      port: 4318
+      tls:
+        insecure: true
