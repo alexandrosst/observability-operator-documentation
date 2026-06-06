@@ -1,5 +1,0 @@
-{{- if .Release.IsUpgrade }}
-Upgrade complete.
-{{- else }}
-Observability Operator chart installed.
-{{- end }}
