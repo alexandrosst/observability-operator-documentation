@@ -1,45 +1,24 @@
-# fullnameOverride for each included dependency (ensures predictable service names)
-# Only include keys for dependencies that are actually in Chart.yaml
-
 prometheus-node-exporter:
   fullnameOverride: node-exporter
 
 otelCollector:
-  clusterName: "athens_k8s_cluster"
+  clusterName: athens_k8s_cluster
   scrapeInterval: 8s
   evaluationInterval: 5s
-  exporters:
-    otlp:
-      host: "147.102.13.108"
-      port: 4317
-      tls:
-        insecure: true
-  configMapName: otel-collector-config
+  configMapName: otel-collector-config-map
   deploymentName: otel-collector
-  serviceName: otel-collector
-  replicas: 1
+  serviceName: otel-collector-service
   image:
     registry: otel
     name: opentelemetry-collector-contrib
     tag: "0.98.0"
-  pipelines:
-    metrics:
-      receivers:
-        - prometheus
-        - otlp
-      exporters:
-        - otlp
-      processors:
-        - resource
-        - batch
-    logs:
-      receivers:
-        - otlp
-      exporters:
-        - otlp
-      processors:
-        - resource
-        - batch
+  replicas: 1
+  exporters:
+    otlp:
+      host: 147.102.13.108
+      port: 4318
+      tls:
+        insecure: true
   ports:
     otlp-grpc:
       port: 4317

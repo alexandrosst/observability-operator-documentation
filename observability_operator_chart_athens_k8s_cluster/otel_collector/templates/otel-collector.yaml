@@ -26,9 +26,14 @@ data:
               relabel_configs:
                 - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
                   regex: "prometheus-node-exporter"
-                  action: "keep"
+                  action: keep
                 - source_labels: [__meta_kubernetes_pod_node_name]
                   target_label: node
+    exporters:
+      otlp:
+        endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
+        tls:
+          insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure }}
     processors:
       batch: {}
       resource:
@@ -36,11 +41,6 @@ data:
           - key: cluster
             value: {{ .Values.otelCollector.clusterName }}
             action: insert
-    exporters:
-      otlp:
-        endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
-        tls:
-          insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure }}
     service:
       extensions: [health_check]
       pipelines:
@@ -71,7 +71,6 @@ spec:
       containers:
         - name: {{ .Values.otelCollector.deploymentName }}
           image: "{{ .Values.otelCollector.image.registry }}/{{ .Values.otelCollector.image.name }}:{{ .Values.otelCollector.image.tag }}"
-          imagePullPolicy: Always
           args: ["--config=/conf/otel-agent-config.yaml"]
           volumeMounts:
             - name: config-volume
@@ -83,13 +82,13 @@ spec:
               scheme: HTTP
             initialDelaySeconds: 1
             periodSeconds: 3
+            timeoutSeconds: 2
             successThreshold: 1
             failureThreshold: 3
-            timeoutSeconds: 2
       volumes:
-      - name: config-volume
-        configMap:
-          name: {{ .Values.otelCollector.configMapName }}
+        - name: config-volume
+          configMap:
+            name: {{ .Values.otelCollector.configMapName }}
 ---
 apiVersion: v1
 kind: Service
@@ -101,9 +100,9 @@ spec:
   ports:
     - name: otlp-grpc
       protocol: TCP
-      port: 4317
-      targetPort: 4317
+      port: {{ .Values.otelCollector.ports.otlp-grpc.port }}
+      targetPort: {{ .Values.otelCollector.ports.otlp-grpc.targetPort }}
     - name: otlp-http
       protocol: TCP
-      port: 4318
-      targetPort: 4318
+      port: {{ .Values.otelCollector.ports.otlp-http.port }}
+      targetPort: {{ .Values.otelCollector.ports.otlp-http.targetPort }}
