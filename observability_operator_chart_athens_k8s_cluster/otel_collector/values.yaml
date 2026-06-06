@@ -17,10 +17,10 @@ otelCollector:
     name: opentelemetry-collector-contrib
     tag: "0.98.0"
   ports:
-    otlpGrpc:
+    "otlp-grpc":
       port: 4317
       targetPort: 4317
-    otlpHttp:
+    "otlp-http":
       port: 4318
       targetPort: 4318
   pipelines:
