@@ -34,7 +34,7 @@ observability_operator_chart_<clusterName>/
 - `otlpExportEndpoint.host` — hostname or IP of the OTLP export destination
 
 **Optional (defaults):**
-- `otlpExportEndpoint.port` — default `4318`
+- `otlpExportEndpoint.port` — default `4317`
 - `scrapeInterval` — default `5s`
 - `evaluationInterval` — default `5s`
 
