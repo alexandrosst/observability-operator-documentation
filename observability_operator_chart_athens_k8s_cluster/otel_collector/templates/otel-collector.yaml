@@ -1,7 +1,11 @@
+---
+{{-/* ConfigMap */-}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Values.otelCollector.configMapName }}
+  labels:
+    app: {{ .Values.otelCollector.deploymentName }}
 data:
   otel-agent-config.yaml: |
     extensions:
@@ -45,12 +49,14 @@ data:
             value: {{ .Values.otelCollector.clusterName }}
             action: insert
     service:
+      extensions: [health_check]
       pipelines:
         metrics:
           receivers: [prometheus]
           processors: [resource, batch]
           exporters: [otlp]
 ---
+{{-/* Deployment */-}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -69,7 +75,6 @@ spec:
       containers:
         - name: {{ .Values.otelCollector.deploymentName }}
           image: "{{ .Values.otelCollector.image.registry }}/{{ .Values.otelCollector.image.name }}:{{ .Values.otelCollector.image.tag }}"
-          imagePullPolicy: Always
           args: ["--config=/conf/otel-agent-config.yaml"]
           volumeMounts:
             - name: config-volume
@@ -78,16 +83,14 @@ spec:
             httpGet:
               path: /health_check
               port: 13133
-            initialDelaySeconds: 1
-            periodSeconds: 3
-            successThreshold: 1
-            failureThreshold: 3
-            timeoutSeconds: 2
+            initialDelaySeconds: 5
+            periodSeconds: 10
       volumes:
         - name: config-volume
           configMap:
             name: {{ .Values.otelCollector.configMapName }}
 ---
+{{-/* Service */-}}
 apiVersion: v1
 kind: Service
 metadata:
@@ -95,4 +98,12 @@ metadata:
 spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName }}
-  ports: []
+  ports:
+    - name: otlp-grpc
+      protocol: TCP
+      port: {{ .Values.otelCollector.ports.otlp-grpc.port }}
+      targetPort: {{ .Values.otelCollector.ports.otlp-grpc.targetPort }}
+    - name: otlp-http
+      protocol: TCP
+      port: {{ .Values.otelCollector.ports.otlp-http.port }}
+      targetPort: {{ .Values.otelCollector.ports.otlp-http.targetPort }}
