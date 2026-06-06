@@ -14,8 +14,7 @@
   "app.kubernetes.io/instance" .Release.Name
   "app.kubernetes.io/version" .Chart.AppVersion
   "app.kubernetes.io/managed-by" "Helm" }}
-{{- $merged := merge $labels .Values.global.labels -}}
-{{- toYaml $merged | nindent 0 }}
+{{- toYaml $labels | nindent 0 }}
 {{- end -}}
 
 {{- define "helm.selectorLabels" -}}
