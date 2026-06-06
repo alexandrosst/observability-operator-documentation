@@ -2,26 +2,3 @@ kepler:
   fullnameOverride: kepler
 prometheus-node-exporter:
   fullnameOverride: node-exporter
-otelCollector:
-  clusterName: athens_k8s_cluster
-  exporters:
-    otlp:
-      host: 147.102.13.108
-      port: 4318
-      tls:
-        insecure: true
-  scrapeInterval: 8s
-  evaluationInterval: 5s
-  configMapName: otel-collector-config
-  deploymentName: otel-collector
-  serviceName: otel-collector
-  replicas: 1
-  image:
-    registry: otel/opentelemetry-collector-contrib
-    name: otelcol-contrib
-    tag: "0.89.0"
-  pipelines:
-    metrics:
-      receivers: [prometheus]
-      processors: [resource, batch]
-      exporters: [otlp]
