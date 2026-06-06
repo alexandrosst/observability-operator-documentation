@@ -34,7 +34,7 @@ observability_operator_chart_<clusterName>/
 - `otlpExportEndpoint.host` — hostname or IP of the OTLP export destination
 
 **Optional (defaults):**
-- `otlpExportEndpoint.port` — default `4317`
+- `otlpExportEndpoint.port` — default `4318`
 - `scrapeInterval` — default `5s`
 - `evaluationInterval` — default `5s`
 
@@ -382,12 +382,43 @@ Do not expose ports if the `otlp` receiver is not included.
 
 # RBAC Rules
 
-Base ClusterRole resources (always include):
-```yaml
-resources: [pods, nodes, services, endpoints, events]
-```
+Copy this template exactly for `otel_collector/templates/permission.yaml`.
+The `name` field in every resource and subject must be `{{ .Values.otelCollector.deploymentName }}` — never null, never hardcoded.
+Add `nodes/proxy` to the ClusterRole `resources` list when `containerResources` or `kubelet` is requested.
 
-Add `nodes/proxy` when `containerResources` or `kubelet` is requested.
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.otelCollector.deploymentName }}
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .Values.otelCollector.deploymentName }}
+rules:
+  - apiGroups: [""]
+    resources: [pods, nodes, services, endpoints, events]
+    verbs: [get, list, watch]
+  # add the following line when containerResources or kubelet is requested:
+  # - apiGroups: [""]
+  #   resources: [nodes/proxy]
+  #   verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .Values.otelCollector.deploymentName }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ .Values.otelCollector.deploymentName }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.otelCollector.deploymentName }}
+    namespace: {{ .Release.Namespace }}
+```
 
 ---
 
