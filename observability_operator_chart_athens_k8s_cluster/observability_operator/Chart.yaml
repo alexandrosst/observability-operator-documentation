@@ -1,13 +1,17 @@
 apiVersion: v2
-name: observability-operator
-description: Helm chart for deploying observability components.
+name: observability_operator_chart_athens_k8s_cluster
+description: Observability Operator chart for athens_k8s_cluster
 type: application
 version: 0.1.0
 appVersion: "1.0"
+
 dependencies:
   - name: otel-collector
     version: 0.1.0
     repository: "file://../otel_collector"
-  - name: network-latency
-    version: 0.1.0
-    repository: "https://gitlab.com/api/v4/projects/44429468/packages/helm/stable"
+  - name: kepler
+    version: 0.6.1
+    repository: "https://sustainable-computing-io.github.io/kepler-helm-chart"
+  - name: prometheus-node-exporter
+    version: 4.55.0
+    repository: "https://prometheus-community.github.io/helm-charts"
