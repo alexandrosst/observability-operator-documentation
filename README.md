@@ -1,39 +1,42 @@
 # Observability Chart Agent Specification
+
 ## Purpose
+
 This repository defines a specification for an LLM agent that dynamically generates modular Helm charts for Kubernetes observability deployments.
 
 The agent must generate an `observability_operator_chart_<suffix>` according to the user's requested telemetry signals.
 
-The generated chart should:
-- include only the required observability components,
-- generate a minimal OpenTelemetry Collector configuration,
-- avoid unused dependencies,
-- avoid unused scrape jobs,
-- generate valid helm templates,
-- generate valid Kubernetes manifests.
+The generated chart must:
+- include only the required observability components based on user-requested signals
+- generate a minimal OpenTelemetry Collector configuration
+- avoid unused dependencies
+- avoid unused scrape jobs
+- generate valid Helm templates
+- generate valid Kubernetes manifests
 
 ---
 
 # High-Level Architecture
+
 The generated chart consists of:
-1. A parent helm chart named `observability_operator`
+1. A parent Helm chart named `observability_operator`
 2. A local sub-chart named `otel_collector`
-3. Optional third-party helm chart dependencies
+3. Optional third-party Helm chart dependencies, included only when required by the requested signals
 
 The parent chart is responsible for:
-* declaring helm chart dependencies,
-* orchestrating exporter installation.
+- declaring Helm chart dependencies
+- orchestrating exporter installation
 
 The `otel_collector` sub-chart is responsible for:
-* OTLP telemetry ingestion,
-* Prometheus scraping,
-* telemetry enrichment,
-* telemetry export.
+- OTLP telemetry ingestion
+- Prometheus scraping
+- telemetry enrichment
+- telemetry export
 
 ---
 
 # Required Output Structure
-The agent must generate the following structure.
+
 ```text
 observability_operator_chart_<suffix>/
   observability_operator/
@@ -48,344 +51,76 @@ observability_operator_chart_<suffix>/
 ```
 
 **Rules:**
-- The parent chart `observability_operator` must contain dependency declarations only in `Chart.yaml`. In its `values.yaml` file it can contain overrides for its dependencies values if needed, like with network-latency or fluent-bit.
-- The parent chart must always include the local sub-chart `otel-collector` dependency.
-- `otel_collector` sub-chart is defined only in `otel_collector/`.
+- The parent chart `observability_operator` must contain dependency declarations only in `Chart.yaml`. Its `values.yaml` may contain dependency value overrides where needed (e.g. network-latency target hosts, fluent-bit inputs).
+- The parent chart must always include the local `otel-collector` sub-chart dependency.
+- The `otel_collector` sub-chart is defined only in `otel_collector/`.
 
 ---
 
 # User Input Contract
-The user must provide configuration for `otel_collector` sub-chart:
+
+The user provides their requirements in natural language. The agent must extract the following from the user's message:
+
+**Required:**
 ```yaml
-clusterName: ""
+clusterName: ""               # name of the target cluster
 otlpExportEndpoint:
-  ip: ""
-  port: 4318
+  host: ""                    # hostname or IP of the OTLP export destination
+  port: 4318                  # port of the OTLP export destination
 ```
 
-The user may also request telemetry signals, such as:
+**Optional (use defaults if not specified):**
+```yaml
+scrapeInterval: 5s
+evaluationInterval: 5s
+```
+
+**Signals** (derived from natural language — see Signal-to-Dependency Mapping below):
 ```yaml
 signals:
-  energy: true
-  nodeResources: true
-  containerResources: true
-  kubernetesState: true
-  kubelet: true
-  networkLatency: true
-  logs: true
-  traces: true
+  energy: false
+  nodeResources: false
+  containerResources: false
+  kubernetesState: false
+  kubelet: false
+  networkLatency: false
+  applicationMetrics: false
+  applicationLogs: false
+  systemLogs: false
+  kubernetesEvents: false
+  traces: false
 ```
 
-The user may also provide the srcape interval for metrics `scrapeInterval`.
+If a signal is not mentioned by the user, it must not be included. Do not default signals to true.
 
-Some optional otel collector configuration is the following:
+**Network latency additional input** (required only when `networkLatency: true`):
 ```yaml
-otelCollector:
-  image:
-    registry: otel
-    name: opentelemetry-collector-contrib
-    tag: latest
-
-  replicas: 1
-
-  scrapeInterval: 5s
-  evaluationInterval: 5s
-
-  deploymentName: otel-collector
-  serviceName: otel-collector-service
-  configMapName: otel-collector-config-map
+networkLatency:
+  targets:
+    - cluster: ""
+      host_ip: [""]
 ```
-
-If optional inputs are not provided, the agent should use the defaults above.
 
 ---
 
 # Signal-to-Dependency Mapping
-The agent must map user telemetry requirements to Helm dependencies.
+
+The agent maps user language to signals, then signals to Helm dependencies and OTel receivers/scrape jobs. Only include what the user explicitly requests.
+
+---
 
 ## Energy Metrics
-Keywords:
-- energy metrics
-- power consumption
-- node energy
-- pod energy
-- container energy
-- sustainability metrics
 
-Dependency to be added in the parent `observability_operator` chart:
+**Keywords:** energy metrics, power consumption, node energy, pod energy, container energy, sustainability metrics
+
+**Helm dependency** (parent `Chart.yaml`):
 ```yaml
 - name: kepler
   version: 0.6.1
   repository: "https://sustainable-computing-io.github.io/kepler-helm-chart"
 ```
 
-Scrape job name to be added in `otel_collector` sub-chart:
-```yaml
-job_name: "kepler"
-```
-
----
-
-## Node Resource Metrics
-Keywords:
-- node CPU usage
-- node memory usage
-- filesystem metrics
-- network device metrics
-- host-level resource metrics
-
-Dependency to be added in the parent `observability_operator` chart:
-```yaml
-- name: prometheus-node-exporter
-  version: 4.55.0
-  repository: "https://prometheus-community.github.io/helm-charts"
-```
-
-Scrape job name to be added in `otel_collector` sub-chart:
-```yaml
-job_name: "node-exporter"
-```
-
----
-
-## Kubernetes Object Metrics
-Keywords:
-- pod status
-- deployment status
-- replica counts
-- Kubernetes object state
-- desired vs available replicas
-- namespace-level Kubernetes metadata
-
-Dependency to be added in the parent `observability_operator` chart:
-```yaml
-- name: kube-state-metrics
-  version: 7.4.0
-  repository: "https://prometheus-community.github.io/helm-charts"
-```
-
-Scrape job name to be added in `otel_collector` sub-chart:
-```yaml
-job_name: "kube-state-metrics"
-```
-
----
-
-## Container Resource Metrics
-Keywords:
-- container CPU usage
-- container memory usage
-- container filesystem usage
-- pod-level resource usage
-- container-level resource usage
-
-No external helm dependency is required in the parent `observability_operator` chart.
-
-Scrape job name to be added in `otel_collector` sub-chart:
-```yaml
-job_name: "cadvisor"
-```
-
-Required RBAC:
-```yaml
-resources:
-  - nodes
-  - nodes/proxy
-```
-
----
-
-## Kubelet Metrics
-Keywords:
-- kubelet metrics
-- pod lifecycle metrics
-- volume metrics
-- node runtime metrics
-
-No external helm dependency is required in the parent `observability_operator` chart.
-
-Scrape job name to be added in `otel_collector` sub-chart:
-```yaml
-job_name: "kubelet"
-```
-
----
-
-## Network Latency Metrics
-Keywords:
-- network latency
-- inter-node latency
-- network delay
-- connectivity delay metrics
-
-Dependency to be added in the `Chart.yaml` file of the parent `observability_operator` chart:
-```yaml
-- name: network-latency
-  version: 0.1.0
-  repository: "https://gitlab.com/api/v4/projects/44429468/packages/helm/stable"
-```
-
-Scrape job name to be added in `otel_collector` sub-chart:
-```yaml
-job_name: "network-latency"
-```
-
-## Application Metrics
-Application metrics are custom metrics exported using the OTLP Protocol. The `otlp` receiver is needed to be defined and included in the metrics pipeline of the `otel_collector` sub-chart.
-
----
-
-## Logs
-There are 2 types of logs.
-## Application Logs
-Application logs are emitted directly by the application using the OTLP protocol. Only the `otlp` receiver is needed to be enabled in the logs `otel_collector` sub-chart. No Fluent Bit. No tailing. No systemd. No containerd scraping.
-
-## System Logs
-System logs include:
-- Kubernetes system component logs
-- kubelet logs
-- node logs
-- cluster logs
-- system logs
-- containerd logs
-- non-application logs
-- journald logs
-
-Dependency to be added in the `Chart.yaml` file of the parent `observability_operator` chart:
-```yaml
-- name: fluent-bit
-  version: 0.57.6
-  repository: "https://fluent.github.io/helm-charts"
-```
-
-In the `values.yaml` file of the parent `observability_operator` chart, we must put some configuration for it, specifying inputs.
-
-## Kubernetes Events Logs
-When kubernetes events logs are requested, just the `k8s_events` receiver is needed to be added in the `otel_collector` sub-chart.
-
----
-
-# Parent Chart Generation Rules
-The parent chart `observability_operator` must always include:
-```yaml
-- name: otel-collector
-  version: 0.1.0
-  repository: "file://../otel_collector"
-```
-
-**Rules:**
-- The parent chart must include only the absolutely needed dependencies. These dependencies are those required by the selected signals, based on user requests.
-- Unnecessary dependencies must not be included.
-- For each dependency name defined in the parent chart, we can override some of its values in the `values.yaml` file by using its name. For example, we can update the target for getting the `network-latency` chart dependency:
-```yaml
-network-latency:
-  target_hosts:
-    - cluster: example_target_cluster
-      host_ip: ["10.0.0.1"]
-```
-
----
-
-# OpenTelemetry Collector Generation Rules
-The agent must generate the `otel_collector` sub-chart dynamically.
-The general idea is that we have **receivers**, **processors**, and **exporters**.
-
-## Always Include
-
-```yaml
-extensions:
-  health_check:
-    endpoint: 0.0.0.0:13133
-```
-
-and:
-
-```yaml
-args: ["--config=/conf/<config-file-name>.yaml"]
-```
-specifying the otel configuration file name. This name must match the configuration file name in the Config Map of the `otel_collector` sub-chart.
-
----
-
-## required processors
-The `batch` processor and the `resource` processor for specifying the cluster name are always needed. The configuration file should include:
-```yaml
-processors:
-  batch:
-
-  resource:
-    attributes:
-      - key: cluster
-        value: {{ .Values.otelCollector.clusterName }}
-        action: insert
-```
-Ensure that `.Values.otelCollector.clusterName` exists.
-
----
-
-## otlp exporter
-The `otlp` exporter is needed, specifying the (ip, port) endpoint for sending the telemetry. TLS settings must always be nested under the OTLP exporter and must always come from `.Values`. The configuration file should include:
-```yaml
-exporters:
-  otlp:
-    endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
-    tls:
-      insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure | default true }}
-```
-
----
-
-## otlp receiver
-Include the `otlp` receiver only when:
-- application traces are requested,
-- application otlp metrics are requested,
-- application otlp logs are requested.
-
-The `otel_collector` sub-chart configuration file should include: 
-```yaml
-receivers:
-  otlp:
-    protocols:
-      grpc:
-        endpoint: 0.0.0.0:4317
-      http:
-        endpoint: 0.0.0.0:4318
-```
-
----
-
-## k8s_events receiver
-Include the `k8s_events` receiver only when kubernetes cluster events as logs are requested. In this case, the `otel_collector` sub-chart configuration file should include:
-```yaml
-receivers:
-  k8s_events:
-    auth_type: serviceAccount
-    namespaces: []
-```
-
----
-
-## prometheus receiver
-Include the `prometheus` receiver only when Prometheus-compatible exporters are requested. These metrics are exported from kepler, kube-state, network-latency, kubelet, cadvisor. In this case, the `otel_collector` sub-chart configuration file should include:
-```yaml
-receivers:
-  prometheus:
-    config:
-      global:
-        scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
-        evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
-      scrape_configs:
-```
-
----
-
-For the case of `prometheus` receiver in `otel_collector` sub-chart configuration file, we should specify some scrape jobs.
-The agent must use the following exact scrape-job templates. The agent must not invent alternative discovery rules unless the user explicitly changes service names or labels.
-
----
-
-### kepler
-When `kepler` is needed and is added as dependency in the `Chart.yaml` file of the  parent chart `observability_operator`, we need to specify this job:
+**Scrape job** (`otel_collector` prometheus receiver):
 ```yaml
 - job_name: "kepler"
   kubernetes_sd_configs:
@@ -398,12 +133,26 @@ When `kepler` is needed and is added as dependency in the `Chart.yaml` file of t
       target_label: node
 ```
 
-In the `values.yaml` file of the parent chart `observability_operator`, we can override its name.
+**Parent `values.yaml` override:**
+```yaml
+kepler:
+  fullnameOverride: kepler
+```
 
 ---
 
-### node exporter
-When `node-exporter` is needed and is added as dependency in the `Chart.yaml` file of the  parent chart `observability_operator`, we need to specify this job:
+## Node Resource Metrics
+
+**Keywords:** node CPU usage, node memory usage, filesystem metrics, network device metrics, host-level resource metrics
+
+**Helm dependency** (parent `Chart.yaml`):
+```yaml
+- name: prometheus-node-exporter
+  version: 4.55.0
+  repository: "https://prometheus-community.github.io/helm-charts"
+```
+
+**Scrape job** (`otel_collector` prometheus receiver):
 ```yaml
 - job_name: "node-exporter"
   kubernetes_sd_configs:
@@ -416,12 +165,51 @@ When `node-exporter` is needed and is added as dependency in the `Chart.yaml` fi
       target_label: node
 ```
 
-In the `values.yaml` file of the parent chart `observability_operator`, we can override its name.
+**Parent `values.yaml` override:**
+```yaml
+prometheus-node-exporter:
+  fullnameOverride: node-exporter
+```
 
 ---
 
-### cAdvisor
-When `cAdvisor` is needed, we need to specify this job:
+## Kubernetes Object Metrics
+
+**Keywords:** pod status, deployment status, replica counts, Kubernetes object state, desired vs available replicas, namespace-level Kubernetes metadata
+
+**Helm dependency** (parent `Chart.yaml`):
+```yaml
+- name: kube-state-metrics
+  version: 7.4.0
+  repository: "https://prometheus-community.github.io/helm-charts"
+```
+
+**Scrape job** (`otel_collector` prometheus receiver):
+```yaml
+- job_name: "kube-state-metrics"
+  kubernetes_sd_configs:
+    - role: "endpoints"
+  relabel_configs:
+    - source_labels: [__meta_kubernetes_service_name]
+      action: keep
+      regex: kube-state-metrics
+```
+
+**Parent `values.yaml` override:**
+```yaml
+kube-state-metrics:
+  fullnameOverride: kube-state-metrics
+```
+
+---
+
+## Container Resource Metrics
+
+**Keywords:** container CPU usage, container memory usage, container filesystem usage, pod-level resource usage, container-level resource usage
+
+No external Helm dependency required.
+
+**Scrape job** (`otel_collector` prometheus receiver):
 ```yaml
 - job_name: "cadvisor"
   scheme: "https"
@@ -441,10 +229,20 @@ When `cAdvisor` is needed, we need to specify this job:
       action: "replace"
 ```
 
+**Required RBAC resources** (in addition to base RBAC):
+```yaml
+- nodes/proxy
+```
+
 ---
 
-### kubelet
-When `kubelet` is needed, we need to specify this job:
+## Kubelet Metrics
+
+**Keywords:** kubelet metrics, pod lifecycle metrics, volume metrics, node runtime metrics
+
+No external Helm dependency required.
+
+**Scrape job** (`otel_collector` prometheus receiver):
 ```yaml
 - job_name: "kubelet"
   scheme: "https"
@@ -466,24 +264,18 @@ When `kubelet` is needed, we need to specify this job:
 
 ---
 
-### kube-state-metrics
-When `kube-state-metrics` is needed and is added as dependency in the `Chart.yaml` file of the  parent chart `observability_operator`, we need to specify this job:
+## Network Latency Metrics
+
+**Keywords:** network latency, inter-node latency, network delay, connectivity delay metrics
+
+**Helm dependency** (parent `Chart.yaml`):
 ```yaml
-- job_name: "kube-state-metrics"
-  kubernetes_sd_configs:
-    - role: "endpoints"
-  relabel_configs:
-    - source_labels: [__meta_kubernetes_service_name]
-      action: keep
-      regex: kube-state-metrics
+- name: network-latency
+  version: 0.1.0
+  repository: "https://gitlab.com/api/v4/projects/44429468/packages/helm/stable"
 ```
 
-In the `values.yaml` file of the parent chart `observability_operator`, we can override its name.
-
----
-
-### network latency
-When `network-latency` is needed and is added as dependency in the `Chart.yaml` file of the parent chart `observability_operator`, we need to specify this job:
+**Scrape job** (`otel_collector` prometheus receiver):
 ```yaml
 - job_name: "network-latency-agent"
   kubernetes_sd_configs:
@@ -494,462 +286,333 @@ When `network-latency` is needed and is added as dependency in the `Chart.yaml` 
       regex: network-latency-agent-service
 ```
 
-In the `values.yaml` file of the parent chart `observability_operator`, we can override the target hosts by defining a cluster and its IPs.
-
----
-
-# Pipeline Generation Rules
-Generate only the **required pipelines**, using the **receivers**, **processors**, and **exporters** that were defined in the configuration file of `otel_collector` sub-chart.
-
----
-
-## Metrics Only
-
-```yaml
-service:
-  pipelines:
-    metrics:
-```
-
----
-
-## Traces
-
-```yaml
-service:
-  pipelines:
-    traces:
-```
-
----
-
-## Logs
-
-```yaml
-service:
-  pipelines:
-    logs:
-```
-
----
-
-## Receiver Consistency
-
-If a pipeline references:
-
-```yaml
-prometheus
-```
-
-then the `prometheus` receiver must exist.
-
-If a pipeline references:
-
-```yaml
-otlp
-```
-
-then the `otlp` receiver must exist.
-
----
-
-## Processor Consistency
-
-If a pipeline references:
-
-```yaml
-resource
-batch
-```
-
-then these processors must exist.
-
----
-
-## Exporter Consistency
-
-If a pipeline references:
-
-```yaml
-otlp
-```
-
-then the OTLP exporter must exist.
-
----
-
-# Helm Templating Rules
-
----
-
-## Values Namespace
-
-All Collector configuration must exist under:
-
-```yaml
-otelCollector:
-```
-
-Example:
-
-```yaml
-otelCollector:
-  clusterName: my-cluster
-  deploymentName: otel-collector
-  replicas: 1
-```
-
----
-
-## Prometheus Relabel Escaping
-
-Use:
-
-```yaml
-$${1}
-```
-
-inside Helm templates.
-
-Incorrect:
-
-```yaml
-${1}
-```
-
----
-
-## Namespace References
-
-Use:
-
-```yaml
-namespace: {{ .Release.Namespace }}
-```
-
-inside ClusterRoleBindings.
-
----
-
-## Collector Ports
-
-Expose only required ports.
-
-OTLP HTTP:
-
-```yaml
-port: 4318
-targetPort: 4318
-```
-
-OTLP gRPC:
-
-```yaml
-port: 4317
-targetPort: 4317
-```
-
----
-
-# RBAC Rules
-
-Required RBAC:
-
-```yaml
-resources:
-  - pods
-  - nodes
-  - nodes/proxy
-  - services
-  - endpoints
-  - events
-```
-
----
-
-# Validation Checklist
-
-The generated chart must satisfy all conditions below.
-
-## Parent Chart
-
-* `observability_operator/Chart.yaml` exists
-* chart name is `observability-operator`
-* `otel-collector` dependency always exists
-* only requested dependencies are included
-* no unused dependencies exist
-
----
-
-## Collector Chart
-
-Required files:
-
-```text
-otel_collector/
-  Chart.yaml
-  values.yaml
-  templates/
-    otel-collector.yaml
-    permission.yaml
-```
-
----
-
-## Collector Configuration
-
-- only required receivers exist
-- `prometheus` receiver exists only when scrape jobs exist
-- each metrics dependency has a matching scrape job
-- omitted dependencies must not have scrape jobs
-- `otlp` exporter endpoint comes from user input
-- cluster resource attribute exists through its `resource` processor
-- include all the necessary manifests e.g. Service, Config Map, Deployment.
-
----
-
-## Helm Validation
-
-The generated chart must pass:
-
-```bash
-helm lint observability_operator_chart_<suffix>/observability_operator
-```
-
-and:
-
-```bash
-helm template observability_operator_chart_<suffix>/observability_operator
-```
-
-without errors.
-
----
-
-# Reference Chart
-
-The repository also includes an example chart:
-
-```text
-reference-chart/
-```
-
-directory.
-
-The reference chart is an example implementation only.
-
-The agent must not blindly copy all dependencies or scrape jobs from the reference chart.
-
-The agent must dynamically generate a minimal chart according to the requested signals.
-
-The reference chart exists to:
-
-- demonstrate Helm style,
-- demonstrate templating conventions,
-- demonstrate Collector configuration structure,
-- demonstrate RBAC structure.
-
----
-
-# Reference Chart Files
-
-## reference-chart/observability_operator/Chart.yaml
-
-```yaml
-apiVersion: v2
-name: observability-operator
-description: A Helm chart for deploying observability components.
-type: application
-version: 0.1.0
-appVersion: dev
-
-dependencies:
-  - name: otel-collector
-    version: 0.1.0
-    repository: "file://../otel_collector"
-```
-
----
-## reference-chart/observability_operator/values.yaml
-
+**Parent `values.yaml` override** (target hosts come from user input):
 ```yaml
 network-latency:
   target_hosts:
-    - cluster: "localhost"
-      host_ip: ["127.0.0.1"]
-    - cluster: "custom_cluster"
-      host_ip: ["192.168.1.100"]
+    - cluster: "<user-provided cluster name>"
+      host_ip: ["<user-provided IP>"]
+```
 
-prometheus-node-exporter:
-  fullnameOverride: node-exporter
+---
 
-kube-state-metrics:
-  fullnameOverride: kube-state-metrics
+## Application Metrics
 
-kepler:
-  fullnameOverride: kepler
+**Keywords:** custom metrics, application metrics, OTLP metrics, instrumented metrics
 
+No external Helm dependency required.
+
+Requires the `otlp` receiver in the `otel_collector` sub-chart, included in the metrics pipeline.
+
+---
+
+## Application Logs
+
+**Keywords:** application logs, OTLP logs, instrumented logs
+
+No external Helm dependency required. No Fluent Bit. No log tailing. No systemd or containerd scraping.
+
+Requires the `otlp` receiver in the `otel_collector` sub-chart, included in the logs pipeline.
+
+---
+
+## System Logs
+
+**Keywords:** Kubernetes system logs, kubelet logs, node logs, cluster logs, system logs, containerd logs, non-application logs, journald logs
+
+**Helm dependency** (parent `Chart.yaml`):
+```yaml
+- name: fluent-bit
+  version: 0.57.6
+  repository: "https://fluent.github.io/helm-charts"
+```
+
+**Parent `values.yaml` override** (Fluent Bit must be configured with inputs and outputs):
+```yaml
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
     - name: systemd-journal
       hostPath:
         path: /run/systemd/journal
-
   extraVolumeMounts:
     - name: systemd-journal
       mountPath: /run/systemd/journal
       readOnly: true
-
   config:
     inputs: |
-      # Pod logs
-      # [INPUT]
-          # Name              tail
-          # Tag               kube.*
-          # Path              /var/log/containers/*.log
-          # multiline.parser  docker, cri
-          # Mem_Buf_Limit     5MB
-          # Skip_Long_Lines   On
-
-      # k3s logs (includes kubelet, apiserver, scheduler, controller-manager)
       [INPUT]
           Name           tail
           Tag            k3s.*
           Path           /var/log/k3s.log
-
-      # System logs (syslog)
       [INPUT]
           Name           tail
           Tag            syslog.*
           Path           /var/log/syslog
-
-      # containerd logs from journald
       [INPUT]
           Name           systemd
           Tag            node.system.*
           Path           /run/systemd/journal
           Systemd_Filter _SYSTEMD_UNIT=containerd
-
     filters: |
       [FILTER]
           Name          modify
           Match         k3s.*
           Add           log_source k3s
           Add           service_name k3s-cluster
-
       [FILTER]
           Name          modify
           Match         syslog.*
           Add           log_source syslog
           Add           service_name os-systemd
-
       [FILTER]
           Name          modify
           Match         node.system.*
           Add           log_source containerd
           Add           service_name container-runtime
-
     outputs: |
       [OUTPUT]
           Name            opentelemetry
           Match           *
-          Host            otel-agent-service
+          Host            {{ .Values.otelCollector.serviceName }}
           Port            4318
-          Metrics_URI     /v1/metrics
           Logs_URI        /v1/logs
-          Traces_URI      /v1/traces
-          Log_response_payload False
           Tls             Off
           Logs_body_key   log
           Logs_body_key_attributes true
           Logs_attributes_metadata_key attributes
           Logs_resource_metadata_key resource
           Logs_instrumentation_scope_metadata_key scope
-
-      [OUTPUT]
-          Name            stdout
-          Match           *
-          Format          json_lines
 ```
+
 ---
 
-## reference-chart/otel_collector/Chart.yaml
+## Kubernetes Events Logs
 
+**Keywords:** Kubernetes events, cluster events, k8s events logs
+
+No external Helm dependency required.
+
+Requires the `k8s_events` receiver in the `otel_collector` sub-chart, included in the logs pipeline:
 ```yaml
-apiVersion: v2
-name: otel-collector
-description: A Helm chart for deploying an OpenTelemetry Collector.
-type: application
-version: 0.1.0
-appVersion: dev
+receivers:
+  k8s_events:
+    auth_type: serviceAccount
+    namespaces: []
 ```
 
 ---
 
-## reference-chart/otel_collector/values.yaml
+# Parent Chart Generation Rules
 
+The parent chart `observability_operator` must always include the local sub-chart dependency:
+```yaml
+- name: otel-collector
+  version: 0.1.0
+  repository: "file://../otel_collector"
+```
+
+**Rules:**
+- Include only the dependencies required by the user-requested signals.
+- Do not include any dependency that was not triggered by a signal.
+- For each included dependency, add its `fullnameOverride` in the parent `values.yaml` to ensure predictable service discovery names for scrape jobs.
+
+---
+
+# OpenTelemetry Collector Generation Rules
+
+## Always Include
+
+Health check extension:
+```yaml
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+```
+
+Container args pointing to the config file:
+```yaml
+args: ["--config=/conf/otel-agent-config.yaml"]
+```
+
+The config file name in the args must match the key used inside the ConfigMap.
+
+---
+
+## Required Processors
+
+Always include both:
+```yaml
+processors:
+  batch:
+
+  resource:
+    attributes:
+      - key: cluster
+        value: {{ .Values.otelCollector.clusterName }}
+        action: insert
+```
+
+---
+
+## OTLP Exporter
+
+Always include:
+```yaml
+exporters:
+  otlp:
+    endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
+    tls:
+      insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure | default true }}
+```
+
+---
+
+## OTLP Receiver
+
+Include only when application traces, application OTLP metrics, or application OTLP logs are requested:
+```yaml
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+```
+
+---
+
+## Kubernetes Events Receiver
+
+Include only when Kubernetes events logs are requested:
+```yaml
+receivers:
+  k8s_events:
+    auth_type: serviceAccount
+    namespaces: []
+```
+
+---
+
+## Prometheus Receiver
+
+Include only when at least one Prometheus-compatible scrape job is needed (kepler, node-exporter, cadvisor, kubelet, kube-state-metrics, network-latency):
+```yaml
+receivers:
+  prometheus:
+    config:
+      global:
+        scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
+        evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
+      scrape_configs:
+        # include only the scrape jobs for requested signals
+```
+
+---
+
+# Pipeline Generation Rules
+
+Generate only the pipelines required by the requested signals. Each pipeline must reference only receivers, processors, and exporters that are defined in the configuration.
+
+**Metrics pipeline** — include when any metrics signal is requested:
+```yaml
+metrics:
+  receivers: [<only the ones defined>]
+  processors: [resource, batch]
+  exporters: [otlp]
+```
+
+**Traces pipeline** — include only when traces are requested:
+```yaml
+traces:
+  receivers: [otlp]
+  processors: [resource, batch]
+  exporters: [otlp]
+```
+
+**Logs pipeline** — include when any log signal is requested:
+```yaml
+logs:
+  receivers: [<only the ones defined>]
+  processors: [resource, batch]
+  exporters: [otlp]
+```
+
+**Consistency rules:**
+- A pipeline must not reference a receiver that is not defined.
+- A pipeline must not reference a processor that is not defined.
+- Every defined receiver must appear in at least one pipeline.
+
+---
+
+# Helm Templating Rules
+
+## Values Namespace
+
+All collector configuration must be nested under:
 ```yaml
 otelCollector:
-  clusterName: demo-cluster
+```
 
-  deploymentName: otel-collector
-  replicas: 1
+## Prometheus Relabel Escaping
 
-  configMapName: otel-collector-config-map
-  serviceName: otel-collector-service
+Inside Helm templates, use `$${1}` not `${1}`:
+```yaml
+replacement: "/api/v1/nodes/$${1}/proxy/metrics/cadvisor"
+```
 
-  image:
-    registry: otel
-    name: opentelemetry-collector-contrib
-    tag: latest
+## Namespace References
 
-  scrapeInterval: 5s
-  evaluationInterval: 5s
+Use `{{ .Release.Namespace }}` in ClusterRoleBindings:
+```yaml
+namespace: {{ .Release.Namespace }}
+```
 
-  exporters:
-    otlp:
-      host: observability-backend.default.svc.cluster.local
-      port: 4318
-      tls:
-        insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure | default true }}
+## Collector Ports
+
+Expose only the ports required by the included receivers:
+
+OTLP gRPC (include when `otlp` receiver is defined):
+```yaml
+otlp-grpc:
+  port: 4317
+  targetPort: 4317
+```
+
+OTLP HTTP (include when `otlp` receiver is defined):
+```yaml
+otlp-http:
+  port: 4318
+  targetPort: 4318
 ```
 
 ---
 
-## reference-chart/otel_collector/templates/permission.yaml
+# RBAC Rules
 
+Always include base RBAC in `permission.yaml`:
 ```yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: otel-collector-serviceaccount
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: otel-collector-clusterrole
-rules:
-- apiGroups: [""]
-  resources:
+resources:
   - pods
   - nodes
-  - nodes/proxy
   - services
   - endpoints
   - events
-  verbs: ["get", "list", "watch"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: otel-collector-clusterrolebinding
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: otel-collector-clusterrole
-subjects:
-- kind: ServiceAccount
-  name: otel-collector-serviceaccount
-  namespace: {{ .Release.Namespace }}
 ```
+
+Add `nodes/proxy` when cadvisor or kubelet scrape jobs are included.
+
+---
+
+# Reference Chart
+
+The repository includes a working example chart at `reference-chart/`.
+
+**The reference chart demonstrates the maximum possible configuration** — all signals enabled. The agent must not copy it wholesale. Use it only as a style reference for:
+- Helm template syntax and structure
+- ConfigMap, Deployment, and Service manifest layout
+- RBAC manifest structure
+- Templating conventions (`{{ .Values... }}`, `{{- range ... }}`, `$${1}` escaping)
+
+The agent must generate a minimal chart driven by the user's requested signals, not reproduce the reference chart.

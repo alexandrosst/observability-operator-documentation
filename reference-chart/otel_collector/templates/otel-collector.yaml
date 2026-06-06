@@ -91,7 +91,7 @@ data:
       debug:
         verbosity: detailed
       otlp:
-        endpoint: {{ .Values.otelCollector.exporters.otlp.ip }}:{{ .Values.otelCollector.exporters.otlp.port }}
+        endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
         tls:
           insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure | default true }}
     processors:

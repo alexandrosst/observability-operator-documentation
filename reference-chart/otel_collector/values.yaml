@@ -17,24 +17,10 @@ otelCollector:
 
   exporters:
     otlp:
-      ip: 127.0.0.1
+      host: 127.0.0.1
       port: 4318
       tls:
         insecure: true
-
-  pipelines:
-    traces:
-      receivers: [otlp]
-      exporters: [otlp]
-      processors: [resource, batch]
-    metrics:
-      receivers: [otlp, prometheus]
-      exporters: [otlp]
-      processors: [resource, batch]
-    logs:
-      receivers: [otlp, k8s_events]
-      exporters: [otlp]
-      processors: [resource, batch]
 
   ports:
     otlp-grpc:
