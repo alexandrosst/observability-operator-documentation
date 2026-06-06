@@ -110,3 +110,24 @@ spec:
         - name: config
           configMap:
             name: {{ .Values.otelCollector.configMapName }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.otelCollector.serviceName }}
+spec:
+  selector:
+    app: {{ .Release.Name }}
+  ports:
+    - name: otlp-grpc
+      protocol: TCP
+      port: {{ .Values.otelCollector.ports.otlp-grpc.port }}
+      targetPort: {{ .Values.otelCollector.ports.otlp-grpc.targetPort }}
+    - name: otlp-http
+      protocol: TCP
+      port: {{ .Values.otelCollector.ports.otlp-http.port }}
+      targetPort: {{ .Values.otelCollector.ports.otlp-http.targetPort }}
+    - name: health-check
+      protocol: TCP
+      port: {{ .Values.otelCollector.ports.health-check.port }}
+      targetPort: {{ .Values.otelCollector.ports.health-check.targetPort }}
