@@ -1,1 +1,34 @@
-# Placeholder for RBAC permissions if needed in future
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: otel-collector-serviceaccount
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: otel-collector-clusterrole
+rules:
+  - apiGroups: [""]
+    resources:
+      - pods
+      - nodes
+      - services
+      - endpoints
+      - events
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: otel-collector-clusterrolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: otel-collector-clusterrole
+subjects:
+  - kind: ServiceAccount
+    name: otel-collector-serviceaccount
+    namespace: {{ .Release.Namespace }}
