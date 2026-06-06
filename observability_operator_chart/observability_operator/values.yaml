@@ -1,4 +1,0 @@
-kepler: {}
-prometheus-node-exporter: {}
-otel-collector:
-  enabled: true
