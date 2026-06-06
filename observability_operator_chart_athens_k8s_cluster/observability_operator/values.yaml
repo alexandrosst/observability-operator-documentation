@@ -1,5 +1,9 @@
+# Values for included dependencies
+# prometheus-node-exporter
 prometheus-node-exporter:
   fullnameOverride: node-exporter
+
+# otel-collector values
 otelCollector:
   clusterName: "athens_k8s_cluster"
   scrapeInterval: 8s
@@ -19,18 +23,9 @@ otelCollector:
     name: opentelemetry-collector-contrib
     tag: "0.98.0"
   ports:
-    "otlp-grpc":
+    otlp-grpc:
       port: 4317
       targetPort: 4317
-    "otlp-http":
+    otlp-http:
       port: 4318
       targetPort: 4318
-  pipelines:
-    metrics:
-      receivers: [prometheus]
-      exporters: [otlp]
-      processors: [resource, batch]
-    logs:
-      receivers: [otlp]
-      exporters: [otlp]
-      processors: [resource, batch]
