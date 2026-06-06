@@ -4,7 +4,7 @@
 {{- end }}
 
 {{- define "otel-collector.serviceAccountName" -}}
-{{- default (include "otel-collector.fullname" .) .Values.serviceAccount.name -}}
+{{ include "otel-collector.fullname" . }}
 {{- end }}
 
 {{- define "otel-collector.labels" -}}
