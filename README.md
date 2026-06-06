@@ -42,6 +42,8 @@ observability_operator_chart_<suffix>/
   observability_operator/
     Chart.yaml
     values.yaml
+    templates/
+      NOTES.txt
   otel_collector/
     Chart.yaml
     values.yaml
@@ -52,7 +54,7 @@ observability_operator_chart_<suffix>/
 
 **Rules:**
 - The parent chart `observability_operator` must contain dependency declarations only in `Chart.yaml`. Its `values.yaml` may contain dependency value overrides where needed (e.g. network-latency target hosts, fluent-bit inputs).
-- Always include observability_operator/templates/NOTES.txt with a brief description of the chart. This prevents helm lint from warning about a missing templates/ directory.
+- The parent chart must always include `templates/NOTES.txt`. Without it, `helm lint --strict` fails with a "templates/ directory does not exist" error.
 - The parent chart must always include the local `otel-collector` sub-chart dependency.
 - The `otel_collector` sub-chart is defined only in `otel_collector/`.
 
