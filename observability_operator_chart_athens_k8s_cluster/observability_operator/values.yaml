@@ -1,37 +1,36 @@
 prometheus-node-exporter:
   fullnameOverride: node-exporter
-
 otelCollector:
-  clusterName: athens_k8s_cluster
+  clusterName: "athens_k8s_cluster"
   scrapeInterval: 8s
   evaluationInterval: 5s
-  configMapName: otel-collector-config-map
+  exporters:
+    otlp:
+      host: "147.102.13.108"
+      port: 4318
+      tls:
+        insecure: true
+  configMapName: otel-collector-config
   deploymentName: otel-collector
-  serviceName: otel-collector-service
+  serviceName: otel-collector
+  replicas: 1
   image:
     registry: otel
     name: opentelemetry-collector-contrib
     tag: "0.98.0"
-  replicas: 1
-  exporters:
-    otlp:
-      host: 147.102.13.108
-      port: 4318
-      tls:
-        insecure: true
   ports:
-    otlp-grpc:
+    "otlp-grpc":
       port: 4317
       targetPort: 4317
-    otlp-http:
+    "otlp-http":
       port: 4318
       targetPort: 4318
   pipelines:
     metrics:
-      receivers: ["prometheus", "otlp"]
-      exporters: ["otlp"]
-      processors: ["resource", "batch"]
+      receivers: [prometheus]
+      exporters: [otlp]
+      processors: [resource, batch]
     logs:
-      receivers: ["otlp"]
-      exporters: ["otlp"]
-      processors: ["resource", "batch"]
+      receivers: [otlp]
+      exporters: [otlp]
+      processors: [resource, batch]
