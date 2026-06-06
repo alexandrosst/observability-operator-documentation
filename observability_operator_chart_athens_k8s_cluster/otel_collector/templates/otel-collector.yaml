@@ -26,7 +26,7 @@ data:
               relabel_configs:
                 - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
                   regex: "prometheus-node-exporter"
-                  action: keep
+                  action: "keep"
                 - source_labels: [__meta_kubernetes_pod_node_name]
                   target_label: node
     exporters:
@@ -35,7 +35,7 @@ data:
         tls:
           insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure }}
     processors:
-      batch: {}
+      batch:
       resource:
         attributes:
           - key: cluster
@@ -45,13 +45,13 @@ data:
       extensions: [health_check]
       pipelines:
         metrics:
-          receivers: [prometheus, otlp]
-          processors: [resource, batch]
+          receivers: [prometheus]
           exporters: [otlp]
+          processors: [resource, batch]
         logs:
           receivers: [otlp]
-          processors: [resource, batch]
           exporters: [otlp]
+          processors: [resource, batch]
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -67,10 +67,11 @@ spec:
       labels:
         app: {{ .Values.otelCollector.deploymentName }}
     spec:
-      serviceAccountName: otel-collector-serviceaccount
+      serviceAccountName: {{ .Values.otelCollector.deploymentName }}
       containers:
         - name: {{ .Values.otelCollector.deploymentName }}
           image: "{{ .Values.otelCollector.image.registry }}/{{ .Values.otelCollector.image.name }}:{{ .Values.otelCollector.image.tag }}"
+          imagePullPolicy: Always
           args: ["--config=/conf/otel-agent-config.yaml"]
           volumeMounts:
             - name: config-volume
@@ -82,13 +83,13 @@ spec:
               scheme: HTTP
             initialDelaySeconds: 1
             periodSeconds: 3
-            timeoutSeconds: 2
             successThreshold: 1
             failureThreshold: 3
+            timeoutSeconds: 2
       volumes:
-        - name: config-volume
-          configMap:
-            name: {{ .Values.otelCollector.configMapName }}
+      - name: config-volume
+        configMap:
+          name: {{ .Values.otelCollector.configMapName }}
 ---
 apiVersion: v1
 kind: Service
@@ -100,9 +101,9 @@ spec:
   ports:
     - name: otlp-grpc
       protocol: TCP
-      port: {{ .Values.otelCollector.ports.otlp-grpc.port }}
-      targetPort: {{ .Values.otelCollector.ports.otlp-grpc.targetPort }}
+      port: {{ (index .Values.otelCollector.ports "otlp-grpc").port }}
+      targetPort: {{ (index .Values.otelCollector.ports "otlp-grpc").targetPort }}
     - name: otlp-http
       protocol: TCP
-      port: {{ .Values.otelCollector.ports.otlp-http.port }}
-      targetPort: {{ .Values.otelCollector.ports.otlp-http.targetPort }}
+      port: {{ (index .Values.otelCollector.ports "otlp-http").port }}
+      targetPort: {{ (index .Values.otelCollector.ports "otlp-http").targetPort }}
