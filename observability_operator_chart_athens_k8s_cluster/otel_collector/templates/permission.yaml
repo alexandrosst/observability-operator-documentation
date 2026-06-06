@@ -1,31 +1,60 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "otel-collector.fullname" . }}-role
+rules:
+  - apiGroups: [""]
+    resources:
+      - pods
+      - nodes
+      - services
+      - endpoints
+      - events
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "otel-collector.fullname" . }}-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "otel-collector.fullname" . }}-role
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "otel-collector.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: otel-collector-serviceaccount
+  name: {{ include "otel-collector.serviceAccountName" . }}
+  labels:
+    {{- include "otel-collector.labels" . | nindent 4 }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: otel-collector-clusterrole
+  name: {{ include "otel-collector.fullname" . }}-clusterrole
 rules:
-- apiGroups: ["""]
-  resources:
-  - pods
-  - nodes
-  - services
-  - endpoints
-  - events
-  verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources:
+      - pods
+      - nodes
+      - services
+      - endpoints
+      - events
+    verbs: ["get", "list", "watch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: otel-collector-clusterrolebinding
+  name: {{ include "otel-collector.fullname" . }}-clusterrolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: otel-collector-clusterrole
+  name: {{ include "otel-collector.fullname" . }}-clusterrole
 subjects:
-- kind: ServiceAccount
-  name: otel-collector-serviceaccount
-  namespace: {{ .Release.Namespace }}
+  - kind: ServiceAccount
+    name: {{ include "otel-collector.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
