@@ -1,31 +1,7 @@
-# Values for included dependencies
-# prometheus-node-exporter
+# fullnameOverride for each included dependency (ensures predictable service names)
+
+# Include otelCollector block so NOTES.txt can access clusterName (value sourced from subchart)
+otelCollector: {}
+
 prometheus-node-exporter:
   fullnameOverride: node-exporter
-
-# otel-collector values
-otelCollector:
-  clusterName: "athens_k8s_cluster"
-  scrapeInterval: 8s
-  evaluationInterval: 5s
-  exporters:
-    otlp:
-      host: "147.102.13.108"
-      port: 4318
-      tls:
-        insecure: true
-  configMapName: otel-collector-config
-  deploymentName: otel-collector
-  serviceName: otel-collector
-  replicas: 1
-  image:
-    registry: otel
-    name: opentelemetry-collector-contrib
-    tag: "0.98.0"
-  ports:
-    otlp-grpc:
-      port: 4317
-      targetPort: 4317
-    otlp-http:
-      port: 4318
-      targetPort: 4318

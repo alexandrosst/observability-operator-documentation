@@ -6,7 +6,7 @@ data:
   otel-agent-config.yaml: |
     extensions:
       health_check:
-        endpoint: 0.0.0.0:13133
+        endpoint: 0.0.0.1:13133
     receivers:
       otlp:
         protocols:
@@ -33,7 +33,7 @@ data:
       otlp:
         endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
         tls:
-          insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure | default true }}
+          insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure }}
     processors:
       batch:
       resource:
@@ -42,17 +42,16 @@ data:
             value: {{ .Values.otelCollector.clusterName }}
             action: insert
     service:
-      extensions:
-      - health_check
+      extensions: [health_check]
       pipelines:
         metrics:
-          receivers: ["prometheus", "otlp"]
-          exporters: ["otlp"]
-          processors: ["resource", "batch"]
+          receivers: [prometheus]
+          processors: [resource, batch]
+          exporters: [otlp]
         logs:
-          receivers: ["otlp"]
-          exporters: ["otlp"]
-          processors: ["resource", "batch"]
+          receivers: [otlp]
+          processors: [resource, batch]
+          exporters: [otlp]
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -79,7 +78,7 @@ spec:
               mountPath: /conf
           readinessProbe:
             httpGet:
-              path: "/"
+              path: /
               port: 13133
               scheme: HTTP
             initialDelaySeconds: 1
@@ -102,9 +101,9 @@ spec:
   ports:
     - name: otlp-grpc
       protocol: TCP
-      port: {{ .Values.otelCollector.ports.otlp-grpc.port }}
-      targetPort: {{ .Values.otelCollector.ports.otlp-grpc.targetPort }}
+      port: {{ .Values.otelCollector.ports.otlpGrpc.port }}
+      targetPort: {{ .Values.otelCollector.ports.otlpGrpc.targetPort }}
     - name: otlp-http
       protocol: TCP
-      port: {{ .Values.otelCollector.ports.otlp-http.port }}
-      targetPort: {{ .Values.otelCollector.ports.otlp-http.targetPort }}
+      port: {{ .Values.otelCollector.ports.otlpHttp.port }}
+      targetPort: {{ .Values.otelCollector.ports.otlpHttp.targetPort }}
