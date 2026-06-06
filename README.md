@@ -460,13 +460,26 @@ processors:
 
 ## OTLP Exporter
 
-Always include:
+Always include in the template:
 ```yaml
 exporters:
   otlp:
     endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
     tls:
-      insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure | default true }}
+      insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure }}
+```
+
+The `tls.insecure` field **must** be defined in `otel_collector/values.yaml` — do not
+use `| default true` in the template. If `tls` is nil in values, Helm throws a nil
+pointer error before the default filter can apply. Always define:
+```yaml
+otelCollector:
+  exporters:
+    otlp:
+      host: ""
+      port: 4318
+      tls:
+        insecure: true
 ```
 
 ---
