@@ -1,3 +1,6 @@
 # fullnameOverride for each included dependency (ensures predictable service names)
 # prometheus-node-exporter:
 #   fullnameOverride: node-exporter
+
+otelCollector:
+  clusterName: "athens_k8s_cluster"
