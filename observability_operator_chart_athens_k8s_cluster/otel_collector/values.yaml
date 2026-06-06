@@ -1,19 +1,21 @@
 otelCollector:
-  configMapName: otel-collector-config
+  configMapName: otel-agent-config
   deploymentName: otel-collector
-  serviceName: otel-collector-svc
+  serviceName: otel-collector
   replicas: 1
   image:
-    registry: otelcol
-    name: otel-collector
-    tag: latest
-  ports:
-    otlpGrpc:
-      port: 4317
-      targetPort: 4317
-    otlpHttp:
-      port: 4318
-      targetPort: 4318
-    healthCheck:
-      port: 13133
-      targetPort: 13133
+    registry: otel/opentelemetry-collector-contrib
+    name: otel-collector-contrib
+    tag: 0.103.0
+  ports: {}
+  pipelines:
+    metrics:
+      receivers:
+        - prometheus
+      processors:
+        - resource
+        - batch
+      exporters:
+        - otlp
+  scrapeInterval: 8s
+  evaluationInterval: 5s
