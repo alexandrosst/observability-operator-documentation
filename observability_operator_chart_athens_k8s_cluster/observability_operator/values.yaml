@@ -1,23 +1,19 @@
-network-latency:
-  target_hosts:
-    - cluster: athens_k8s_cluster
-      host_ip:
-        - "147.102.13.200"
 otelCollector:
   clusterName: athens_k8s_cluster
-  deploymentName: otel-collector
-  replicas: 1
-  configMapName: otel-collector-config-map
-  serviceName: otel-collector-service
-  image:
-    registry: otel
-    name: opentelemetry-collector-contrib
-    tag: latest
-  scrapeInterval: 10s
-  evaluationInterval: 10s
+  scrapeInterval: 8s
+  evaluationInterval: 5s
   exporters:
     otlp:
       host: 147.102.13.108
       port: 4318
       tls:
         insecure: true
+  pipelines:
+    metrics:
+      receivers: [prometheus]
+      processors: [resource, batch]
+      exporters: [otlp]
+kepler:
+  fullnameOverride: kepler
+prometheus-node-exporter:
+  fullnameOverride: node-exporter
