@@ -7,6 +7,7 @@ data:
     extensions:
       health_check:
         endpoint: 0.0.0.0:13133
+
     receivers:
       prometheus:
         config:
@@ -23,12 +24,14 @@ data:
                   action: "keep"
                 - source_labels: [__meta_kubernetes_pod_node_name]
                   target_label: node
+
       otlp:
         protocols:
           grpc:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
+
     processors:
       batch:
       resource:
@@ -36,50 +39,42 @@ data:
           - key: cluster
             value: {{ .Values.otelCollector.clusterName }}
             action: insert
+
     exporters:
       otlp:
         endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
         tls:
           insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure }}
+
     service:
-      extensions:
-        - health_check
+      extensions: [health_check]
       pipelines:
         metrics:
-          receivers:
-            - prometheus
-            - otlp
-          processors:
-            - resource
-            - batch
-          exporters:
-            - otlp
+          receivers: [prometheus, otlp]
+          processors: [resource, batch]
+          exporters: [otlp]
         logs:
-          receivers:
-            - otlp
-          processors:
-            - resource
-            - batch
-          exporters:
-            - otlp
+          receivers: [otlp]
+          processors: [resource, batch]
+          exporters: [otlp]
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.otelCollector.deploymentName }}
+  name: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
 spec:
   replicas: {{ .Values.otelCollector.replicas }}
   selector:
     matchLabels:
-      app: {{ .Values.otelCollector.deploymentName }}
+      app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   template:
     metadata:
       labels:
-        app: {{ .Values.otelCollector.deploymentName }}
+        app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
     spec:
-      serviceAccountName: {{ .Values.otelCollector.deploymentName }}
+      serviceAccountName: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
       containers:
-        - name: {{ .Values.otelCollector.deploymentName }}
+        - name: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
           image: "{{ .Values.otelCollector.image.registry }}/{{ .Values.otelCollector.image.name }}:{{ .Values.otelCollector.image.tag }}"
           imagePullPolicy: Always
           args: ["--config=/conf/otel-agent-config.yaml"]
@@ -107,7 +102,7 @@ metadata:
   name: {{ .Values.otelCollector.serviceName }}
 spec:
   selector:
-    app: {{ .Values.otelCollector.deploymentName }}
+    app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
     - name: otlp-grpc
       protocol: TCP
