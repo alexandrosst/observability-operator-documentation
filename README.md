@@ -188,6 +188,7 @@ otelCollector:
   evaluationInterval: 5s
   deploymentName: otel-collector
   configMapName: otel-collector-config
+  configChecksum: ""   # SHA-256 of the ConfigMap data block — computed and filled in by the agent at generation time
   serviceName: otel-collector
   replicas: 1
   image:
@@ -297,6 +298,8 @@ spec:
     metadata:
       labels:
         app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
+      annotations:
+        checksum/config: {{ .Values.otelCollector.configChecksum }}
     spec:
       serviceAccountName: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
       containers:
