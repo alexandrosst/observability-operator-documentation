@@ -146,9 +146,12 @@ Include only keys for dependencies that are present in Chart.yaml.
 #   fullnameOverride: kube-state-metrics
 
 # network-latency:
+#   name: network-latency-agent   # determines the Kubernetes Service name: <name>-service
 #   target_hosts:
 #     - cluster: "<clusterName>"
 #       host_ip: ["<IP>"]
+#   parameters:
+#     interval: 5                 # scrape interval in seconds (integer, no 's' suffix)
 
 # fluent-bit:
 #   fullnameOverride: fluent-bit
@@ -469,6 +472,8 @@ Include only the jobs for requested signals. Paste them verbatim under `scrape_c
 ```
 
 ### `network-latency-agent` — signal: `networkLatency`
+The service name is `<network-latency.name>-service`. The scrape job regex must
+match it exactly — use the same `name` value set in the parent `values.yaml`.
 ```yaml
 - job_name: "network-latency-agent"
   kubernetes_sd_configs:
@@ -476,7 +481,7 @@ Include only the jobs for requested signals. Paste them verbatim under `scrape_c
   relabel_configs:
     - source_labels: [__meta_kubernetes_service_name]
       action: keep
-      regex: network-latency-agent-service
+      regex: <network-latency.name>-service   # e.g. network-latency-agent-service
 ```
 
 ---
