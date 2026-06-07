@@ -1,7 +1,7 @@
 otelCollector:
   clusterName: "athens_k8s_cluster"
   scrapeInterval: 8s
-  evaluationInterval: 5s
+  evaluationInterval: 8s
   exporters:
     otlp:
       host: "147.102.13.108"
@@ -16,27 +16,3 @@ otelCollector:
     registry: otel
     name: opentelemetry-collector-contrib
     tag: "0.98.0"
-  ports:
-    otlpGrpc:
-      port: 4317
-      targetPort: 4317
-    otlpHttp:
-      port: 4318
-      targetPort: 4318
-  pipelines:
-    metrics:
-      receivers:
-        - prometheus
-      processors:
-        - resource
-        - batch
-      exporters:
-        - otlp
-    logs:
-      receivers:
-        - otlp
-      processors:
-        - resource
-        - batch
-      exporters:
-        - otlp
