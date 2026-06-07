@@ -1,143 +1,64 @@
-# name: 2. Validate Observability Helm Chart
-
-# on:
-#   pull_request:
-#     branches:
-#       - main
-#     paths:
-#       - "observability_operator_chart*/**"
-#       - ".github/workflows/helm-validate.yml"
-
-# permissions:
-#   contents: read
-
-# jobs:
-#   validate-helm-chart:
-#     runs-on: ubuntu-latest
-
-#     env:
-#       RELEASE_NAME: observability-operator
-
-#     steps:
-#       - uses: actions/checkout@v4
-
-#       # Dynamically detect whichever chart folder the agent pushed
-#       - name: Detect chart folder
-#         id: detect
-#         run: |
-#           CHART_DIR=$(find . -maxdepth 1 -type d -name "observability_operator_chart*" | head -n 1)
-#           echo "Detected chart directory: $CHART_DIR"
-#           echo "chart_dir=$CHART_DIR/observability_operator" >> $GITHUB_OUTPUT
-
-#       - uses: azure/setup-helm@v4
-
-#       - name: Add Helm repositories
-#         run: |
-#           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-#           helm repo add sustainable-computing-io https://sustainable-computing-io.github.io/kepler-helm-chart
-#           helm repo add network-latency https://gitlab.com/api/v4/projects/44429468/packages/helm/stable
-#           helm repo add fluent https://fluent.github.io/helm-charts
-#           helm repo update
-
-#       - name: Update chart dependencies
-#         run: helm dependency update "${{ steps.detect.outputs.chart_dir }}"
-
-#       - name: Lint chart
-#         run: helm lint "${{ steps.detect.outputs.chart_dir }}" --strict
-
-#       - name: Render chart
-#         run: |
-#           helm template "$RELEASE_NAME" "${{ steps.detect.outputs.chart_dir }}" \
-#             --namespace observability \
-#             > rendered.yaml
-
-#       - name: Validate rendered Kubernetes manifests
-#         uses: docker://ghcr.io/yannh/kubeconform:v0.6.7-alpine
-#         with:
-#           entrypoint: /kubeconform
-#           args: "-strict -ignore-missing-schemas -summary rendered.yaml"
-name: Agent Content Pipeline
+name: 2. Validate Observability Helm Chart
 
 on:
-  push:
-    branches:
-      - feature/observability-operator-chart
-    paths-ignore:
-      - ".github/**"
+  workflow_run:
+    workflows: ["1. Dynamic Clean Feature Branch Overwrite"]
+    types:
+      - completed
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  # ── JOB 1: CLEAN AND REWRITE HISTORY ───────────────────────────────────────
-  dynamic-clean-and-overwrite:
-    if: github.actor != 'github-actions[bot]'
+  validate-helm-chart:
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    outputs:
-      # We create an output to tell the next job what folder to validate
-      changed_folder: ${{ steps.detect.outputs.folder }}
+
+    env:
+      RELEASE_NAME: observability-operator
+
     steps:
-      - name: Checkout repository (last 2 commits)
+      - name: Checkout feature branch at cleaned commit
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
-          # 🌟 CRITICAL: Use a Personal Access Token (PAT) if you want the 
-          # subsequent validation check to trigger after the force push!
-          # token: ${{ secrets.YOUR_AGENT_PAT }} 
+          ref: ${{ github.event.workflow_run.head_sha }}
 
-      - name: Detect and purge modified folder
+      # Dynamically detect whichever chart folder the agent pushed
+      - name: Detect chart folder
         id: detect
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-          PREVIOUS_COMMIT=$(git rev-parse HEAD~1)
-          CURRENT_COMMIT=$(git rev-parse HEAD)
-
-          CHANGED_FOLDER=$(git diff-tree --no-commit-id --name-only -r "$PREVIOUS_COMMIT" "$CURRENT_COMMIT" \
-            | awk -F/ '{print $1}' | uniq | head -n 1)
-
-          if [ -z "$CHANGED_FOLDER" ] || [ "$CHANGED_FOLDER" = "." ]; then
-            echo "No specific top-level folder detected. Skipping purge."
+          CHART_DIR=$(find . -maxdepth 1 -type d -name "observability_operator_chart*" | head -n 1)
+          if [ -z "$CHART_DIR" ]; then
+            echo "No observability_operator_chart* folder found. Skipping."
             exit 0
           fi
+          echo "Detected chart directory: $CHART_DIR"
+          echo "chart_dir=$CHART_DIR/observability_operator" >> $GITHUB_OUTPUT
 
-          echo "Target folder: $CHANGED_FOLDER"
-          echo "folder=$CHANGED_FOLDER" >> $GITHUB_OUTPUT
+      - uses: azure/setup-helm@v4
 
-          # Backup
-          mkdir -p /tmp/dynamic_backup
-          cp -r "$CHANGED_FOLDER"/. /tmp/dynamic_backup/
-
-          # Revert and Purge
-          git checkout "$PREVIOUS_COMMIT" -- "$CHANGED_FOLDER"/
-          git rm -rf "$CHANGED_FOLDER"/
-          rm -rf "$CHANGED_FOLDER"/
-
-          # Restore
-          mkdir -p "$CHANGED_FOLDER"
-          cp -r /tmp/dynamic_backup/. "$CHANGED_FOLDER"/
-
-          # Amend and Force Push
-          git add "$CHANGED_FOLDER"/
-          if ! git diff --staged --quiet; then
-            git commit --amend --no-edit
-            git push origin HEAD:"${{ github.ref }}" --force
-          else
-            echo "Folder is already clean. No action needed."
-          fi
-
-  # ── JOB 2: VALIDATION (Only runs AFTER cleanup finishes) ───────────────────
-  validate-chart:
-    needs: dynamic-clean-and-overwrite # 🌟 THIS ENFORCES THE SEQUENCE!
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout fresh code
-        uses: actions/checkout@v4
-
-      # Paste your exact Helm lint / Kubeconform steps here...
-      - name: Run Kubeconform
+      - name: Add Helm repositories
         run: |
-          # You can even use the output from job 1 if needed:
-          echo "Validating folder: ${{ needs.dynamic-clean-and-overwrite.outputs.changed_folder }}"
-          # Your validation commands here...
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo add sustainable-computing-io https://sustainable-computing-io.github.io/kepler-helm-chart
+          helm repo add network-latency https://gitlab.com/api/v4/projects/44429468/packages/helm/stable
+          helm repo add fluent https://fluent.github.io/helm-charts
+          helm repo update
+
+      - name: Update chart dependencies
+        run: helm dependency update "${{ steps.detect.outputs.chart_dir }}"
+
+      - name: Lint chart
+        run: helm lint "${{ steps.detect.outputs.chart_dir }}" --strict
+
+      - name: Render chart
+        run: |
+          helm template "$RELEASE_NAME" "${{ steps.detect.outputs.chart_dir }}" \
+            --namespace observability \
+            > rendered.yaml
+
+      - name: Validate rendered Kubernetes manifests
+        uses: docker://ghcr.io/yannh/kubeconform:v0.6.7-alpine
+        with:
+          entrypoint: /kubeconform
+          args: "-strict -summary rendered.yaml"
