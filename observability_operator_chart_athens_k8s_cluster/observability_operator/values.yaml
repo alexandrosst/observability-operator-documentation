@@ -1,8 +1,10 @@
 kepler:
   fullnameOverride: kepler
 
-prometheus-node-exporter:
-  fullnameOverride: node-exporter
+network-latency:
+  target_hosts:
+    - cluster: "testbed_cluster"
+      host_ip: ["147.102.13.200"]
 
 otel-collector:
   otelCollector:
