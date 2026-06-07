@@ -1,0 +1,22 @@
+prometheus-node-exporter:
+  fullnameOverride: node-exporter
+
+otel-collector:
+  otelCollector:
+    clusterName: "athens_k8s_cluster"
+    scrapeInterval: 8s
+    evaluationInterval: 8s
+    deploymentName: otel-collector
+    configMapName: otel-collector-config
+    serviceName: otel-collector
+    replicas: 1
+    image:
+      registry: otel
+      name: opentelemetry-collector-contrib
+      tag: "0.98.0"
+    exporters:
+      otlp:
+        host: "147.102.13.108"
+        port: 4318
+        tls:
+          insecure: true
