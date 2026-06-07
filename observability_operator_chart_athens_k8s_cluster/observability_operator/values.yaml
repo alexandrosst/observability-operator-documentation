@@ -1,8 +1,11 @@
+kepler:
+  fullnameOverride: kepler
+
 otel-collector:
   otelCollector:
     clusterName: "athens_k8s_cluster"
-    scrapeInterval: 8s
-    evaluationInterval: 8s
+    scrapeInterval: 20s
+    evaluationInterval: 20s
     deploymentName: otel-collector
     configMapName: otel-collector-config
     serviceName: otel-collector
@@ -17,6 +20,3 @@ otel-collector:
         port: 4318
         tls:
           insecure: true
-
-prometheus-node-exporter:
-  fullnameOverride: node-exporter
