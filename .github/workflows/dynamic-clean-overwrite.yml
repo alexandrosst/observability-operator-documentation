@@ -44,11 +44,13 @@ jobs:
           mkdir -p /tmp/dynamic_backup
           cp -r "$CHANGED_FOLDER"/. /tmp/dynamic_backup/
 
-          # 2. Revert the folder to the previous commit so Git tracks deletions cleanly
-          git checkout "$PREVIOUS_COMMIT" -- "$CHANGED_FOLDER"/
+          # 2. Revert the folder to the previous commit so Git tracks deletions cleanly.
+          # If the folder is new (not present on the previous commit), skip this step.
+          git checkout "$PREVIOUS_COMMIT" -- "$CHANGED_FOLDER"/ 2>/dev/null \
+            || echo "Folder '$CHANGED_FOLDER' is new — skipping revert step."
 
           # 3. Purge the old version entirely from Git tracking
-          git rm -rf "$CHANGED_FOLDER"/
+          git rm -rf "$CHANGED_FOLDER"/ 2>/dev/null || true
           rm -rf "$CHANGED_FOLDER"/
 
           # 4. Restore the agent's new files into the now-empty directory
