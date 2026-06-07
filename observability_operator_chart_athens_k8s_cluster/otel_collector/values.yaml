@@ -4,7 +4,7 @@ otelCollector:
   evaluationInterval: 5s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "6120fd7bf49e0f8fa3371f99a5938862b152de16a57ffe3e2d7ba8e515c19e42"
+  configChecksum: "39faf66833c9bf760c475a9310dc4ac6c0a33582b3da263114a713b23d5b7808"
   serviceName: otel-collector
   replicas: 1
   image:
