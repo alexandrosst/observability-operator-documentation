@@ -1,0 +1,4 @@
+otelCollector:
+  clusterName: "lorca-cluster-2"
+kepler:
+  fullnameOverride: kepler
