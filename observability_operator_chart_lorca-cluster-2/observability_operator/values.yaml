@@ -1,8 +1,23 @@
-kepler:
-  fullnameOverride: kepler
-
 otel-collector:
   otelCollector:
     clusterName: "lorca-cluster-2"
+    scrapeInterval: 15s
+    evaluationInterval: 15s
+    deploymentName: otel-collector
+    configMapName: otel-collector-config
+    configChecksum: ""
+    serviceName: otel-collector
+    replicas: 1
+    image:
+      registry: otel
+      name: opentelemetry-collector-contrib
+      tag: "0.98.0"
+    exporters:
+      otlp:
+        host: "147.102.13.108"
+        port: 4318
+        tls:
+          insecure: true
 
-clusterName: "lorca-cluster-2"
+kepler:
+  fullnameOverride: kepler
