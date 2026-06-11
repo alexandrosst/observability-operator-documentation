@@ -1,10 +1,10 @@
 otelCollector:
   clusterName: "lorca-cluster-2"
   scrapeInterval: 15s
-  evaluationInterval: 5s
+  evaluationInterval: 15s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "c5adba20dcadddaee07d2df1d1213113a11ad42b844ae55daea0ed7ce17c5f88"
+  configChecksum: "b5ab797be2dc6c941c0cbe4741840ac3ad1cc3e97ebedd0cc78537f418f4e557"
   serviceName: otel-collector
   replicas: 1
   image:
