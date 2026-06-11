@@ -1,1 +1,1 @@
-Observability Operator deployed to cluster lorca-cluster-2.
+Observability Operator deployed to cluster {{ .Values.otelCollector.clusterName }}.
