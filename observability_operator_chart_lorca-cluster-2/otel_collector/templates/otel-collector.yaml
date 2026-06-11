@@ -15,12 +15,12 @@ data:
             scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
             evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
           scrape_configs:
-            - job_name: "kepler"
+            - job_name: "node-exporter"
               kubernetes_sd_configs:
                 - role: "pod"
               relabel_configs:
                 - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
-                  regex: "kepler"
+                  regex: "prometheus-node-exporter"
                   action: "keep"
                 - source_labels: [__meta_kubernetes_pod_node_name]
                   target_label: node
@@ -40,9 +40,16 @@ data:
                   target_label: "__metrics_path__"
                   replacement: "/api/v1/nodes/$${1}/proxy/metrics/cadvisor"
                   action: "replace"
+      otlp:
+        protocols:
+          grpc: {}
+          http: {}
+      k8s_events:
+        auth_type: serviceAccount
+        namespaces: []
 
     processors:
-      batch:
+      batch: {}
       resource:
         attributes:
           - key: cluster
@@ -60,6 +67,14 @@ data:
       pipelines:
         metrics:
           receivers: [prometheus]
+          processors: [resource, batch]
+          exporters: [otlp]
+        logs:
+          receivers: [otlp, k8s_events]
+          processors: [resource, batch]
+          exporters: [otlp]
+        traces:
+          receivers: [otlp]
           processors: [resource, batch]
           exporters: [otlp]
 ---
@@ -111,13 +126,7 @@ spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
-    # Include otlp-grpc and otlp-http only when the otlp receiver is defined.
-    # Omit entirely if no otlp receiver.
-    # - name: otlp-grpc
-    #   protocol: TCP
-    #   port: 4317
-    #   targetPort: 4317
-    # - name: otlp-http
-    #   protocol: TCP
-    #   port: 4318
-    #   targetPort: 4318
+    - name: otlp-http
+      protocol: TCP
+      port: 4318
+      targetPort: 4318
