@@ -1,1 +1,1 @@
-Observability Operator deployed to cluster {{ index .Values "otel-collector" "otelCollector" "clusterName" }}.
+Observability Operator deployed to cluster {{ .Values.clusterName }}.
