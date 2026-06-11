@@ -15,12 +15,12 @@ data:
             scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
             evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
           scrape_configs:
-            - job_name: "node-exporter"
+            - job_name: "kepler"
               kubernetes_sd_configs:
                 - role: "pod"
               relabel_configs:
                 - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
-                  regex: "prometheus-node-exporter"
+                  regex: "kepler"
                   action: "keep"
                 - source_labels: [__meta_kubernetes_pod_node_name]
                   target_label: node
@@ -40,16 +40,22 @@ data:
                   target_label: "__metrics_path__"
                   replacement: "/api/v1/nodes/$${1}/proxy/metrics/cadvisor"
                   action: "replace"
+            - job_name: "network-latency-agent"
+              kubernetes_sd_configs:
+                - role: "service"
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_service_name]
+                  action: keep
+                  regex: network-latency-agent-service
       otlp:
         protocols:
-          grpc: {}
-          http: {}
-      k8s_events:
-        auth_type: serviceAccount
-        namespaces: []
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
 
     processors:
-      batch: {}
+      batch:
       resource:
         attributes:
           - key: cluster
@@ -66,15 +72,7 @@ data:
       extensions: [health_check]
       pipelines:
         metrics:
-          receivers: [prometheus]
-          processors: [resource, batch]
-          exporters: [otlp]
-        logs:
-          receivers: [otlp, k8s_events]
-          processors: [resource, batch]
-          exporters: [otlp]
-        traces:
-          receivers: [otlp]
+          receivers: [prometheus, otlp]
           processors: [resource, batch]
           exporters: [otlp]
 ---
@@ -105,9 +103,9 @@ spec:
               mountPath: /conf
           readinessProbe:
             httpGet:
-              path: /
-              port: 13133
-              scheme: HTTP
+                path: /
+                port: 13133
+                scheme: HTTP
             initialDelaySeconds: 1
             periodSeconds: 3
             successThreshold: 1
@@ -126,6 +124,10 @@ spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
+    - name: otlp-grpc
+      protocol: TCP
+      port: 4317
+      targetPort: 4317
     - name: otlp-http
       protocol: TCP
       port: 4318

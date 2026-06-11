@@ -1,5 +1,18 @@
+# kepler:
+kepler:
+  fullnameOverride: kepler
+
+# network-latency:
+network-latency:
+  name: network-latency-agent
+  target_hosts:
+    - cluster: "lorca-cluster-2"
+      host_ip:
+        - "147.102.13.108"
+        - "147.102.13.108"
+  parameters:
+    interval: 15
+
+# otelCollector values needed for NOTES
 otelCollector:
   clusterName: "lorca-cluster-2"
-
-prometheus-node-exporter:
-  fullnameOverride: node-exporter
