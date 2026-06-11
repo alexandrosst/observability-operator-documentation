@@ -33,7 +33,7 @@ data:
                   regex: network-latency-agent-service
 
     processors:
-      batch:
+      batch: {}
       resource:
         attributes:
           - key: cluster

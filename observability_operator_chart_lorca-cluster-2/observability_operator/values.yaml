@@ -1,27 +1,17 @@
-# kepler:
-#   fullnameOverride: kepler
+otelCollector:
+  clusterName: "lorca-cluster-2"
+
 kepler:
   fullnameOverride: kepler
 
-# network-latency:
 network-latency:
   name: network-latency-agent
   target_hosts:
     - cluster: "lorca-cluster-2"
-      host_ip: ["147.102.13.108"]
-    - cluster: "lorca-cluster-2"
-      host_ip: ["147.102.13.108"]
-    - cluster: "lorca-cluster-2"
-      host_ip: ["147.102.13.108"]
-    - cluster: "lorca-cluster-2"
-      host_ip: ["147.102.13.109"]
+      host_ip:
+        - "147.102.13.108"
+        - "147.102.13.108"
+        - "147102.13.108"
+        - "147.102.13.109"
   parameters:
     interval: 15
-
-# fluent-bit:
-#   fullnameOverride: fluent-bit
-#   <see Fluent Bit section below for full config>
-
-# otelCollector values needed for NOTES.txt
-otelCollector:
-  clusterName: "lorca-cluster-2"
