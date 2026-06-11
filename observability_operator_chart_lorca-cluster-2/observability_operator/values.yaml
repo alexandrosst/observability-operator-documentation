@@ -1,13 +1,12 @@
 kepler:
   fullnameOverride: kepler
 
+prometheus-node-exporter:
+  fullnameOverride: node-exporter
+
 network-latency:
   name: network-latency-agent
   target_hosts:
-    - cluster: "lorca-cluster-2"
-      host_ip: ["147.102.13.108"]
-    - cluster: "lorca-cluster-2"
-      host_ip: ["147.102.13.108"]
     - cluster: "lorca-cluster-2"
       host_ip: ["147.102.13.108"]
   parameters:
@@ -16,3 +15,20 @@ network-latency:
 otel-collector:
   otelCollector:
     clusterName: "lorca-cluster-2"
+    scrapeInterval: 15s
+    evaluationInterval: 15s
+    deploymentName: otel-collector
+    configMapName: otel-collector-config
+    configChecksum: ""
+    serviceName: otel-collector
+    replicas: 1
+    image:
+      registry: otel
+      name: opentelemetry-collector-contrib
+      tag: "0.98.0"
+    exporters:
+      otlp:
+        host: "147.102.13.108"
+        port: 4318
+        tls:
+          insecure: true
