@@ -1,5 +1,8 @@
-otelCollector:
-  clusterName: "staging-edge-de-03"
+# Uncomment and fill in only the blocks for included dependencies.
+
 # prometheus-node-exporter:
 prometheus-node-exporter:
   fullnameOverride: node-exporter
+
+otelCollector:
+  clusterName: "staging-edge-de-03"
