@@ -81,7 +81,7 @@ spec:
               mountPath: /conf
           readinessProbe:
             httpGet:
-              path: /
+              path: "/"
               port: 13133
               scheme: HTTP
             initialDelaySeconds: 1
@@ -101,4 +101,14 @@ metadata:
 spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
-  ports: []
+  ports:
+    # Include otlp-grpc and otlp-http only when the otlp receiver is defined.
+    # Omit entirely if no otlp receiver.
+    # - name: otlp-grpc
+    #   protocol: TCP
+    #   port: 4317
+    #   targetPort: 4317
+    # - name: otlp-http
+    #   protocol: TCP
+    #   port: 4318
+    #   targetPort: 4318
