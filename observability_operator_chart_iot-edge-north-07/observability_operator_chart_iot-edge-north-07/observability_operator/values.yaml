@@ -1,7 +1,8 @@
-# Uncomment and fill in only the blocks for included dependencies.
+otelCollector:
+  clusterName: "iot-edge-north-07"
 
 # prometheus-node-exporter:
-node-exporter:
+prometheus-node-exporter:
   fullnameOverride: node-exporter
 
 # network-latency:
@@ -9,12 +10,10 @@ network-latency:
   name: network-latency-agent
   target_hosts:
     - cluster: "iot-edge-north-07"
-      host_ip:
-        - "10.0.1.5"
-        - "10.0.1.6"
-        - "10.0.1.7"
+      host_ip: ["10.0.1.5"]
+    - cluster: "iot-edge-north-07"
+      host_ip: ["10.0.1.6"]
+    - cluster: "iot-edge-north-07"
+      host_ip: ["10.0.1.7"]
   parameters:
     interval: 10
-
-otelCollector:
-  clusterName: "iot-edge-north-07"
