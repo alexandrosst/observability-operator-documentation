@@ -1,4 +1,4 @@
-prometheus-node-exporter:
-  fullnameOverride: node-exporter
 otelCollector:
   clusterName: "staging-edge-de-03"
+prometheus-node-exporter:
+  fullnameOverride: node-exporter
