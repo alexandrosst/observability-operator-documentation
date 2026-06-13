@@ -1,0 +1,19 @@
+otelCollector:
+  clusterName: "cloud-prod-eu-1"
+  scrapeInterval: 30s
+  evaluationInterval: 5s
+  deploymentName: otel-collector
+  configMapName: otel-collector-config
+  configChecksum: "546bd66b2d970da900067305d11a50f73e8ae0f17902ecae3f7180640d76cbe0"
+  serviceName: otel-collector
+  replicas: 1
+  image:
+    registry: otel
+    name: opentelemetry-collector-contrib
+    tag: "0.98.0"
+  exporters:
+    otlp:
+      host: "otel-gateway.monitoring.svc.cluster.local"
+      port: 4318
+      tls:
+        insecure: true
