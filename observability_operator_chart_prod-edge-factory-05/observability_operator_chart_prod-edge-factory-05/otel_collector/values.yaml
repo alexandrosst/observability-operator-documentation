@@ -1,0 +1,19 @@
+otelCollector:
+  clusterName: "prod-edge-factory-05"
+  scrapeInterval: 20s
+  evaluationInterval: 5s
+  deploymentName: otel-collector
+  configMapName: otel-collector-config
+  configChecksum: "52bf48cb64f37a8141fcd01084635c45509b1ef97a9036223f8ee1dc9ee2c51f"
+  serviceName: otel-collector
+  replicas: 1
+  image:
+    registry: otel
+    name: opentelemetry-collector-contrib
+    tag: "0.98.0"
+  exporters:
+    otlp:
+      host: "factory-collector.prod"
+      port: 4318
+      tls:
+        insecure: true
