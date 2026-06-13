@@ -1,4 +1,5 @@
 otelCollector:
   clusterName: "staging-edge-de-03"
+# prometheus-node-exporter:
 prometheus-node-exporter:
   fullnameOverride: node-exporter

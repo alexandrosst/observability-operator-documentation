@@ -30,9 +30,6 @@ data:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
-      k8s_events:
-        auth_type: serviceAccount
-        namespaces: []
 
     processors:
       batch:
@@ -56,7 +53,7 @@ data:
           processors: [resource, batch]
           exporters: [otlp]
         logs:
-          receivers: [otlp, k8s_events]
+          receivers: [otlp]
           processors: [resource, batch]
           exporters: [otlp]
         traces:
