@@ -1,0 +1,16 @@
+apiVersion: v2
+name: observability_operator
+description: Observability Operator for prod-edge-factory-05
+type: application
+version: 0.1.0
+dependencies:
+  - name: otel-collector
+    alias: otelCollector
+    version: 0.1.0
+    repository: "file://../otel_collector"
+  - name: prometheus-node-exporter
+    version: 4.55.0
+    repository: "https://prometheus-community.github.io/helm-charts"
+  - name: fluent-bit
+    version: 0.57.6
+    repository: "https://fluent.github.io/helm-charts"
