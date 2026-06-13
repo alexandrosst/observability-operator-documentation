@@ -1,0 +1,19 @@
+otelCollector:
+  clusterName: "iot-edge-north-07"
+  scrapeInterval: 10s
+  evaluationInterval: 5s
+  deploymentName: otel-collector
+  configMapName: otel-collector-config
+  configChecksum: "9676c0ccbc0171341c5c7c1202952ae2f915d0f55fbb672345ac75defb9f440c"
+  serviceName: otel-collector
+  replicas: 1
+  image:
+    registry: otel
+    name: opentelemetry-collector-contrib
+    tag: "0.98.0"
+  exporters:
+    otlp:
+      host: "monitoring.corp.internal"
+      port: 4318
+      tls:
+        insecure: true
