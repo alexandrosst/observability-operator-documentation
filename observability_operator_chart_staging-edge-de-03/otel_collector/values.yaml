@@ -1,0 +1,19 @@
+otelCollector:
+  clusterName: "staging-edge-de-03"
+  scrapeInterval: 15s
+  evaluationInterval: 5s
+  deploymentName: otel-collector
+  configMapName: otel-collector-config
+  configChecksum: "ccfde36e0e8e7115de9c660ae2fcaccd55b11035fe6a3fd5cecc03dd5f0f3a7a"
+  serviceName: otel-collector
+  replicas: 1
+  image:
+    registry: otel
+    name: opentelemetry-collector-contrib
+    tag: "0.98.0"
+  exporters:
+    otlp:
+      host: "collector.infra.local"
+      port: 4318
+      tls:
+        insecure: true
