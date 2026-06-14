@@ -1,0 +1,19 @@
+otelCollector:
+  clusterName: "edge-events-only-03"
+  scrapeInterval: 30s
+  evaluationInterval: 5s
+  deploymentName: otel-collector
+  configMapName: otel-collector-config
+  configChecksum: "a1520017036d5cb457d4d559cbf7bd2e8902171e2f3b3ccaf0fa4875c48915bd"
+  serviceName: otel-collector
+  replicas: 1
+  image:
+    registry: otel
+    name: opentelemetry-collector-contrib
+    tag: "0.98.0"
+  exporters:
+    otlp:
+      host: "events-collector.monitoring.svc"
+      port: 4318
+      tls:
+        insecure: true

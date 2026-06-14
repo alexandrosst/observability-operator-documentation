@@ -1,0 +1,2 @@
+otelCollector:
+  clusterName: "edge-events-only-03"
