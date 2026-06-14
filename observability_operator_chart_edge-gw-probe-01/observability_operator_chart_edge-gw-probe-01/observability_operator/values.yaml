@@ -1,0 +1,17 @@
+# prometheus-node-exporter:
+prometheus-node-exporter:
+  fullnameOverride: node-exporter
+
+# network-latency:
+network-latency:
+  name: network-latency-agent
+  target_hosts:
+    - cluster: "edge-gw-probe-01"
+      host_ip:
+        - "10.0.1.1"
+  parameters:
+    interval: 15
+
+# otelCollector stub to expose clusterName for NOTES.txt
+otelCollector:
+  clusterName: "edge-gw-probe-01"
