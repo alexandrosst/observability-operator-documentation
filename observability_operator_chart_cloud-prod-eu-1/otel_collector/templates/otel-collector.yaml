@@ -26,7 +26,7 @@ data:
                   target_label: node
 
     processors:
-      batch: {}
+      batch:
       resource:
         attributes:
           - key: cluster
@@ -95,11 +95,13 @@ spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
-    - name: otlp-grpc
-      protocol: TCP
-      port: 4317
-      targetPort: 4317
-    - name: otlp-http
-      protocol: TCP
-      port: 4318
-      targetPort: 4318
+    # Include otlp-grpc and otlp-http only when the otlp receiver is defined.
+    # Omit entirely if no otlp receiver.
+    # - name: otlp-grpc
+    #   protocol: TCP
+    #   port: 4317
+    #   targetPort: 4317
+    # - name: otlp-http
+    #   protocol: TCP
+    #   port: 4318
+    #   targetPort: 4318
