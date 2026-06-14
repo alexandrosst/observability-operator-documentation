@@ -1,4 +1,10 @@
-otelCollector:
-  clusterName: "staging-edge-de-03"
+# kepler:
+kepler:
+  fullnameOverride: kepler
+
+# prometheus-node-exporter:
 prometheus-node-exporter:
   fullnameOverride: node-exporter
+
+otelCollector:
+  clusterName: "staging-edge-de-03"
