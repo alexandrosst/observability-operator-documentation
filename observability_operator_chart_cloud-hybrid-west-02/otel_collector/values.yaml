@@ -1,0 +1,19 @@
+otelCollector:
+  clusterName: "cloud-hybrid-west-02"
+  scrapeInterval: 10s
+  evaluationInterval: 5s
+  deploymentName: otel-collector
+  configMapName: otel-collector-config
+  configChecksum: "1f126d3fd0d237f7aeca3cd14e7d221777e6bf651727b979f24d075f31261716"
+  serviceName: otel-collector
+  replicas: 1
+  image:
+    registry: otel
+    name: opentelemetry-collector-contrib
+    tag: "0.98.0"
+  exporters:
+    otlp:
+      host: "otel.platform.internal"
+      port: 4318
+      tls:
+        insecure: true
