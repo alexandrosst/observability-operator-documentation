@@ -1,0 +1,1 @@
+Observability Operator deployed to cluster {{ .Values.otelCollector.clusterName }}.
