@@ -1,8 +1,17 @@
-# prometheus-node-exporter:
+# Uncomment and fill in only the blocks for included dependencies.
+
+# kepler:
+#   fullnameOverride: kepler
+
+otelCollector:
+  clusterName: "edge-gw-probe-01"
+
 prometheus-node-exporter:
   fullnameOverride: node-exporter
 
-# network-latency:
+# kube-state-metrics:
+#   fullnameOverride: kube-state-metrics
+
 network-latency:
   name: network-latency-agent
   target_hosts:
@@ -12,6 +21,6 @@ network-latency:
   parameters:
     interval: 15
 
-# otelCollector stub to expose clusterName for NOTES.txt
-otelCollector:
-  clusterName: "edge-gw-probe-01"
+# fluent-bit:
+#   fullnameOverride: fluent-bit
+#   <see Fluent Bit section below for full config>
