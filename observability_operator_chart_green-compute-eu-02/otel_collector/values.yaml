@@ -1,0 +1,19 @@
+otelCollector:
+  clusterName: "green-compute-eu-02"
+  scrapeInterval: 20s
+  evaluationInterval: 5s
+  deploymentName: otel-collector
+  configMapName: otel-collector-config
+  configChecksum: "c348163019945ecc9d6a991fc1c8043e0a64bd3ca7add3689c024050ae534430"
+  serviceName: otel-collector
+  replicas: 1
+  image:
+    registry: otel
+    name: opentelemetry-collector-contrib
+    tag: "0.98.0"
+  exporters:
+    otlp:
+      host: "energy-collector.infra.local"
+      port: 4318
+      tls:
+        insecure: true
