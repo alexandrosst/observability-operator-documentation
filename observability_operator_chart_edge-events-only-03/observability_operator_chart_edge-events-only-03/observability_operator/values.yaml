@@ -1,2 +1,1 @@
-otelCollector:
-  clusterName: "edge-events-only-03"
+# No external dependencies are enabled for this deployment.
