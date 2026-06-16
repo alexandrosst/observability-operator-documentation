@@ -1,26 +1,10 @@
-# Uncomment and fill in only the blocks for included dependencies.
-
-# kepler:
-#   fullnameOverride: kepler
-
-otelCollector:
-  clusterName: "edge-gw-probe-01"
-
 prometheus-node-exporter:
   fullnameOverride: node-exporter
-
-# kube-state-metrics:
-#   fullnameOverride: kube-state-metrics
 
 network-latency:
   name: network-latency-agent
   target_hosts:
     - cluster: "edge-gw-probe-01"
-      host_ip:
-        - "10.0.1.1"
+      host_ip: ["10.0.1.1"]
   parameters:
     interval: 15
-
-# fluent-bit:
-#   fullnameOverride: fluent-bit
-#   <see Fluent Bit section below for full config>
