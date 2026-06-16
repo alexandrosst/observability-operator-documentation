@@ -1,0 +1,21 @@
+# Uncomment and fill in only the blocks for included dependencies.
+
+# prometheus-node-exporter:
+nodeResources:
+  fullnameOverride: node-exporter
+
+# network-latency:
+network-latency:
+  name: network-latency-agent   # determines the Kubernetes Service name: <name>-service
+  target_hosts:
+    - cluster: "multi-probe-datacenter-01"
+      host_ip:
+        - "10.0.0.1"
+        - "10.0.0.2"
+        - "10.0.0.3"
+        - "10.0.0.4"
+        - "10.0.0.5"
+        - "10.0.0.6"
+        - "10.0.0.7"
+  parameters:
+    interval: 10
