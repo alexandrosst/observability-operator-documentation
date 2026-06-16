@@ -7,13 +7,18 @@ network-latency:
   name: network-latency-agent
   target_hosts:
     - cluster: "multi-probe-datacenter-01"
-      host_ip:
-        - "10.0.0.1"
-        - "10.0.0.2"
-        - "10.0.0.3"
-        - "10.0.0.4"
-        - "10.0.0.5"
-        - "10.0.0.6"
-        - "10.0.0.7"
+      host_ip: ["10.0.0.1"]
+    - cluster: "multi-probe-datacenter-01"
+      host_ip: ["10.0.0.2"]
+    - cluster: "multi-probe-datacenter-01"
+      host_ip: ["10.0.0.3"]
+    - cluster: "multi-probe-datacenter-01"
+      host_ip: ["10.0.0.4"]
+    - cluster: "multi-probe-datacenter-01"
+      host_ip: ["10.0.0.5"]
+    - cluster: "multi-probe-datacenter-01"
+      host_ip: ["10.0.0.6"]
+    - cluster: "multi-probe-datacenter-01"
+      host_ip: ["10.0.0.7"]
   parameters:
     interval: 10
