@@ -8,5 +8,5 @@ dependencies:
     version: 0.1.0
     repository: "file://../otel_collector"
   - name: kepler
-    version: 0.6.1
+    version: "0.6.1"
     repository: "https://sustainable-computing-io.github.io/kepler-helm-chart"
