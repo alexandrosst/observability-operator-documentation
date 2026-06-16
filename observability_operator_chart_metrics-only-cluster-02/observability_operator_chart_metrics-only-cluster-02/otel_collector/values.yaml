@@ -1,0 +1,19 @@
+otelCollector:
+  clusterName: "metrics-only-cluster-02"
+  scrapeInterval: 15s
+  evaluationInterval: 5s
+  deploymentName: otel-collector
+  configMapName: otel-collector-config
+  configChecksum: "deb5c5edbbd4ade3cbaa1438515e09a741b1a7a3c4a14b4e0d851f9b98f34c85"
+  serviceName: otel-collector
+  replicas: 1
+  image:
+    registry: otel
+    name: opentelemetry-collector-contrib
+    tag: "0.98.0"
+  exporters:
+    otlp:
+      host: "metrics-collector.infra.svc"
+      port: 4318
+      tls:
+        insecure: true

@@ -1,0 +1,17 @@
+# kepler:
+#   fullnameOverride: kepler
+
+# prometheus-node-exporter:
+#   fullnameOverride: node-exporter
+
+# kube-state-metrics:
+#   fullnameOverride: kube-state-metrics
+
+kepler:
+  fullnameOverride: kepler
+
+prometheus-node-exporter:
+  fullnameOverride: node-exporter
+
+kube-state-metrics:
+  fullnameOverride: kube-state-metrics
