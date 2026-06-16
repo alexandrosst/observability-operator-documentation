@@ -1,22 +1,4 @@
-# Uncomment and fill in only the blocks for included dependencies.
-
-# kepler:
-#   fullnameOverride: kepler
-
-# prometheus-node-exporter:
-#   fullnameOverride: node-exporter
-
-# kube-state-metrics:
-#   fullnameOverride: kube-state-metrics
-
-# network-latency:
-#   name: network-latency-agent   # determines the Kubernetes Service name: <name>-service
-#   target_hosts:
-#     - cluster: "<clusterName>"
-#       host_ip: ["<IP>"]
-#   parameters:
-#     interval: 5                 # scrape interval in seconds (integer, no 's' suffix)
-
+# Fluent Bit configuration for systemLogs
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
@@ -28,7 +10,7 @@ fluent-bit:
       mountPath: /run/systemd/journal
       readOnly: true
   config:
-    inputs: |-
+    inputs: |
       [INPUT]
           Name           tail
           Tag            k3s.*
@@ -42,7 +24,7 @@ fluent-bit:
           Tag            node.system.*
           Path           /run/systemd/journal
           Systemd_Filter _SYSTEMD_UNIT=containerd
-    filters: |-
+    filters: |
       [FILTER]
           Name          modify
           Match         k3s.*
@@ -58,7 +40,7 @@ fluent-bit:
           Match         node.system.*
           Add           log_source containerd
           Add           service_name container-runtime
-    outputs: |-
+    outputs: |
       [OUTPUT]
           Name            opentelemetry
           Match           *
