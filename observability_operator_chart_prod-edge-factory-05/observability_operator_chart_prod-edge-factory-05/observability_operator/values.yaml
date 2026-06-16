@@ -1,16 +1,12 @@
-# kepler:
 kepler:
   fullnameOverride: kepler
 
-# prometheus-node-exporter:
 prometheus-node-exporter:
   fullnameOverride: node-exporter
 
-# kube-state-metrics:
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
-# fluent-bit:
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
@@ -56,7 +52,7 @@ fluent-bit:
       [OUTPUT]
           Name            opentelemetry
           Match           *
-          Host            {{ .Values.otelCollector.serviceName }}
+          Host            otel-collector
           Port            4318
           Logs_URI        /v1/logs
           Tls             Off
@@ -65,5 +61,3 @@ fluent-bit:
           Logs_attributes_metadata_key attributes
           Logs_resource_metadata_key resource
           Logs_instrumentation_scope_metadata_key scope
-  otelCollector:
-    serviceName: otel-collector
