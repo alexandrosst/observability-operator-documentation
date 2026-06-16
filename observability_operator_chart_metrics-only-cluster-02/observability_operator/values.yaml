@@ -1,6 +1,3 @@
-otelCollector:
-  clusterName: "metrics-only-cluster-02"
-
 kepler:
   fullnameOverride: kepler
 
