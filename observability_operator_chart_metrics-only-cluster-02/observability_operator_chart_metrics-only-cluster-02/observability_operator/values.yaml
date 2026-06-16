@@ -1,11 +1,4 @@
-# kepler:
-#   fullnameOverride: kepler
-
-# prometheus-node-exporter:
-#   fullnameOverride: node-exporter
-
-# kube-state-metrics:
-#   fullnameOverride: kube-state-metrics
+# Included dependencies values
 
 kepler:
   fullnameOverride: kepler
