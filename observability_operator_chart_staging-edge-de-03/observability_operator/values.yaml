@@ -1,3 +1,5 @@
+# Uncomment and fill in only the blocks for included dependencies.
+
 # kepler:
 kepler:
   fullnameOverride: kepler
@@ -5,6 +7,3 @@ kepler:
 # prometheus-node-exporter:
 prometheus-node-exporter:
   fullnameOverride: node-exporter
-
-otelCollector:
-  clusterName: "staging-edge-de-03"
