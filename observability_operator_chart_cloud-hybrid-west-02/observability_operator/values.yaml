@@ -1,39 +1,29 @@
 # kepler:
-#   fullnameOverride: kepler
 kepler:
   fullnameOverride: kepler
 
 # prometheus-node-exporter:
-#   fullnameOverride: node-exporter
 prometheus-node-exporter:
   fullnameOverride: node-exporter
 
 # kube-state-metrics:
-#   fullnameOverride: kube-state-metrics
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
 # network-latency:
-#   name: network-latency-agent
-#   target_hosts:
-#     - cluster: "<clusterName>"
-#       host_ip: ["<IP>"]
-#   parameters:
-#     interval: <seconds>
 network-latency:
   name: network-latency-agent
   target_hosts:
     - cluster: "cloud-hybrid-west-02"
-      host_ip:
-        - "10.0.0.5"
-        - "10.0.0.12"
-        - "10.0.0.20"
+      host_ip: ["10.0.0.5"]
+    - cluster: "cloud-hybrid-west-02"
+      host_ip: ["10.0.0.12"]
+    - cluster: "cloud-hybrid-west-02"
+      host_ip: ["10.0.0.20"]
   parameters:
     interval: 10
 
 # fluent-bit:
-#   fullnameOverride: fluent-bit
-#   <see Fluent Bit section below for full config>
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
@@ -88,7 +78,4 @@ fluent-bit:
           Logs_attributes_metadata_key attributes
           Logs_resource_metadata_key resource
           Logs_instrumentation_scope_metadata_key scope
-
-# Add otelCollector block to expose cluster name for NOTES.txt
-otelCollector:
-  clusterName: "cloud-hybrid-west-02"
+          Logs_instrumentation_scope_metadata_key scope
