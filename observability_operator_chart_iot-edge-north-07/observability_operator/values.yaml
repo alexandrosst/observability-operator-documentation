@@ -1,14 +1,11 @@
 # kepler:
-kepler:
-  fullnameOverride: kepler
+#   fullnameOverride: kepler
 
 # prometheus-node-exporter:
-prometheus-node-exporter:
-  fullnameOverride: node-exporter
+#   fullnameOverride: node-exporter
 
 # kube-state-metrics:
-kube-state-metrics:
-  fullnameOverride: kube-state-metrics
+#   fullnameOverride: kube-state-metrics
 
 # network-latency:
 network-latency:
@@ -41,7 +38,7 @@ fluent-bit:
       mountPath: /run/systemd/journal
       readOnly: true
   config:
-    inputs: |-
+    inputs: |
       [INPUT]
           Name           tail
           Tag            k3s.*
@@ -55,7 +52,7 @@ fluent-bit:
           Tag            node.system.*
           Path           /run/systemd/journal
           Systemd_Filter _SYSTEMD_UNIT=containerd
-    filters: |-
+    filters: |
       [FILTER]
           Name          modify
           Match         k3s.*
@@ -71,7 +68,7 @@ fluent-bit:
           Match         node.system.*
           Add           log_source containerd
           Add           service_name container-runtime
-    outputs: |-
+    outputs: |
       [OUTPUT]
           Name            opentelemetry
           Match           *
@@ -83,6 +80,4 @@ fluent-bit:
           Logs_body_key_attributes true
           Logs_attributes_metadata_key attributes
           Logs_resource_metadata_key resource
-          Logs_instrumentation_scope_metadata_key scope
-          Logs_instrumentation_scope_metadata_key scope
           Logs_instrumentation_scope_metadata_key scope
