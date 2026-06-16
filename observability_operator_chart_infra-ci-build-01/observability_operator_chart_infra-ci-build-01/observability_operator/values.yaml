@@ -1,5 +1,4 @@
-otelCollector:
-  clusterName: "infra-ci-build-01"
+# Fluent Bit configuration for systemLogs
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
