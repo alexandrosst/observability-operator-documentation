@@ -84,6 +84,8 @@ networkLatency:
 
 **RBAC:** add `nodes/proxy` to ClusterRole when `containerResources` or `kubelet` is requested.
 
+**Note:** `systemLogs` requires the `otlp` receiver (HTTP protocol, port 4318) in the OTel collector so Fluent Bit can deliver logs. Include it whenever `systemLogs: true`, even if no other OTLP signal is requested.
+
 ---
 
 ## 4. Helm Dependency Versions
@@ -240,7 +242,7 @@ data:
       #     scrape_configs:
       #       <paste only the scrape jobs for requested signals — see section 6>
 
-      # otlp: include if applicationMetrics, applicationLogs, or traces requested
+      # otlp: include if applicationMetrics, applicationLogs, traces, or systemLogs requested
       # otlp:
       #   protocols:
       #     grpc:
@@ -536,7 +538,7 @@ fluent-bit:
       [OUTPUT]
           Name            opentelemetry
           Match           *
-          Host            {{ .Values.otelCollector.serviceName }}
+          Host            otel-collector
           Port            4318
           Logs_URI        /v1/logs
           Tls             Off
