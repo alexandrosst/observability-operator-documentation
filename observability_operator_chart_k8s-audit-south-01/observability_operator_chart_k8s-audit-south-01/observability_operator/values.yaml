@@ -1,10 +1,8 @@
-# Uncomment and fill in only the blocks for included dependencies.
-
-# kube-state-metrics:
+# k8s State Metrics
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
-# fluent-bit:
+# Fluent Bit configuration for systemLogs
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
@@ -59,7 +57,3 @@ fluent-bit:
           Logs_attributes_metadata_key attributes
           Logs_resource_metadata_key resource
           Logs_instrumentation_scope_metadata_key scope
-
-# Add otelCollector reference for fluent-bit config
-otelCollector:
-  serviceName: otel-collector
