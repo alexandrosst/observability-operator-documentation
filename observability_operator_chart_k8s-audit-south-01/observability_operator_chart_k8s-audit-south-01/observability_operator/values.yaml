@@ -1,8 +1,6 @@
-# k8s State Metrics
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
-# Fluent Bit configuration for systemLogs
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
