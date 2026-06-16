@@ -1,5 +1,2 @@
-otelCollector:
-  clusterName: "cloud-prod-eu-1"
-# prometheus-node-exporter
 prometheus-node-exporter:
   fullnameOverride: node-exporter
