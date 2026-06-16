@@ -1,5 +1,5 @@
-kube-state-metrics:
-  fullnameOverride: kube-state-metrics
+# kube-state-metrics:
+#   fullnameOverride: kube-state-metrics
 
 fluent-bit:
   fullnameOverride: fluent-bit
@@ -12,7 +12,7 @@ fluent-bit:
       mountPath: /run/systemd/journal
       readOnly: true
   config:
-    inputs: |
+    inputs: |-
       [INPUT]
           Name           tail
           Tag            k3s.*
@@ -26,7 +26,7 @@ fluent-bit:
           Tag            node.system.*
           Path           /run/systemd/journal
           Systemd_Filter _SYSTEMD_UNIT=containerd
-    filters: |
+    filters: |-
       [FILTER]
           Name          modify
           Match         k3s.*
@@ -42,7 +42,7 @@ fluent-bit:
           Match         node.system.*
           Add           log_source containerd
           Add           service_name container-runtime
-    outputs: |
+    outputs: |-
       [OUTPUT]
           Name            opentelemetry
           Match           *
