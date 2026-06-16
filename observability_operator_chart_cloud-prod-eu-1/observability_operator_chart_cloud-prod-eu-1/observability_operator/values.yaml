@@ -1,9 +1,5 @@
-# Uncomment and fill in only the blocks for included dependencies.
-
-prometheus-node-exporter:
-  fullnameOverride: node-exporter
-
 otelCollector:
   clusterName: "cloud-prod-eu-1"
-
-# No other dependencies.
+# prometheus-node-exporter:
+prometheus-node-exporter:
+  fullnameOverride: node-exporter
