@@ -163,7 +163,7 @@ Include only keys for dependencies that are present in Chart.yaml.
 ### `observability_operator/templates/NOTES.txt`
 
 ```
-Observability Operator deployed to cluster {{ .Values.otelCollector.clusterName }}.
+Observability Operator deployed successfully.
 ```
 
 ---
