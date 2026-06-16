@@ -1,5 +1,5 @@
-otelCollector:
-  clusterName: "cloud-prod-eu-1"
+# kepler:
+#   fullnameOverride: kepler
 
 prometheus-node-exporter:
   fullnameOverride: node-exporter
