@@ -31,12 +31,13 @@ data:
                 - source_labels: [__meta_kubernetes_service_name]
                   action: "keep"
                   regex: network-latency-agent-service
+
       k8s_events:
         auth_type: serviceAccount
         namespaces: []
 
     processors:
-      batch:
+      batch: {}
       resource:
         attributes:
           - key: cluster
