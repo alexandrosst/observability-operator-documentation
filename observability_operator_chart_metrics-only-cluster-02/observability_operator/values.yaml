@@ -1,8 +1,13 @@
+# Uncomment and fill in only the blocks for included dependencies.
+
+# kepler:
 kepler:
   fullnameOverride: kepler
 
+# prometheus-node-exporter:
 prometheus-node-exporter:
   fullnameOverride: node-exporter
 
+# kube-state-metrics:
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
