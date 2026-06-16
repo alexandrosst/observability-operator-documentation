@@ -1,0 +1,12 @@
+apiVersion: v2
+name: observability_operator
+description: Observability Operator for edge-campus-pt-01
+type: application
+version: 0.1.0
+dependencies:
+  - name: otel-collector
+    version: 0.1.0
+    repository: "file://../otel_collector"
+  - name: prometheus-node-exporter
+    version: 4.55.0
+    repository: "https://prometheus-community.github.io/helm-charts"
