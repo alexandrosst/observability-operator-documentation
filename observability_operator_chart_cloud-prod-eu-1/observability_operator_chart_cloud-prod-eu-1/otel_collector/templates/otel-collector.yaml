@@ -94,4 +94,5 @@ metadata:
 spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
-  ports: []
+  ports:
+    # Omit OTLP ports because receiver not defined
