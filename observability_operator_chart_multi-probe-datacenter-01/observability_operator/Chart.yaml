@@ -8,8 +8,8 @@ dependencies:
     version: 0.1.0
     repository: "file://../otel_collector"
   - name: prometheus-node-exporter
-    version: 4.55.0
+    version: "4.55.0"
     repository: "https://prometheus-community.github.io/helm-charts"
   - name: network-latency
-    version: 0.1.0
+    version: "0.1.0"
     repository: "https://gitlab.com/api/v4/projects/44429468/packages/helm/stable"
