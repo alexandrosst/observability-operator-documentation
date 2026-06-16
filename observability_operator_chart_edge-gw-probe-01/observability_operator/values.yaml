@@ -1,0 +1,22 @@
+# prometheus-node-exporter:
+#   fullnameOverride: node-exporter
+
+# network-latency:
+#   name: network-latency-agent   # determines the Kubernetes Service name: <name>-service
+#   target_hosts:
+#     - cluster: "<clusterName>"
+#       host_ip: ["<IP>"]
+#   parameters:
+#     interval: 5
+
+prometheus-node-exporter:
+  fullnameOverride: node-exporter
+
+network-latency:
+  name: network-latency-agent
+  target_hosts:
+    - cluster: "edge-gw-probe-01"
+      host_ip:
+        - "10.0.1.1"
+  parameters:
+    interval: 15
