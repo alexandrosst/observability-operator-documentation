@@ -1,0 +1,19 @@
+otelCollector:
+  clusterName: "deep-obs-cluster-07"
+  scrapeInterval: 5s
+  evaluationInterval: 5s
+  deploymentName: otel-collector
+  configMapName: otel-collector-config
+  configChecksum: "ee5d589dca17550eaf58c8a02fb3800b20751c5347e73fa608fad57ab4190e1c"
+  serviceName: otel-collector
+  replicas: 1
+  image:
+    registry: otel
+    name: opentelemetry-collector-contrib
+    tag: "0.98.0"
+  exporters:
+    otlp:
+      host: "full-collector.ops.svc"
+      port: 4318
+      tls:
+        insecure: true
