@@ -1,0 +1,19 @@
+otelCollector:
+  clusterName: "multi-probe-datacenter-01"
+  scrapeInterval: 10s
+  evaluationInterval: 5s
+  deploymentName: otel-collector
+  configMapName: otel-collector-config
+  configChecksum: "65b24335b4906158cf34cdfb0aa4ecaa74eae7cb8d504ac6fd48eb706fd8ff14"
+  serviceName: otel-collector
+  replicas: 1
+  image:
+    registry: otel
+    name: opentelemetry-collector-contrib
+    tag: "0.98.0"
+  exporters:
+    otlp:
+      host: "otel-collector.dc01.svc"
+      port: 4318
+      tls:
+        insecure: true
