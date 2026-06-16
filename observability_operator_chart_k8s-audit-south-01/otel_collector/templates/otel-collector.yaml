@@ -2,23 +2,13 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Values.otelCollector.configMapName }}
-
 data:
-  otel-agent-config.yaml: |-
+  otel-agent-config.yaml: |
     extensions:
       health_check:
         endpoint: 0.0.0.0:13133
 
     receivers:
-      otlp:
-        protocols:
-          grpc:
-            endpoint: 0.0.0.0:4317
-          http:
-            endpoint: 0.0.0.0:4318
-      k8s_events:
-        auth_type: serviceAccount
-        namespaces: []
       prometheus:
         config:
           global:
@@ -32,6 +22,15 @@ data:
                 - source_labels: [__meta_kubernetes_service_name]
                   action: keep
                   regex: kube-state-metrics
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+      k8s_events:
+        auth_type: serviceAccount
+        namespaces: []
 
     processors:
       batch:
@@ -50,12 +49,12 @@ data:
     service:
       extensions: [health_check]
       pipelines:
-        logs:
-          receivers: [otlp, k8s_events]
-          processors: [resource, batch]
-          exporters: [otlp]
         metrics:
           receivers: [prometheus]
+          processors: [resource, batch]
+          exporters: [otlp]
+        logs:
+          receivers: [otlp, k8s_events]
           processors: [resource, batch]
           exporters: [otlp]
 ---
