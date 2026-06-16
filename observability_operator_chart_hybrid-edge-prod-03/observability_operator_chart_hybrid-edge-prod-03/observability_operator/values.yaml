@@ -1,16 +1,16 @@
-# kepler configuration
+# kepler:
 kepler:
   fullnameOverride: kepler
 
-# prometheus-node-exporter configuration
+# prometheus-node-exporter:
 prometheus-node-exporter:
   fullnameOverride: node-exporter
 
-# kube-state-metrics configuration
+# kube-state-metrics:
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
-# network-latency configuration
+# network-latency:
 network-latency:
   name: network-latency-agent
   target_hosts:
@@ -21,11 +21,9 @@ network-latency:
   parameters:
     interval: 10
 
-# fluent-bit configuration
+# fluent-bit:
 fluent-bit:
   fullnameOverride: fluent-bit
-  otelCollector:
-    serviceName: otel-collector
   extraVolumes:
     - name: systemd-journal
       hostPath:
@@ -69,7 +67,7 @@ fluent-bit:
       [OUTPUT]
           Name            opentelemetry
           Match           *
-          Host            {{ .Values.otelCollector.serviceName }}
+          Host            otel-collector
           Port            4318
           Logs_URI        /v1/logs
           Tls             Off
@@ -78,9 +76,3 @@ fluent-bit:
           Logs_attributes_metadata_key attributes
           Logs_resource_metadata_key resource
           Logs_instrumentation_scope_metadata_key scope
-          Logs_instrumentation_scope_metadata_key scope
-
-# otelCollector values for parent chart
-otelCollector:
-  clusterName: "hybrid-edge-prod-03"
-  serviceName: otel-collector
