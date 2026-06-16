@@ -9,12 +9,18 @@ data:
         endpoint: 0.0.0.0:13133
 
     receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
       k8s_events:
         auth_type: serviceAccount
         namespaces: []
 
     processors:
-      batch: {}
+      batch:
       resource:
         attributes:
           - key: cluster
@@ -30,8 +36,16 @@ data:
     service:
       extensions: [health_check]
       pipelines:
+        metrics:
+          receivers: [otlp]
+          processors: [resource, batch]
+          exporters: [otlp]
         logs:
-          receivers: [k8s_events]
+          receivers: [otlp, k8s_events]
+          processors: [resource, batch]
+          exporters: [otlp]
+        traces:
+          receivers: [otlp]
           processors: [resource, batch]
           exporters: [otlp]
 ---
@@ -83,4 +97,11 @@ spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
-    # No otlp ports because otlp receiver not defined
+    - name: otlp-grpc
+      protocol: TCP
+      port: 4317
+      targetPort: 4317
+    - name: otlp-http
+      protocol: TCP
+      port: 4318
+      targetPort: 4318
