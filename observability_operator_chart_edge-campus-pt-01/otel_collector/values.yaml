@@ -1,0 +1,19 @@
+otelCollector:
+  clusterName: "edge-campus-pt-01"
+  scrapeInterval: 20s
+  evaluationInterval: 5s
+  deploymentName: otel-collector
+  configMapName: otel-collector-config
+  configChecksum: "8c6d1ac9aa22cb81baeddd347d8b2d02621b13c203725be154e97505745becfc"
+  serviceName: otel-collector
+  replicas: 1
+  image:
+    registry: otel
+    name: opentelemetry-collector-contrib
+    tag: "0.98.0"
+  exporters:
+    otlp:
+      host: "otel-collector.monitoring.svc.cluster.local"
+      port: 4318
+      tls:
+        insecure: true
