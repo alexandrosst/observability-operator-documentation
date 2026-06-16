@@ -67,7 +67,7 @@ data:
         namespaces: []
 
     processors:
-      batch: {}
+      batch:
       resource:
         attributes:
           - key: cluster
