@@ -1,0 +1,6 @@
+otelCollector:
+  clusterName: "trace-only-staging-01"
+  deploymentName: otel-collector
+  serviceName: otel-collector
+  configMapName: otel-collector-config
+  configChecksum: ""
