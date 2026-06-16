@@ -5,7 +5,6 @@ type: application
 version: 0.1.0
 dependencies:
   - name: otel-collector
-    alias: otelCollector
     version: 0.1.0
     repository: "file://../otel_collector"
   - name: prometheus-node-exporter
