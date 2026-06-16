@@ -1,0 +1,19 @@
+otelCollector:
+  clusterName: "dev-lab-02"
+  scrapeInterval: 5s
+  evaluationInterval: 5s
+  deploymentName: otel-collector
+  configMapName: otel-collector-config
+  configChecksum: "01e86a756041f740aab9bf46067035e22dc72a2f31ae8682dae3c35f52a96692"
+  serviceName: otel-collector
+  replicas: 1
+  image:
+    registry: otel
+    name: opentelemetry-collector-contrib
+    tag: "0.98.0"
+  exporters:
+    otlp:
+      host: "telemetry.dev.internal"
+      port: 4318
+      tls:
+        insecure: true
