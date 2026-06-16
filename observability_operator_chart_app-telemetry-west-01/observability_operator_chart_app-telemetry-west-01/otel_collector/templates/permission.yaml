@@ -12,7 +12,10 @@ rules:
   - apiGroups: [""]
     resources: [pods, nodes, services, endpoints, events]
     verbs: [get, list, watch]
-  # No nodes/proxy needed as containerResources and kubelet are false
+  # Uncomment when containerResources or kubelet is requested:
+  # - apiGroups: [""]
+  #   resources: [nodes/proxy]
+  #   verbs: [get, list, watch]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding

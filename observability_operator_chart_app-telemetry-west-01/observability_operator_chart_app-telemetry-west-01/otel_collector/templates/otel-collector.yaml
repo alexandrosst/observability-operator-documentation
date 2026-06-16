@@ -17,7 +17,7 @@ data:
             endpoint: 0.0.0.0:4318
 
     processors:
-      batch: {}
+      batch:
       resource:
         attributes:
           - key: cluster

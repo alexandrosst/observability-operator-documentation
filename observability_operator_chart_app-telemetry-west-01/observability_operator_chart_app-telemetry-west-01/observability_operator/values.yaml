@@ -1,2 +1,1 @@
-otelCollector:
-  clusterName: "app-telemetry-west-01"
+# No external dependencies
