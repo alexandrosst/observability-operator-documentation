@@ -1,10 +1,10 @@
 otelCollector:
   clusterName: "iot-edge-north-07"
-  scrapeInterval: 10s
+  scrapeInterval: 5s
   evaluationInterval: 5s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "1ab6bd6e055763be15ed4e26933c72da15839e25aafeb8e534f6f4c4c45edc75"
+  configChecksum: "1ac837adde7b219b92e4ef02597488325d478090d90003471ec1c93e6948ad76"
   serviceName: otel-collector
   replicas: 1
   image:
