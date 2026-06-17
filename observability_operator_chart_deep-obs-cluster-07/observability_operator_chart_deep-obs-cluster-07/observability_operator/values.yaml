@@ -1,16 +1,12 @@
-# kepler:
 kepler:
   fullnameOverride: kepler
 
-# prometheus-node-exporter:
 prometheus-node-exporter:
   fullnameOverride: node-exporter
 
-# kube-state-metrics:
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
-# network-latency:
 network-latency:
   name: network-latency-agent
   target_hosts:
@@ -22,7 +18,6 @@ network-latency:
   parameters:
     interval: 5
 
-# fluent-bit:
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
@@ -74,6 +69,6 @@ fluent-bit:
           Tls             Off
           Logs_body_key   log
           Logs_body_key_attributes true
-          Logs_attributes_metadata_key attributes
+          Logs_attribute_metadata_key attributes
           Logs_resource_metadata_key resource
           Logs_instrumentation_scope_metadata_key scope

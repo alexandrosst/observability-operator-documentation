@@ -109,7 +109,7 @@ data:
       extensions: [health_check]
       pipelines:
         metrics:
-          receivers: [prometheus]
+          receivers: [prometheus, otlp]
           processors: [resource, batch]
           exporters: [otlp]
         logs:
