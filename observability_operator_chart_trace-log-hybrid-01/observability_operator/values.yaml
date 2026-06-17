@@ -1,4 +1,6 @@
-fluent-bit:
+# Uncomment and fill in only the blocks for included dependencies.
+
+# fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
     - name: systemd-journal
@@ -52,3 +54,4 @@ fluent-bit:
           Logs_attributes_metadata_key attributes
           Logs_resource_metadata_key resource
           Logs_instrumentation_scope_metadata_key scope
+          Logs_in_body    true
