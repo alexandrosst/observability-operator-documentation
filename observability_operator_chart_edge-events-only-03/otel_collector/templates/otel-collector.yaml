@@ -9,7 +9,9 @@ data:
         endpoint: 0.0.0.0:13133
 
     receivers:
-      k8s_events: {}
+      k8s_events:
+        auth_type: serviceAccount
+        namespaces: []
 
     processors:
       batch: {}
@@ -81,4 +83,4 @@ spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
-    # No OTLP ports defined because OTLP receiver is not enabled.
+    # No otlp ports because otlp receiver not defined
