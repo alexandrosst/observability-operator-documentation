@@ -17,10 +17,20 @@ network-latency:
     - cluster: "iot-edge-north-07"
       host_ip:
         - "192.168.10.5"
+    - cluster: "iot-edge-north-07"
+      host_ip:
         - "192.168.10.20"
+    - cluster: "iot-edge-north-07"
+      host_ip:
         - "192.168.10.50"
+    - cluster: "iot-edge-north-07"
+      host_ip:
         - "10.10.0.100"
+    - cluster: "iot-edge-north-07"
+      host_ip:
         - "10.10.0.101"
+    - cluster: "iot-edge-north-07"
+      host_ip:
         - "10.10.0.50"
   parameters:
     interval: 5
@@ -37,7 +47,7 @@ fluent-bit:
       mountPath: /run/systemd/journal
       readOnly: true
   config:
-    inputs: |-
+    inputs: |
       [INPUT]
           Name           tail
           Tag            k3s.*
@@ -51,7 +61,7 @@ fluent-bit:
           Tag            node.system.*
           Path           /run/systemd/journal
           Systemd_Filter _SYSTEMD_UNIT=containerd
-    filters: |-
+    filters: |
       [FILTER]
           Name          modify
           Match         k3s.*
@@ -67,7 +77,7 @@ fluent-bit:
           Match         node.system.*
           Add           log_source containerd
           Add           service_name container-runtime
-    outputs: |-
+    outputs: |
       [OUTPUT]
           Name            opentelemetry
           Match           *
