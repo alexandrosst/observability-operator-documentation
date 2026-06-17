@@ -52,4 +52,3 @@ fluent-bit:
           Logs_attributes_metadata_key attributes
           Logs_resource_metadata_key resource
           Logs_instrumentation_scope_metadata_key scope
-          Logs_instrumentation_scope_metadata_key scope
