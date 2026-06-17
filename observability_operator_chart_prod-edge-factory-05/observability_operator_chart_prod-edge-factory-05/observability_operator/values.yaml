@@ -1,16 +1,14 @@
-# kepler configuration
+# Uncomment and fill in only the blocks for included dependencies.
+
 kepler:
   fullnameOverride: kepler
 
-# prometheus-node-exporter configuration
 prometheus-node-exporter:
   fullnameOverride: node-exporter
 
-# kube-state-metrics configuration
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
-# fluent-bit configuration
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
