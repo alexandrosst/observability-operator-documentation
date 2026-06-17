@@ -1,16 +1,12 @@
-# kepler:
 kepler:
   fullnameOverride: kepler
 
-# prometheus-node-exporter:
 prometheus-node-exporter:
   fullnameOverride: node-exporter
 
-# kube-state-metrics:
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
-# network-latency:
 network-latency:
   name: network-latency-agent
   target_hosts:
@@ -22,7 +18,6 @@ network-latency:
   parameters:
     interval: 10
 
-# fluent-bit:
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
