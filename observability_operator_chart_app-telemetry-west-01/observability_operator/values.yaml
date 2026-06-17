@@ -1,1 +1,22 @@
-{}
+# Uncomment and fill in only the blocks for included dependencies.
+
+# kepler:
+#   fullnameOverride: kepler
+
+# prometheus-node-exporter:
+#   fullnameOverride: node-exporter
+
+# kube-state-metrics:
+#   fullnameOverride: kube-state-metrics
+
+# network-latency:
+#   name: network-latency-agent   # determines the Kubernetes Service name: <name>-service
+#   target_hosts:
+#     - cluster: "<clusterName>"
+#     host_ip: ["<IP>"]
+#   parameters:
+#     interval: 5                 # scrape interval in seconds (integer, no 's' suffix)
+
+# fluent-bit:
+#   fullnameOverride: fluent-bit
+#   <see Fluent Bit section below for full config>
