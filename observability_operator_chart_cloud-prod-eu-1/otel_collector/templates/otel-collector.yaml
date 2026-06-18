@@ -94,4 +94,8 @@ metadata:
 spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
-  ports: []
+  ports:
+    - name: health
+      protocol: TCP
+      port: 13133
+      targetPort: 13133
