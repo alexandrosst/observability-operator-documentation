@@ -11,10 +11,11 @@ network-latency:
   name: network-latency-agent
   target_hosts:
     - cluster: "cloud-hybrid-west-02"
-      host_ip:
-        - "10.0.0.5"
-        - "10.0.0.12"
-        - "10.0.0.20"
+      host_ip: ["10.0.0.5"]
+    - cluster: "cloud-hybrid-west-02"
+      host_ip: ["10.0.0.12"]
+    - cluster: "cloud-hybrid-west-02"
+      host_ip: ["10.0.0.20"]
   parameters:
     interval: 10
 
