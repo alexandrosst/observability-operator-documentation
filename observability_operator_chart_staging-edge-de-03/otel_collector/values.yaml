@@ -1,10 +1,10 @@
 otelCollector:
   clusterName: "staging-edge-de-03"
   scrapeInterval: 15s
-  evaluationInterval: 5s
+  evaluationInterval: 15s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "3221d69bea2ee76ecb314de0dfbe8d64b3d5d017a5dc3b5c09e334dd1546c6e6"
+  configChecksum: "f4a0bb7ba02174946401be91486fcbe56700100a9f8e5da6fea454723baa0cf4"
   serviceName: otel-collector
   replicas: 1
   image:
