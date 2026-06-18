@@ -1,16 +1,12 @@
-# kepler
 kepler:
   fullnameOverride: kepler
 
-# prometheus-node-exporter
 prometheus-node-exporter:
   fullnameOverride: node-exporter
 
-# kube-state-metrics
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
-# fluent-bit
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
