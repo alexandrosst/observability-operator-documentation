@@ -1,10 +1,10 @@
 otelCollector:
   clusterName: "edge-gw-probe-01"
   scrapeInterval: 15s
-  evaluationInterval: 5s
+  evaluationInterval: 15s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "e53beabf819937a8e2f3db2064b2877dfe582ec2eba3558fd06a9a1a98641bfd"
+  configChecksum: "926e4486abfc119508022ed56533eb159013262a78f8d9dad619d25dcccca7fb"
   serviceName: otel-collector
   replicas: 1
   image:
