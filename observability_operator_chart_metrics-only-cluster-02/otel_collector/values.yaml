@@ -1,10 +1,10 @@
 otelCollector:
   clusterName: "metrics-only-cluster-02"
   scrapeInterval: 15s
-  evaluationInterval: 5s
+  evaluationInterval: 15s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "9c461c8ba06c833ddb1780563b6c2b956f18412a9dfb1169e2e7efc2eeaa7f98"
+  configChecksum: "a22d5a890b4a48618f742aeb73681524a6049f64cc57b685770bae5dac8cb5ed"
   serviceName: otel-collector
   replicas: 1
   image:
