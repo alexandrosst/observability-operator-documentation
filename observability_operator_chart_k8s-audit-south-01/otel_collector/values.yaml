@@ -1,10 +1,10 @@
 otelCollector:
   clusterName: "k8s-audit-south-01"
   scrapeInterval: 30s
-  evaluationInterval: 5s
+  evaluationInterval: 30s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "30ce32fb102d1d0fb9df76b27980100ae4d2a39dfcc45c5447584efb94d49354"
+  configChecksum: "7b68c78462675ad64b1b8b4e653a8e36a5138d45e4826415ad6f29fc1260f294"
   serviceName: otel-collector
   replicas: 1
   image:
