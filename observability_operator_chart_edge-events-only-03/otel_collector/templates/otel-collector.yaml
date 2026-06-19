@@ -14,7 +14,7 @@ data:
         namespaces: []
 
     processors:
-      batch: {}
+      batch:
       resource:
         attributes:
           - key: cluster
@@ -82,5 +82,4 @@ metadata:
 spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
-  ports:
-    # No otlp ports because otlp receiver not defined
+  ports: []
