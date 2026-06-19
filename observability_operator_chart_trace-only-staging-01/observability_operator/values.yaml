@@ -1,1 +1,20 @@
-# No external dependencies
+otel-collector:
+  otelCollector:
+    clusterName: "trace-only-staging-01"
+    scrapeInterval: 30s
+    evaluationInterval: 30s
+    deploymentName: otel-collector
+    configMapName: otel-collector-config
+    configChecksum: ""
+    serviceName: otel-collector
+    replicas: 1
+    image:
+      registry: otel
+      name: opentelemetry-collector-contrib
+      tag: "0.98.0"
+    exporters:
+      otlp:
+        host: "trace-collector.staging.svc"
+        port: 4318
+        tls:
+          insecure: true
