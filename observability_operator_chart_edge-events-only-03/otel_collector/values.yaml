@@ -1,7 +1,7 @@
 otelCollector:
   clusterName: "edge-events-only-03"
   scrapeInterval: 30s
-  evaluationInterval: 30s
+  evaluationInterval: 5s
   deploymentName: otel-collector
   configMapName: otel-collector-config
   configChecksum: "70e55ff68e0cbdf83075003ab95ad2b727de7f0e5a13c0c4685d981770606639"
