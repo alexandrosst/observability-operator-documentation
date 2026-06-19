@@ -12,8 +12,8 @@ data:
       prometheus:
         config:
           global:
-            scrape_interval: 10s
-            evaluation_interval: 5s
+            scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
+            evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
           scrape_configs:
             - job_name: "node-exporter"
               kubernetes_sd_configs:
@@ -31,10 +31,13 @@ data:
                 - source_labels: [__meta_kubernetes_service_name]
                   action: keep
                   regex: network-latency-agent-service
-      k8s_events: {}
+
+      k8s_events:
+        auth_type: serviceAccount
+        namespaces: []
 
     processors:
-      batch: {}
+      batch:
       resource:
         attributes:
           - key: cluster
@@ -106,5 +109,4 @@ metadata:
 spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
-  ports:
-    # OTLP ports omitted because otlp receiver not defined
+  ports: []
