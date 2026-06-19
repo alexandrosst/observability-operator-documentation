@@ -1,6 +1,2 @@
-# kepler:
 kepler:
   fullnameOverride: kepler
-
-otelCollector:
-  clusterName: "green-compute-eu-02"
