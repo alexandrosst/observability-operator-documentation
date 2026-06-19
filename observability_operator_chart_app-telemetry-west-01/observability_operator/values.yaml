@@ -1,2 +1,20 @@
 otel-collector:
-  fullnameOverride: otel-collector
+  otelCollector:
+    clusterName: "app-telemetry-west-01"
+    scrapeInterval: 10s
+    evaluationInterval: 10s
+    deploymentName: otel-collector
+    configMapName: otel-collector-config
+    configChecksum: ""
+    serviceName: otel-collector
+    replicas: 1
+    image:
+      registry: otel
+      name: opentelemetry-collector-contrib
+      tag: "0.98.0"
+    exporters:
+      otlp:
+        host: "telemetry-gateway.prod.svc"
+        port: 4318
+        tls:
+          insecure: true
