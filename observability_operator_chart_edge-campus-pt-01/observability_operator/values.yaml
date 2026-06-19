@@ -1,4 +1,2 @@
-# Uncomment and fill in only the blocks for included dependencies.
-
 prometheus-node-exporter:
   fullnameOverride: node-exporter
