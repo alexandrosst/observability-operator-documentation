@@ -1,7 +1,7 @@
 otelCollector:
   clusterName: "app-telemetry-west-01"
   scrapeInterval: 10s
-  evaluationInterval: 5s
+  evaluationInterval: 10s
   deploymentName: otel-collector
   configMapName: otel-collector-config
   configChecksum: "aaaf92c5404e9476c41442aac46e466236b4f4d5368ba9332168799f8c659b44"
