@@ -15,12 +15,13 @@ data:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
+
       k8s_events:
         auth_type: serviceAccount
         namespaces: []
 
     processors:
-      batch: {}
+      batch:
       resource:
         attributes:
           - key: cluster
@@ -40,10 +41,12 @@ data:
           receivers: [otlp]
           processors: [resource, batch]
           exporters: [otlp]
+
         logs:
           receivers: [otlp, k8s_events]
           processors: [resource, batch]
           exporters: [otlp]
+
         traces:
           receivers: [otlp]
           processors: [resource, batch]
