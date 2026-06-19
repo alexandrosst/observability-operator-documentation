@@ -143,7 +143,7 @@ spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
-    - name: health
+    - name: health-check
       protocol: TCP
       port: 13133
       targetPort: 13133
