@@ -1,27 +1,22 @@
-# kepler:
 kepler:
   fullnameOverride: kepler
 
-# prometheus-node-exporter:
 prometheus-node-exporter:
   fullnameOverride: node-exporter
 
-# kube-state-metrics:
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
-# network-latency:
 network-latency:
   name: network-latency-agent
   target_hosts:
     - cluster: "hybrid-edge-prod-03"
-      host_ip:
-        - "172.20.0.10"
-        - "172.20.0.20"
+      host_ip: ["172.20.0.10"]
+    - cluster: "hybrid-edge-prod-03"
+      host_ip: ["172.20.0.20"]
   parameters:
     interval: 10
 
-# fluent-bit:
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:

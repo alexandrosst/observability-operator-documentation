@@ -1,7 +1,7 @@
 otelCollector:
   clusterName: "hybrid-edge-prod-03"
   scrapeInterval: 10s
-  evaluationInterval: 5s
+  evaluationInterval: 10s
   deploymentName: otel-collector
   configMapName: otel-collector-config
   configChecksum: "8c725a1de9d24b4ade0f0fe5cc88f2902b4073929dcc575e80262ebf445958e8"
