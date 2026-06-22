@@ -1,5 +1,5 @@
 apiVersion: v2
-name: observability_operator
+name: observability_operator_chart_edge-gw-probe-01
 description: Observability Operator for edge-gw-probe-01
 type: application
 version: 0.1.0
@@ -7,9 +7,6 @@ dependencies:
   - name: otel-collector
     version: 0.1.0
     repository: "file://../otel_collector"
-  - name: prometheus-node-exporter
-    version: 4.55.0
-    repository: "https://prometheus-community.github.io/helm-charts"
   - name: network-latency
     version: 0.1.0
     repository: "https://gitlab.com/api/v4/projects/44429468/packages/helm/stable"

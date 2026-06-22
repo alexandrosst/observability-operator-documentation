@@ -1,6 +1,3 @@
-prometheus-node-exporter:
-  fullnameOverride: node-exporter
-
 network-latency:
   name: network-latency-agent
   target_hosts:
