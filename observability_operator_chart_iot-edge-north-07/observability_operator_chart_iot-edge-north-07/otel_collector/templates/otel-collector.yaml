@@ -79,14 +79,17 @@ data:
                 - source_labels: [__meta_kubernetes_service_name]
                   action: keep
                   regex: network-latency-agent-service
-
+            - job_name: "application-metrics"
+              otlp:
+                endpoint: 0.0.0.0:4317
+                tls:
+                  insecure: true
       otlp:
         protocols:
           grpc:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
-
       k8s_events:
         auth_type: serviceAccount
         namespaces: []
