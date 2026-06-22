@@ -1,4 +1,3 @@
-# fluent-bit
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
@@ -40,3 +39,16 @@ fluent-bit:
           Match         node.system.*
           Add           log_source containerd
           Add           service_name container-runtime
+    outputs: |
+      [OUTPUT]
+          Name            opentelemetry
+          Match           *
+          Host            otel-collector
+          Port            4318
+          Logs_URI        /v1/logs
+          Tls             Off
+          Logs_body_key   log
+          Logs_body_key_attributes true
+          Logs_attributes_metadata_key attributes
+          Logs_resource_metadata_key resource
+          Logs_instrumentation_scope_metadata_key scope
