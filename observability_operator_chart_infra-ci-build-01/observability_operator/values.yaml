@@ -1,5 +1,5 @@
-kube-state-metrics:
-  fullnameOverride: kube-state-metrics
+otel-collector:
+  fullnameOverride: otel-collector
 
 fluent-bit:
   fullnameOverride: fluent-bit
