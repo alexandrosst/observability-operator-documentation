@@ -45,7 +45,7 @@ data:
                   replacement: "kubernetes.default.svc:443"
                   action: "replace"
                 - source_labels: [__meta_kubernetes_node_name]
-                  regex: "^(.+)"
+                  regex: "(.+)"
                   target_label: "__metrics_path__"
                   replacement: "/api/v1/nodes/$${1}/proxy/metrics/cadvisor"
                   action: "replace"
@@ -68,7 +68,7 @@ data:
                   replacement: "kubernetes.default.svc:443"
                   action: "replace"
                 - source_labels: [__meta_kubernetes_node_name]
-                  regex: "^(.+)"
+                  regex: "(.+)"
                   target_label: "__metrics_path__"
                   replacement: "/api/v1/nodes/$${1}/proxy/metrics"
                   action: "replace"
@@ -79,18 +79,15 @@ data:
                 - source_labels: [__meta_kubernetes_service_name]
                   action: keep
                   regex: network-latency-agent-service
-
       otlp:
         protocols:
           grpc:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
-
       k8s_events:
         auth_type: serviceAccount
         namespaces: []
-
     processors:
       batch:
       resource:
@@ -98,13 +95,11 @@ data:
           - key: cluster
             value: {{ .Values.otelCollector.clusterName }}
             action: insert
-
     exporters:
       otlp:
         endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
         tls:
           insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure }}
-
     service:
       extensions: [health_check]
       pipelines:
@@ -116,7 +111,6 @@ data:
           receivers: [otlp, k8s_events]
           processors: [resource, batch]
           exporters: [otlp]
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -153,11 +147,20 @@ spec:
             successThreshold: 1
             failureThreshold: 3
             timeoutSeconds: 2
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 13133
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+            timeoutSeconds: 5
       volumes:
         - name: config-volume
           configMap:
             name: {{ .Values.otelCollector.configMapName }}
-
 ---
 apiVersion: v1
 kind: Service

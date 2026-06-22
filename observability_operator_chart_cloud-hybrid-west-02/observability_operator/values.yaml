@@ -1,3 +1,5 @@
+# Uncomment and fill in only the blocks for included dependencies.
+
 kepler:
   fullnameOverride: kepler
 
@@ -8,7 +10,7 @@ kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
 network-latency:
-  name: network-latency-agent
+  name: network-latency-agent   # determines the Kubernetes Service name: <name>-service
   target_hosts:
     - cluster: "cloud-hybrid-west-02"
       host_ip: ["10.0.0.5", "10.0.0.12", "10.0.0.20"]
