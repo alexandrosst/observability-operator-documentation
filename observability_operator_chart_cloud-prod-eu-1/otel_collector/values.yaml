@@ -4,12 +4,11 @@ otelCollector:
   evaluationInterval: 30s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "1e20b278b48c554c95469774366b356bb2cfb0d73a5df5f71fd09adad467eb89"
   serviceName: otel-collector
   replicas: 1
   image:
-    registry: "otel"
-    name: "opentelemetry-collector-contrib"
+    registry: otel
+    name: opentelemetry-collector-contrib
     tag: "0.98.0"
   exporters:
     otlp:
@@ -17,3 +16,4 @@ otelCollector:
       port: 4318
       tls:
         insecure: true
+  configChecksum: "1981e8085cc860a9da579a8321610e3fce805ebfc6893370a1b9a3efcebd1d06"
