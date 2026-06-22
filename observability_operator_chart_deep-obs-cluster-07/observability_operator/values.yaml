@@ -8,7 +8,7 @@ kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
 network-latency:
-  name: network-latency-agent
+  name: network-latency-agent 
   target_hosts:
     - cluster: "deep-obs-cluster-07"
       host_ip: ["10.1.0.10", "10.1.0.11", "10.1.0.12"]
