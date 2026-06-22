@@ -1,35 +1,22 @@
-# kepler:
+# enable only the dependencies that are used
+
 kepler:
   fullnameOverride: kepler
 
-# prometheus-node-exporter:
 prometheus-node-exporter:
   fullnameOverride: node-exporter
 
-# kube-state-metrics:
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
-# network-latency:
 network-latency:
   name: network-latency-agent
   target_hosts:
     - cluster: "datacenter-south-02"
-      host_ip:
-        - "192.168.1.10"
-    - cluster: "datacenter-south-02"
-      host_ip:
-        - "192.168.1.25"
-    - cluster: "datacenter-south-02"
-      host_ip:
-        - "172.16.0.5"
-    - cluster: "datacenter-south-02"
-      host_ip:
-        - "172.16.0.18"
+      host_ip: ["192.168.1.10", "192.168.1.25", "172.16.0.5", "172.16.0.18"]
   parameters:
     interval: 10
 
-# fluent-bit:
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
