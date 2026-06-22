@@ -1,11 +1,24 @@
+energy:
+  fullnameOverride: kepler
 prometheus-node-exporter:
   fullnameOverride: node-exporter
 
-kepler:
-  fullnameOverride: kepler
-
-applicationLogs:
-  enabled: true
-  otlp:
-    host: "otel-collector"
-    port: 4318
+otel-collector:
+  clusterName: staging-edge-de-03
+  scrapeInterval: 15s
+  evaluationInterval: 15s
+  deploymentName: otel-collector
+  configMapName: otel-collector-config
+  configChecksum: ""
+  serviceName: otel-collector
+  replicas: 1
+  image:
+    registry: otel
+    name: opentelemetry-collector-contrib
+    tag: "0.98.0"
+  exporters:
+    otlp:
+      host: collector.infra.local
+      port: 4318
+      tls:
+        insecure: true

@@ -3,3 +3,4 @@ name: otel-collector
 description: OpenTelemetry Collector sub-chart
 type: application
 version: 0.1.0
+dependencies: []
