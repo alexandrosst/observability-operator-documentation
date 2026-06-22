@@ -11,11 +11,7 @@ network-latency:
   name: network-latency-agent
   target_hosts:
     - cluster: "deep-obs-cluster-07"
-      host_ip: ["10.1.0.10"]
-    - cluster: "deep-obs-cluster-07"
-      host_ip: ["10.1.0.11"]
-    - cluster: "deep-obs-cluster-07"
-      host_ip: ["10.1.0.12"]
+      host_ip: ["10.1.0.10", "10.1.0.11", "10.1.0.12"]
   parameters:
     interval: 5
 
