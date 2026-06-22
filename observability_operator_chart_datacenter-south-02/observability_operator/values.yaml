@@ -1,14 +1,9 @@
-# Uncomment and fill in only the blocks for included dependencies.
-
 kepler:
   fullnameOverride: kepler
-
 prometheus-node-exporter:
   fullnameOverride: node-exporter
-
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
-
 network-latency:
   name: network-latency-agent
   target_hosts:
@@ -16,7 +11,6 @@ network-latency:
       host_ip: ["192.168.1.10", "192.168.1.25", "172.16.0.5", "172.16.0.18"]
   parameters:
     interval: 10
-
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
