@@ -1,8 +1,25 @@
-kepler:
-  fullnameOverride: kepler
-
 prometheus-node-exporter:
   fullnameOverride: node-exporter
-
+kepler:
+  fullnameOverride: kepler
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
+otel-collector:
+  clusterName: metrics-only-cluster-02
+  scrapeInterval: 15s
+  evaluationInterval: 15s
+  deploymentName: otel-collector
+  configMapName: otel-collector-config
+  configChecksum: ""
+  serviceName: otel-collector
+  replicas: 1
+  image:
+    registry: otel
+    name: opentelemetry-collector-contrib
+    tag: "0.98.0"
+  exporters:
+    otlp:
+      host: metrics-collector.infra.svc
+      port: 4318
+      tls:
+        insecure: true

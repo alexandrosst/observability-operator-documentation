@@ -1,10 +1,10 @@
 otelCollector:
-  clusterName: "metrics-only-cluster-02"
+  clusterName: metrics-only-cluster-02
   scrapeInterval: 15s
   evaluationInterval: 15s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "e659b73863cc0ae2c80dcd04c355be0fdca067b3e143c3402ad7d3c408dcda7b"
+  configChecksum: "9feaef553abe22fabe45df7e0dbb21ba4568cf8f13668818085fdc5a5e2332d6"
   serviceName: otel-collector
   replicas: 1
   image:
@@ -13,7 +13,7 @@ otelCollector:
     tag: "0.98.0"
   exporters:
     otlp:
-      host: "metrics-collector.infra.svc"
+      host: metrics-collector.infra.svc
       port: 4318
       tls:
         insecure: true
