@@ -1,8 +1,9 @@
 apiVersion: v2
 name: observability_operator
-description: Observability Operator for deep-obs-cluster-07
-type: application
 version: 0.1.0
+
+description: Observability Operator for deep-obs-cluster-07
+
 dependencies:
   - name: otel-collector
     version: 0.1.0

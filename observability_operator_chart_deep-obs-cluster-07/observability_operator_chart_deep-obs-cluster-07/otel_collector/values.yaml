@@ -1,10 +1,10 @@
 otelCollector:
-  clusterName: "deep-obs-cluster-07"
+  clusterName: deep-obs-cluster-07
   scrapeInterval: 5s
   evaluationInterval: 5s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "c5c3ae2c3b5d977b5a132224d5f7244912b2c5d03dfd04f232a3907d30c3bc03"
+  configChecksum: "d7d95dc17c4d4c895095854315875249a91c0477768a3910cdad0c8b0e2f1147"
   serviceName: otel-collector
   replicas: 1
   image:
@@ -13,7 +13,7 @@ otelCollector:
     tag: "0.98.0"
   exporters:
     otlp:
-      host: "full-collector.ops.svc"
+      host: full-collector.ops.svc
       port: 4318
       tls:
         insecure: true
