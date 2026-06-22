@@ -1,3 +1,4 @@
+# network-latency
 network-latency:
   name: network-latency-agent
   target_hosts:
@@ -6,5 +7,6 @@ network-latency:
   parameters:
     interval: 15
 
+# prometheus-node-exporter
 prometheus-node-exporter:
   fullnameOverride: node-exporter
