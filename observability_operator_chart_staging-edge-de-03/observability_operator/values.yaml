@@ -1,5 +1,11 @@
+prometheus-node-exporter:
+  fullnameOverride: node-exporter
+
 kepler:
   fullnameOverride: kepler
 
-prometheus-node-exporter:
-  fullnameOverride: node-exporter
+applicationLogs:
+  enabled: true
+  otlp:
+    host: "otel-collector"
+    port: 4318

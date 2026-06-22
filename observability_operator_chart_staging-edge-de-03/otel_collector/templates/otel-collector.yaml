@@ -15,15 +15,6 @@ data:
             scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
             evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
           scrape_configs:
-            - job_name: "kepler"
-              kubernetes_sd_configs:
-                - role: "pod"
-              relabel_configs:
-                - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
-                  regex: "kepler"
-                  action: "keep"
-                - source_labels: [__meta_kubernetes_pod_node_name]
-                  target_label: node
             - job_name: "node-exporter"
               kubernetes_sd_configs:
                 - role: "pod"
@@ -33,22 +24,15 @@ data:
                   action: "keep"
                 - source_labels: [__meta_kubernetes_pod_node_name]
                   target_label: node
-            - job_name: "cadvisor"
-              scheme: "https"
-              tls_config:
-                ca_file: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-              bearer_token_file: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+            - job_name: "kepler"
               kubernetes_sd_configs:
-                - role: "node"
+                - role: "pod"
               relabel_configs:
-                - target_label: "__address__"
-                  replacement: "kubernetes.default.svc:443"
-                  action: "replace"
-                - source_labels: [__meta_kubernetes_node_name]
-                  regex: "(.+)"
-                  target_label: "__metrics_path__"
-                  replacement: "/api/v1/nodes/$${1}/proxy/metrics/cadvisor"
-                  action: "replace"
+                - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+                  regex: "kepler"
+                  action: "keep"
+                - source_labels: [__meta_kubernetes_pod_node_name]
+                  target_label: node
       otlp:
         protocols:
           grpc:
@@ -74,7 +58,7 @@ data:
       extensions: [health_check]
       pipelines:
         metrics:
-          receivers: [prometheus]
+          receivers: [prometheus, otlp]
           processors: [resource, batch]
           exporters: [otlp]
         logs:
@@ -85,22 +69,22 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
+  name: {{ .Values.otelCollector.deploymentName }}
 spec:
   replicas: {{ .Values.otelCollector.replicas }}
   selector:
     matchLabels:
-      app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
+      app: {{ .Values.otelCollector.deploymentName }}
   template:
     metadata:
       labels:
-        app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
+        app: {{ .Values.otelCollector.deploymentName }}
       annotations:
         checksum/config: {{ .Values.otelCollector.configChecksum }}
     spec:
-      serviceAccountName: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
+      serviceAccountName: {{ .Values.otelCollector.deploymentName }}
       containers:
-        - name: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
+        - name: {{ .Values.otelCollector.deploymentName }}
           image: "{{ .Values.otelCollector.image.registry }}/{{ .Values.otelCollector.image.name }}:{{ .Values.otelCollector.image.tag }}"
           imagePullPolicy: Always
           args: ["--config=/conf/otel-agent-config.yaml"]
@@ -128,7 +112,7 @@ metadata:
   name: {{ .Values.otelCollector.serviceName }}
 spec:
   selector:
-    app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
+    app: {{ .Values.otelCollector.deploymentName }}
   ports:
     - name: otlp-grpc
       protocol: TCP

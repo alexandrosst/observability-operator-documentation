@@ -1,30 +1,27 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
+  name: {{ .Values.otelCollector.deploymentName }}
   namespace: {{ .Release.Namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
+  name: {{ .Values.otelCollector.deploymentName }}
 rules:
   - apiGroups: [""]
     resources: [pods, nodes, services, endpoints, events]
-    verbs: [get, list, watch]
-  - apiGroups: [""]
-    resources: [nodes/proxy]
     verbs: [get, list, watch]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
+  name: {{ .Values.otelCollector.deploymentName }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
+  name: {{ .Values.otelCollector.deploymentName }}
 subjects:
   - kind: ServiceAccount
-    name: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
+    name: {{ .Values.otelCollector.deploymentName }}
     namespace: {{ .Release.Namespace }}
