@@ -1,2 +1,9 @@
+networkLatency:
+  name: network-latency-agent
+  targets:
+    - cluster: "cloud-prod-eu-1"
+      host_ip: ["<IP>"]
+  parameters:
+    interval: 30
 prometheus-node-exporter:
   fullnameOverride: node-exporter

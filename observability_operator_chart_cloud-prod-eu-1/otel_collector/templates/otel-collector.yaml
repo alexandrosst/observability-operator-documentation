@@ -1,19 +1,18 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.otelCollector.configMapName }}
+  name: "otel-collector-config"
 data:
-  otel-agent-config.yaml: |
+  "otel-agent-config.yaml": |
     extensions:
       health_check:
-        endpoint: 0.0.0.0:13133
-
+        endpoint: "0.0.0.0:13133"
     receivers:
       prometheus:
         config:
           global:
-            scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
-            evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
+            scrape_interval: 30s
+            evaluation_interval: 30s
           scrape_configs:
             - job_name: "node-exporter"
               kubernetes_sd_configs:
@@ -24,21 +23,18 @@ data:
                   action: "keep"
                 - source_labels: [__meta_kubernetes_pod_node_name]
                   target_label: node
-
     processors:
       batch:
       resource:
         attributes:
-          - key: cluster
-            value: {{ .Values.otelCollector.clusterName }}
-            action: insert
-
+          - key: "cluster"
+            value: "cloud-prod-eu-1"
+            action: "insert"
     exporters:
       otlp:
-        endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
+        endpoint: "otel-gateway.monitoring.svc.cluster.local:4318"
         tls:
-          insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure }}
-
+          insecure: true
     service:
       extensions: [health_check]
       pipelines:
@@ -50,31 +46,29 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
+  name: "otel-collector"
 spec:
-  replicas: {{ .Values.otelCollector.replicas }}
+  replicas: 1
   selector:
     matchLabels:
-      app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
+      app: "otel-collector"
   template:
     metadata:
       labels:
-        app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
+        app: "otel-collector"
       annotations:
-        checksum/config: {{ .Values.otelCollector.configChecksum }}
+        checksum/config: ""
     spec:
-      serviceAccountName: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
       containers:
-        - name: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
-          image: "{{ .Values.otelCollector.image.registry }}/{{ .Values.otelCollector.image.name }}:{{ .Values.otelCollector.image.tag }}"
-          imagePullPolicy: Always
+        - name: "otel-collector"
+          image: "otel/opentelemetry-collector-contrib:0.98.0"
           args: ["--config=/conf/otel-agent-config.yaml"]
           volumeMounts:
-            - name: config-volume
-              mountPath: /conf
+            - name: "config-volume"
+              mountPath: "/conf"
           readinessProbe:
             httpGet:
-              path: /
+              path: "/"
               port: 13133
               scheme: HTTP
             initialDelaySeconds: 1
@@ -83,9 +77,9 @@ spec:
             failureThreshold: 3
             timeoutSeconds: 2
       volumes:
-        - name: config-volume
+        - name: "config-volume"
           configMap:
-            name: {{ .Values.otelCollector.configMapName }}
+            name: "otel-collector-config"
 ---
 apiVersion: v1
 kind: Service
@@ -93,5 +87,13 @@ metadata:
   name: {{ .Values.otelCollector.serviceName }}
 spec:
   selector:
-    app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
-  ports: []
+    app: "otel-collector"
+  ports:
+    - name: otlp-grpc
+      protocol: TCP
+      port: 4317
+      targetPort: 4317
+    - name: otlp-http
+      protocol: TCP
+      port: 4318
+      targetPort: 4318
