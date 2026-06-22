@@ -3,19 +3,27 @@ kind: ConfigMap
 metadata:
   name: {{ .Values.otelCollector.configMapName }}
 data:
-  otel-agent-config.yaml: |-
+  otel-agent-config.yaml: |
     extensions:
       health_check:
         endpoint: 0.0.0.0:13133
+
     receivers:
-      # prometheus: include if any scrape-based signal is requested
       prometheus:
         config:
           global:
             scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
             evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
           scrape_configs:
-            # network-latency-agent
+            - job_name: "node-exporter"
+              kubernetes_sd_configs:
+                - role: "pod"
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+                  regex: "prometheus-node-exporter"
+                  action: "keep"
+                - source_labels: [__meta_kubernetes_pod_node_name]
+                  target_label: node
             - job_name: "network-latency-agent"
               kubernetes_sd_configs:
                 - role: "service"
@@ -23,6 +31,7 @@ data:
                 - source_labels: [__meta_kubernetes_service_name]
                   action: keep
                   regex: network-latency-agent-service
+
     processors:
       batch:
       resource:
@@ -30,11 +39,13 @@ data:
           - key: cluster
             value: {{ .Values.otelCollector.clusterName }}
             action: insert
+
     exporters:
       otlp:
         endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
         tls:
           insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure }}
+
     service:
       extensions: [health_check]
       pipelines:
@@ -91,12 +102,6 @@ spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
-    # Include otlp-grpc and otlp-http only when the otlp receiver is defined.
-    # Omit entirely if no otlp receiver.
-    - name: otlp-grpc
-      protocol: TCP
-      port: 4317
-      targetPort: 4317
     - name: otlp-http
       protocol: TCP
       port: 4318
