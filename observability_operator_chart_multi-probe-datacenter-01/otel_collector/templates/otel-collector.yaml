@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ .Values.otelCollector.configMapName }}
 data:
-  otel-agent-config.yaml: |
+  otel-agent-config.yaml: |-
     extensions:
       health_check:
         endpoint: 0.0.0.0:13133
@@ -109,4 +109,12 @@ metadata:
 spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
-  ports: []
+  ports:
+    - name: otlp-grpc
+      protocol: TCP
+      port: 4317
+      targetPort: 4317
+    - name: otlp-http
+      protocol: TCP
+      port: 4318
+      targetPort: 4318
