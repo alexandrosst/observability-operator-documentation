@@ -1,20 +1,22 @@
-otel-collector:
-  clusterName: "trace-only-staging-01"
-  otelCollector:
-    scrapeInterval: 30s
-    evaluationInterval: 30s
-    deploymentName: otel-collector
-    configMapName: otel-collector-config
-    configChecksum: ""
-    serviceName: otel-collector
-    replicas: 1
-    image:
-      registry: otel
-      name: opentelemetry-collector-contrib
-      tag: "0.98.0"
-    exporters:
-      otlp:
-        host: "trace-collector.staging.svc"
-        port: 4318
-        tls:
-          insecure: true
+# Uncomment and fill in only the blocks for included dependencies.
+
+# kepler:
+#   fullnameOverride: kepler
+
+# prometheus-node-exporter:
+#   fullnameOverride: node-exporter
+
+# kube-state-metrics:
+#   fullnameOverride: kube-state-metrics
+
+# network-latency:
+#   name: network-latency-agent   # determines the Kubernetes Service name: <name>-service
+#   target_hosts:
+#     - cluster: "<clusterName>"
+#       host_ip: ["<IP>"]
+#   parameters:
+#     interval: 5                 # scrape interval in seconds (integer, no 's' suffix)
+
+# fluent-bit:
+#   fullnameOverride: fluent-bit
+#   <see Fluent Bit section below for full config>

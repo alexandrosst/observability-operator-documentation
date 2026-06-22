@@ -9,6 +9,7 @@ data:
         endpoint: 0.0.0.0:13133
 
     receivers:
+      # otlp: include if applicationMetrics, applicationLogs, traces, or systemLogs requested
       otlp:
         protocols:
           grpc:
@@ -33,6 +34,7 @@ data:
     service:
       extensions: [health_check]
       pipelines:
+        # traces: include only when traces requested
         traces:
           receivers: [otlp]
           processors: [resource, batch]
@@ -86,6 +88,8 @@ spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
+    # Include otlp-grpc and otlp-http only when the otlp receiver is defined.
+    # Omit entirely if no otlp receiver.
     - name: otlp-grpc
       protocol: TCP
       port: 4317
