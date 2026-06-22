@@ -1,2 +1,2 @@
-nodeResources:
+prometheus-node-exporter:
   fullnameOverride: node-exporter

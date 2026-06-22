@@ -1,10 +1,10 @@
 otelCollector:
   clusterName: "cloud-prod-eu-1"
   scrapeInterval: 30s
-  evaluationInterval: 30s
+  evaluationInterval: 5s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "30be2a9482fc67017eafd7045a1465e6869da530af910aff92b4101cfa41e3d0"
+  configChecksum: "bbe31093b44c5761d2c0559f98ce9df507abe50ef7145a8e8901cf84c65d0f0f"
   serviceName: otel-collector
   replicas: 1
   image:
