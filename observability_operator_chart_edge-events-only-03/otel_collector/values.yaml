@@ -1,10 +1,10 @@
 otelCollector:
-  clusterName: "edge-events-only-03"
+  clusterName: edge-events-only-03
   scrapeInterval: 30s
-  evaluationInterval: 5s
+  evaluationInterval: 30s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "70e55ff68e0cbdf83075003ab95ad2b727de7f0e5a13c0c4685d981770606639"
+  configChecksum: "7cfe23689bd5f57cd43b1b7a559c9e1a7125b84f334a1611589aaf609b4f6e56"
   serviceName: otel-collector
   replicas: 1
   image:
@@ -13,7 +13,30 @@ otelCollector:
     tag: "0.98.0"
   exporters:
     otlp:
-      host: "events-collector.monitoring.svc"
+      host: events-collector.monitoring.svc
       port: 4318
       tls:
         insecure: true
+  receivers:
+    k8s_events:
+      auth_type: serviceAccount
+      namespaces: []
+  processors:
+    batch:
+    resource:
+      attributes:
+        - key: cluster
+          value: edge-events-only-03
+          action: insert
+  exporters:
+    otlp:
+      endpoint: events-collector.monitoring.svc:4318
+      tls:
+        insecure: true
+  service:
+    extensions: [health_check]
+    pipelines:
+      logs:
+        receivers: [k8s_events]
+        processors: [resource, batch]
+        exporters: [otlp]
