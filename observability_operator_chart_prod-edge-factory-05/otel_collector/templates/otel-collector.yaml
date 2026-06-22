@@ -56,12 +56,12 @@ data:
                 - source_labels: [__meta_kubernetes_service_name]
                   action: keep
                   regex: kube-state-metrics
+
       otlp:
         protocols:
-          grpc:
-            endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
+
       k8s_events:
         auth_type: serviceAccount
         namespaces: []
@@ -84,7 +84,7 @@ data:
       extensions: [health_check]
       pipelines:
         metrics:
-          receivers: [prometheus]
+          receivers: [prometheus, otlp]
           processors: [resource, batch]
           exporters: [otlp]
         logs:
@@ -140,10 +140,6 @@ spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
-    - name: otlp-grpc
-      protocol: TCP
-      port: 4317
-      targetPort: 4317
     - name: otlp-http
       protocol: TCP
       port: 4318
