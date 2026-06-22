@@ -33,11 +33,11 @@ data:
     service:
       extensions: [health_check]
       pipelines:
-        logs:
+        traces:
           receivers: [otlp]
           processors: [resource, batch]
           exporters: [otlp]
-        traces:
+        logs:
           receivers: [otlp]
           processors: [resource, batch]
           exporters: [otlp]

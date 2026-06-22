@@ -1,24 +1,4 @@
-otel-collector:
-  otelCollector:
-    clusterName: "trace-log-hybrid-01"
-    scrapeInterval: 10s
-    evaluationInterval: 10s
-    deploymentName: otel-collector
-    configMapName: otel-collector-config
-    configChecksum: ""
-    serviceName: otel-collector
-    replicas: 1
-    image:
-      registry: otel
-      name: opentelemetry-collector-contrib
-      tag: "0.98.0"
-    exporters:
-      otlp:
-        host: "hybrid-collector.ops.svc"
-        port: 4318
-        tls:
-          insecure: true
-
+# fluent-bit
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
@@ -60,16 +40,3 @@ fluent-bit:
           Match         node.system.*
           Add           log_source containerd
           Add           service_name container-runtime
-    outputs: |
-      [OUTPUT]
-          Name            opentelemetry
-          Match           *
-          Host            otel-collector
-          Port            4318
-          Logs_URI        /v1/logs
-          Tls             Off
-          Logs_body_key   log
-          Logs_body_key_attributes true
-          Logs_attributes_metadata_key attributes
-          Logs_resource_metadata_key resource
-          Logs_instrumentation_scope_metadata_key scope
