@@ -37,20 +37,11 @@ data:
     service:
       extensions: [health_check]
       pipelines:
-        metrics:
-          receivers: [otlp]
-          processors: [resource, batch]
-          exporters: [otlp]
-
         logs:
           receivers: [otlp, k8s_events]
           processors: [resource, batch]
           exporters: [otlp]
 
-        traces:
-          receivers: [otlp]
-          processors: [resource, batch]
-          exporters: [otlp]
 ---
 apiVersion: apps/v1
 kind: Deployment

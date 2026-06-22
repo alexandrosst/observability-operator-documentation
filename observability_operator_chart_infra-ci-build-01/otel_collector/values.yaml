@@ -1,10 +1,10 @@
 otelCollector:
   clusterName: "infra-ci-build-01"
   scrapeInterval: 60s
-  evaluationInterval: 5s
+  evaluationInterval: 60s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "317f8e04d6aaff65b5140f0aae95129a69e87d762840e5b6d89df1cfb51918ff"
+  configChecksum: "f9c92aa8c4c90605514e281bee09b17e9abaf2dfde649b9be6329e159b9342f5"
   serviceName: otel-collector
   replicas: 1
   image:

@@ -1,23 +1,5 @@
-otel-collector:
-  otelCollector:
-    clusterName: "infra-ci-build-01"
-    scrapeInterval: 60s
-    evaluationInterval: 5s
-    deploymentName: otel-collector
-    configMapName: otel-collector-config
-    configChecksum: ""
-    serviceName: otel-collector
-    replicas: 1
-    image:
-      registry: otel
-      name: opentelemetry-collector-contrib
-      tag: "0.98.0"
-    exporters:
-      otlp:
-        host: "audit-collector.ci-infra.svc"
-        port: 4318
-        tls:
-          insecure: true
+kube-state-metrics:
+  fullnameOverride: kube-state-metrics
 
 fluent-bit:
   fullnameOverride: fluent-bit
@@ -73,3 +55,23 @@ fluent-bit:
           Logs_attributes_metadata_key attributes
           Logs_resource_metadata_key resource
           Logs_instrumentation_scope_metadata_key scope
+
+otel-collector:
+  clusterName: "infra-ci-build-01"
+  scrapeInterval: 60s
+  evaluationInterval: 60s
+  deploymentName: otel-collector
+  configMapName: otel-collector-config
+  configChecksum: ""
+  serviceName: otel-collector
+  replicas: 1
+  image:
+    registry: otel
+    name: opentelemetry-collector-contrib
+    tag: "0.98.0"
+  exporters:
+    otlp:
+      host: "audit-collector.ci-infra.svc"
+      port: 4318
+      tls:
+        insecure: true
