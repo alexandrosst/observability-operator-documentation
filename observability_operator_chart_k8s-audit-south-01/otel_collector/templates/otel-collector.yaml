@@ -7,6 +7,7 @@ data:
     extensions:
       health_check:
         endpoint: 0.0.0.0:13133
+
     receivers:
       prometheus:
         config:
@@ -40,11 +41,12 @@ data:
         endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
         tls:
           insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure }}
+
     service:
       extensions: [health_check]
       pipelines:
         metrics:
-          receivers: [prometheus, otlp]
+          receivers: [prometheus]
           processors: [resource, batch]
           exporters: [otlp]
         logs:

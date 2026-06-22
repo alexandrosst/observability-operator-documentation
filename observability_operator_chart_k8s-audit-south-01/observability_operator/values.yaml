@@ -1,6 +1,5 @@
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
-
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
@@ -55,3 +54,5 @@ fluent-bit:
           Logs_attributes_metadata_key attributes
           Logs_resource_metadata_key resource
           Logs_instrumentation_scope_metadata_key scope
+kubernetesEvents:
+  fullnameOverride: kubernetesEvents
