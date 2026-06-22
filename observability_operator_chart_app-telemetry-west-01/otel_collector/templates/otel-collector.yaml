@@ -37,10 +37,12 @@ data:
           receivers: [otlp]
           processors: [resource, batch]
           exporters: [otlp]
+
         logs:
           receivers: [otlp]
           processors: [resource, batch]
           exporters: [otlp]
+
         traces:
           receivers: [otlp]
           processors: [resource, batch]
