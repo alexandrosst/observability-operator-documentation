@@ -94,8 +94,4 @@ metadata:
 spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
-  ports:
-    - name: prometheus
-      protocol: TCP
-      port: 9090
-      targetPort: 9090
+  ports: []
