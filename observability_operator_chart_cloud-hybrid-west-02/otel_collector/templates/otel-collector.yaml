@@ -78,7 +78,8 @@ data:
               relabel_configs:
                 - source_labels: [__meta_kubernetes_service_name]
                   action: keep
-                  regex: network-latency-agent-service
+                  regex: network-latency-agent-service   # e.g. network-latency-agent-service
+
       otlp:
         protocols:
           grpc:
@@ -88,6 +89,7 @@ data:
       k8s_events:
         auth_type: serviceAccount
         namespaces: []
+
     processors:
       batch:
       resource:
@@ -95,11 +97,13 @@ data:
           - key: cluster
             value: {{ .Values.otelCollector.clusterName }}
             action: insert
+
     exporters:
       otlp:
         endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
         tls:
           insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure }}
+
     service:
       extensions: [health_check]
       pipelines:
@@ -109,6 +113,10 @@ data:
           exporters: [otlp]
         logs:
           receivers: [otlp, k8s_events]
+          processors: [resource, batch]
+          exporters: [otlp]
+        traces:
+          receivers: [otlp]
           processors: [resource, batch]
           exporters: [otlp]
 ---
@@ -147,16 +155,6 @@ spec:
             successThreshold: 1
             failureThreshold: 3
             timeoutSeconds: 2
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 13133
-              scheme: HTTP
-            initialDelaySeconds: 60
-            periodSeconds: 10
-            successThreshold: 1
-            failureThreshold: 3
-            timeoutSeconds: 5
       volumes:
         - name: config-volume
           configMap:

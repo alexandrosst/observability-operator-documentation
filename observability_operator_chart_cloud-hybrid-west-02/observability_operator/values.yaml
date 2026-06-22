@@ -15,7 +15,7 @@ network-latency:
     - cluster: "cloud-hybrid-west-02"
       host_ip: ["10.0.0.5", "10.0.0.12", "10.0.0.20"]
   parameters:
-    interval: 10
+    interval: 10                 # scrape interval in seconds (integer, no 's' suffix)
 
 fluent-bit:
   fullnameOverride: fluent-bit
