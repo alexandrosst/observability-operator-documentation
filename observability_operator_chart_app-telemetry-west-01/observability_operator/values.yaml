@@ -1,2 +1,5 @@
+# Uncomment and fill in only the blocks for included dependencies.
+
+# otel-collector
 otel-collector:
   fullnameOverride: otel-collector
