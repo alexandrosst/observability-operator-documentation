@@ -22,13 +22,18 @@ data:
                 - source_labels: [__meta_kubernetes_service_name]
                   action: keep
                   regex: kube-state-metrics
+
       otlp:
         protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
+
       k8s_events:
         auth_type: serviceAccount
         namespaces: []
+
     processors:
       batch:
       resource:
@@ -36,6 +41,7 @@ data:
           - key: cluster
             value: {{ .Values.otelCollector.clusterName }}
             action: insert
+
     exporters:
       otlp:
         endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
@@ -49,10 +55,12 @@ data:
           receivers: [prometheus]
           processors: [resource, batch]
           exporters: [otlp]
+
         logs:
           receivers: [otlp, k8s_events]
           processors: [resource, batch]
           exporters: [otlp]
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -102,6 +110,10 @@ spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
+    - name: otlp-grpc
+      protocol: TCP
+      port: 4317
+      targetPort: 4317
     - name: otlp-http
       protocol: TCP
       port: 4318
