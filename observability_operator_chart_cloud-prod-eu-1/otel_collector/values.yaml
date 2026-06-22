@@ -4,6 +4,7 @@ otelCollector:
   evaluationInterval: 30s
   deploymentName: otel-collector
   configMapName: otel-collector-config
+  configChecksum: "30be2a9482fc67017eafd7045a1465e6869da530af910aff92b4101cfa41e3d0"
   serviceName: otel-collector
   replicas: 1
   image:
@@ -16,4 +17,3 @@ otelCollector:
       port: 4318
       tls:
         insecure: true
-  configChecksum: "1981e8085cc860a9da579a8321610e3fce805ebfc6893370a1b9a3efcebd1d06"

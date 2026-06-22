@@ -1,7 +1,2 @@
-networkLatency:
-  targets:
-    - cluster: "cloud-prod-eu-1"
-      host_ip: ["<IP>"]
-  name: network-latency-agent
-  parameters:
-    interval: 30
+nodeResources:
+  fullnameOverride: node-exporter
