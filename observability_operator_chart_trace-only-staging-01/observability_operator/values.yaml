@@ -1,8 +1,8 @@
 otel-collector:
+  clusterName: "trace-only-staging-01"
   otelCollector:
-    clusterName: "trace-only-staging-01"
     scrapeInterval: 30s
-    evaluationInterval: 5s
+    evaluationInterval: 30s
     deploymentName: otel-collector
     configMapName: otel-collector-config
     configChecksum: ""
