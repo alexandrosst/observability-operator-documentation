@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ .Values.otelCollector.configMapName }}
 data:
-  otel-agent-config.yaml: |-
+  otel-agent-config.yaml: |
     extensions:
       health_check:
         endpoint: 0.0.0.0:13133
@@ -31,7 +31,6 @@ data:
                 - source_labels: [__meta_kubernetes_service_name]
                   action: keep
                   regex: network-latency-agent-service
-
       k8s_events:
         auth_type: serviceAccount
         namespaces: []
