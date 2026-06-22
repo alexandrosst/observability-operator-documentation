@@ -15,6 +15,7 @@ data:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
+
       k8s_events:
         auth_type: serviceAccount
         namespaces: []
@@ -24,24 +25,28 @@ data:
       resource:
         attributes:
           - key: cluster
-            value: {{ .Values.otelCollector.clusterName }}
+            value: infra-ci-build-01
             action: insert
 
     exporters:
       otlp:
-        endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
+        endpoint: audit-collector.ci-infra.svc:4318
         tls:
-          insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure }}
+          insecure: true
 
     service:
       extensions: [health_check]
       pipelines:
-        traces:
+        metrics:
           receivers: [otlp]
           processors: [resource, batch]
           exporters: [otlp]
         logs:
-          receivers: [otlp, k8s_events]
+          receivers: [k8s_events, otlp]
+          processors: [resource, batch]
+          exporters: [otlp]
+        traces:
+          receivers: [otlp]
           processors: [resource, batch]
           exporters: [otlp]
 ---
