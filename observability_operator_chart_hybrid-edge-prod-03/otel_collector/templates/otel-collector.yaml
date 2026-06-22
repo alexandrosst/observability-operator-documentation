@@ -45,7 +45,7 @@ data:
                   replacement: "kubernetes.default.svc:443"
                   action: "replace"
                 - source_labels: [__meta_kubernetes_node_name]
-                  regex: "(.+)"
+                  regex: "^(.+)$"
                   target_label: "__metrics_path__"
                   replacement: "/api/v1/nodes/$${1}/proxy/metrics/cadvisor"
                   action: "replace"
@@ -68,7 +68,7 @@ data:
                   replacement: "kubernetes.default.svc:443"
                   action: "replace"
                 - source_labels: [__meta_kubernetes_node_name]
-                  regex: "(.+)"
+                  regex: "^(.+)$"
                   target_label: "__metrics_path__"
                   replacement: "/api/v1/nodes/$${1}/proxy/metrics"
                   action: "replace"
@@ -116,6 +116,7 @@ data:
           receivers: [otlp, k8s_events]
           processors: [resource, batch]
           exporters: [otlp]
+
 ---
 apiVersion: apps/v1
 kind: Deployment
