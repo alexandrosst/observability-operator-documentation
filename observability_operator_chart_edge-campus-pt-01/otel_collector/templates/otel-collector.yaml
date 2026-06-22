@@ -94,4 +94,8 @@ metadata:
 spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
-  ports: []
+  ports:
+    - name: otlp-http
+      protocol: TCP
+      port: 4318
+      targetPort: 4318
