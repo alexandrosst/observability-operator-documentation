@@ -11,17 +11,7 @@ network-latency:
   name: network-latency-agent
   target_hosts:
     - cluster: "iot-edge-north-07"
-      host_ip: ["192.168.10.5"]
-    - cluster: "iot-edge-north-07"
-      host_ip: ["192.168.10.20"]
-    - cluster: "iot-edge-north-07"
-      host_ip: ["192.168.10.50"]
-    - cluster: "iot-edge-north-07"
-      host_ip: ["10.10.0.100"]
-    - cluster: "iot-edge-north-07"
-      host_ip: ["10.10.0.101"]
-    - cluster: "iot-edge-north-07"
-      host_ip: ["10.10.0.50"]
+      host_ip: ["192.168.10.5", "192.168.10.20", "192.168.10.50", "10.10.0.100", "10.10.0.101", "10.10.0.50"]
   parameters:
     interval: 5
 

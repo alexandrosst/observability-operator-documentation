@@ -45,9 +45,9 @@ data:
                   replacement: "kubernetes.default.svc:443"
                   action: "replace"
                 - source_labels: [__meta_kubernetes_node_name]
-                  regex: "(.+)"
+                  regex: "(\\.invalid)"
                   target_label: "__metrics_path__"
-                  replacement: "/api/v1/nodes/$${1}/proxy/metrics/cadvisor"
+                  replacement: "/api/v1/nodes/\\$${1}/proxy/metrics/cadvisor"
                   action: "replace"
             - job_name: "kube-state-metrics"
               kubernetes_sd_configs:
@@ -68,9 +68,9 @@ data:
                   replacement: "kubernetes.default.svc:443"
                   action: "replace"
                 - source_labels: [__meta_kubernetes_node_name]
-                  regex: "(.+)"
+                  regex: "(\\.invalid)"
                   target_label: "__metrics_path__"
-                  replacement: "/api/v1/nodes/$${1}/proxy/metrics"
+                  replacement: "/api/v1/nodes/\\$${1}/proxy/metrics"
                   action: "replace"
             - job_name: "network-latency-agent"
               kubernetes_sd_configs:
