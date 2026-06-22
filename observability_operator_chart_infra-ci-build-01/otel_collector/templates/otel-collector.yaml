@@ -9,16 +9,15 @@ data:
         endpoint: 0.0.0.0:13133
 
     receivers:
+      k8s_events:
+        auth_type: serviceAccount
+        namespaces: []
       otlp:
         protocols:
           grpc:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
-
-      k8s_events:
-        auth_type: serviceAccount
-        namespaces: []
 
     processors:
       batch:
@@ -41,7 +40,6 @@ data:
           receivers: [otlp, k8s_events]
           processors: [resource, batch]
           exporters: [otlp]
-
 ---
 apiVersion: apps/v1
 kind: Deployment
