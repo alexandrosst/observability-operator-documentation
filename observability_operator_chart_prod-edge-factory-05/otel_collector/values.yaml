@@ -1,10 +1,10 @@
 otelCollector:
   clusterName: "prod-edge-factory-05"
   scrapeInterval: 20s
-  evaluationInterval: 20s
+  evaluationInterval: 5s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "192d955f7c4cfee9dd9748041063c640b40742ac4bd36497aa1d9909b366dd09"
+  configChecksum: "72962711d557ef144d5fd769827d54e4b6e3aaee6f273c9c97a326eb4e7200da"
   serviceName: otel-collector
   replicas: 1
   image:
