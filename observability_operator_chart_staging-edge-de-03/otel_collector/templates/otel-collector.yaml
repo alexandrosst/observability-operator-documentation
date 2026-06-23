@@ -9,6 +9,7 @@ data:
         endpoint: 0.0.0.0:13133
 
     receivers:
+      # prometheus: include if any scrape-based signal is requested
       prometheus:
         config:
           global:
@@ -49,21 +50,26 @@ data:
                   target_label: "__metrics_path__"
                   replacement: "/api/v1/nodes/$${1}/proxy/metrics/cadvisor"
                   action: "replace"
+            - job_name: "kube-state-metrics"
+              kubernetes_sd_configs:
+                - role: "endpoints"
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_service_name]
+                  action: keep
+                  regex: kube-state-metrics
 
-            - job_name: "otlp-metrics"
-              scrape_interval: 15s
-              scrape_timeout: 10s
-              metrics_path: /v1/metrics
-              scheme: http
-              static_configs:
-                - targets: ["otel-collector:4318"]
-
+      # otlp: include if applicationMetrics, applicationLogs, traces, or systemLogs requested
       otlp:
         protocols:
           grpc:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
+
+      # k8s_events: include only if kubernetesEvents requested
+      # k8s_events:
+      #   auth_type: serviceAccount
+      #   namespaces: []
 
     processors:
       batch:
@@ -82,14 +88,23 @@ data:
     service:
       extensions: [health_check]
       pipelines:
+        # metrics: include when any metrics signal is requested
         metrics:
-          receivers: [prometheus]
+          receivers: [prometheus, otlp]
           processors: [resource, batch]
           exporters: [otlp]
+
+        # logs: include when applicationLogs, systemLogs, or kubernetesEvents requested
         logs:
           receivers: [otlp]
           processors: [resource, batch]
           exporters: [otlp]
+
+        # traces: include only when traces requested
+        # traces:
+        #   receivers: [otlp]
+        #   processors: [resource, batch]
+        #   exporters: [otlp]
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -139,6 +154,10 @@ spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
+    - name: otlp-grpc
+      protocol: TCP
+      port: 4317
+      targetPort: 4317
     - name: otlp-http
       protocol: TCP
       port: 4318

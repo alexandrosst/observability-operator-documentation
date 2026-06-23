@@ -1,10 +1,10 @@
 otelCollector:
-  clusterName: staging-edge-de-03
+  clusterName: "staging-edge-de-03"
   scrapeInterval: 15s
-  evaluationInterval: 15s
+  evaluationInterval: 5s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "1f39953b8e7433756cefbf73a05f938434292f02ca90c8143b81ba4c328a4a06"
+  configChecksum: "f64b6a84ea2b9a99c7cf685df9fd5d744fd69fb48e895a143245d71cdd846ae9"
   serviceName: otel-collector
   replicas: 1
   image:
@@ -13,7 +13,7 @@ otelCollector:
     tag: "0.98.0"
   exporters:
     otlp:
-      host: collector.infra.local
+      host: "collector.infra.local"
       port: 4318
       tls:
         insecure: true

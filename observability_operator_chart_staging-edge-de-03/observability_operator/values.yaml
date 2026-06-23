@@ -1,24 +1,22 @@
-energy:
+# Uncomment and fill in only the blocks for included dependencies.
+
+kepler:
   fullnameOverride: kepler
+
 prometheus-node-exporter:
   fullnameOverride: node-exporter
 
-otel-collector:
-  clusterName: staging-edge-de-03
-  scrapeInterval: 15s
-  evaluationInterval: 15s
-  deploymentName: otel-collector
-  configMapName: otel-collector-config
-  configChecksum: ""
-  serviceName: otel-collector
-  replicas: 1
-  image:
-    registry: otel
-    name: opentelemetry-collector-contrib
-    tag: "0.98.0"
-  exporters:
-    otlp:
-      host: collector.infra.local
-      port: 4318
-      tls:
-        insecure: true
+kube-state-metrics:
+  fullnameOverride: kube-state-metrics
+
+# network-latency:
+#   name: network-latency-agent   # determines the Kubernetes Service name: <name>-service
+#   target_hosts:
+#     - cluster: "staging-edge-de-03"
+#       host_ip: ["<IP>"]
+#   parameters:
+#     interval: 5                 # scrape interval in seconds (integer, no 's' suffix)
+
+# fluent-bit:
+#   fullnameOverride: fluent-bit
+#   <see Fluent Bit section below for full config>
