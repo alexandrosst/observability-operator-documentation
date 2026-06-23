@@ -9,6 +9,7 @@ data:
         endpoint: 0.0.0.0:13133
 
     receivers:
+      # prometheus: include if any scrape-based signal is requested
       prometheus:
         config:
           global:
@@ -24,6 +25,19 @@ data:
                   action: "keep"
                 - source_labels: [__meta_kubernetes_pod_node_name]
                   target_label: node
+
+      # otlp: include if applicationMetrics, applicationLogs, traces, or systemLogs requested
+      # otlp:
+      #   protocols:
+      #     grpc:
+      #       endpoint: 0.0.0.0:4317
+      #     http:
+      #       endpoint: 0.0.0.0:4318
+
+      # k8s_events: include only if kubernetesEvents requested
+      # k8s_events:
+      #   auth_type: serviceAccount
+      #   namespaces: []
 
     processors:
       batch:
@@ -42,10 +56,23 @@ data:
     service:
       extensions: [health_check]
       pipelines:
+        # metrics: include when any metrics signal is requested
         metrics:
-          receivers: [prometheus]
+          receivers: [prometheus]   # add otlp here too if applicationMetrics requested
           processors: [resource, batch]
           exporters: [otlp]
+
+        # logs: include when applicationLogs, systemLogs, or kubernetesEvents requested
+        # logs:
+        #   receivers: [otlp]         # add k8s_events here if kubernetesEvents requested
+        #   processors: [resource, batch]
+        #   exporters: [otlp]
+
+        # traces: include only when traces requested
+        # traces:
+        #   receivers: [otlp]
+        #   processors: [resource, batch]
+        #   exporters: [otlp]
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -95,6 +122,12 @@ spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
+    # Include otlp-grpc and otlp-http only when the otlp receiver is defined.
+    # Omit entirely if no otlp receiver.
+    - name: otlp-grpc
+      protocol: TCP
+      port: 4317
+      targetPort: 4317
     - name: otlp-http
       protocol: TCP
       port: 4318
