@@ -1,6 +1,6 @@
 apiVersion: v2
 name: observability_operator
-setDescription: Observability Operator for edge-events-only-03
+description: Observability Operator for edge-events-only-03
 type: application
 version: 0.1.0
 dependencies:
