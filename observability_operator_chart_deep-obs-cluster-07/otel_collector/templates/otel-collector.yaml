@@ -24,6 +24,7 @@ data:
                   action: "keep"
                 - source_labels: [__meta_kubernetes_pod_node_name]
                   target_label: node
+
             - job_name: "node-exporter"
               kubernetes_sd_configs:
                 - role: "pod"
@@ -33,6 +34,7 @@ data:
                   action: "keep"
                 - source_labels: [__meta_kubernetes_pod_node_name]
                   target_label: node
+
             - job_name: "cadvisor"
               scheme: "https"
               tls_config:
@@ -45,10 +47,11 @@ data:
                   replacement: "kubernetes.default.svc:443"
                   action: "replace"
                 - source_labels: [__meta_kubernetes_node_name]
-                  regex: "^(.+)$"
+                  regex: "(.+)"
                   target_label: "__metrics_path__"
                   replacement: "/api/v1/nodes/$${1}/proxy/metrics/cadvisor"
                   action: "replace"
+
             - job_name: "kube-state-metrics"
               kubernetes_sd_configs:
                 - role: "endpoints"
@@ -56,6 +59,7 @@ data:
                 - source_labels: [__meta_kubernetes_service_name]
                   action: keep
                   regex: kube-state-metrics
+
             - job_name: "kubelet"
               scheme: "https"
               tls_config:
@@ -68,23 +72,26 @@ data:
                   replacement: "kubernetes.default.svc:443"
                   action: "replace"
                 - source_labels: [__meta_kubernetes_node_name]
-                  regex: "^(.+)$"
+                  regex: "(.+)"
                   target_label: "__metrics_path__"
                   replacement: "/api/v1/nodes/$${1}/proxy/metrics"
                   action: "replace"
+
             - job_name: "network-latency-agent"
               kubernetes_sd_configs:
                 - role: "service"
               relabel_configs:
                 - source_labels: [__meta_kubernetes_service_name]
                   action: keep
-                  regex: network-latency-agent-service
+                  regex: network-latency-agent-service   # e.g. network-latency-agent-service
+
       otlp:
         protocols:
           grpc:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
+
       k8s_events:
         auth_type: serviceAccount
         namespaces: []
@@ -107,13 +114,15 @@ data:
       extensions: [health_check]
       pipelines:
         metrics:
-          receivers: [prometheus]
+          receivers: [prometheus, otlp]
           processors: [resource, batch]
           exporters: [otlp]
+
         logs:
           receivers: [otlp, k8s_events]
           processors: [resource, batch]
           exporters: [otlp]
+
         traces:
           receivers: [otlp]
           processors: [resource, batch]
