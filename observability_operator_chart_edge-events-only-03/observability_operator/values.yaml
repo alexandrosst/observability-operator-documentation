@@ -12,7 +12,7 @@
 # network-latency:
 #   name: network-latency-agent   # determines the Kubernetes Service name: <name>-service
 #   target_hosts:
-#     - cluster: "<clusterName>"
+#     - cluster: "edge-events-only-03"
 #       host_ip: ["<IP>"]
 #   parameters:
 #     interval: 5                 # scrape interval in seconds (integer, no 's' suffix)

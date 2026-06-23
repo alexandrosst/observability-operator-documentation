@@ -1,9 +1,11 @@
 apiVersion: v2
 name: observability_operator
-description: Observability Operator for edge-events-only-03
+setDescription: Observability Operator for edge-events-only-03
 type: application
 version: 0.1.0
 dependencies:
   - name: otel-collector
     version: 0.1.0
     repository: "file://../otel_collector"
+  # Add only signal-required external dependencies below.
+  # Use exact versions from the table in section 4.
