@@ -1,10 +1,10 @@
 otelCollector:
   clusterName: "trace-only-staging-01"
   scrapeInterval: 30s
-  evaluationInterval: 5s
+  evaluationInterval: 30s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "b804caf8cba9122781482633615504edf27e6e6599b2a40a2d6b10da856eb920"
+  configChecksum: "4b9dbe372a4cfe27f7413989358fc22071c89c7fd2afec7ec6845e59828dc33e"
   serviceName: otel-collector
   replicas: 1
   image:
