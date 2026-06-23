@@ -30,7 +30,7 @@ data:
               relabel_configs:
                 - source_labels: [__meta_kubernetes_service_name]
                   action: keep
-                  regex: network-latency-agent-service   # e.g. network-latency-agent-service
+                  regex: network-latency-agent-service
 
     processors:
       batch:

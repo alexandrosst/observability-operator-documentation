@@ -8,12 +8,12 @@
 #   fullnameOverride: kube-state-metrics
 
 network-latency:
-  name: network-latency-agent   # determines the Kubernetes Service name: <name>-service
+  name: network-latency-agent
   target_hosts:
     - cluster: "edge-gw-probe-01"
       host_ip: ["10.0.1.1"]
   parameters:
-    interval: 15                 # scrape interval in seconds (integer, no 's' suffix)
+    interval: 15
 
 # fluent-bit:
 #   fullnameOverride: fluent-bit
