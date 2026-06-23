@@ -90,7 +90,7 @@ data:
       pipelines:
         # metrics: include when any metrics signal is requested
         metrics:
-          receivers: [prometheus]
+          receivers: [prometheus, otlp]
           processors: [resource, batch]
           exporters: [otlp]
 
@@ -99,6 +99,12 @@ data:
           receivers: [otlp, k8s_events]
           processors: [resource, batch]
           exporters: [otlp]
+
+        # traces: include only when traces requested
+        # traces:
+        #   receivers: [otlp]
+        #   processors: [resource, batch]
+        #   exporters: [otlp]
 ---
 apiVersion: apps/v1
 kind: Deployment
