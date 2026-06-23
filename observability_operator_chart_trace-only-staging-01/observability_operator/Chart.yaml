@@ -1,6 +1,6 @@
 apiVersion: v2
 name: observability_operator
-description: Observability Operator for trace-only-staging-01
+setDescription: Observability Operator for trace-only-staging-01
 type: application
 version: 0.1.0
 dependencies:
