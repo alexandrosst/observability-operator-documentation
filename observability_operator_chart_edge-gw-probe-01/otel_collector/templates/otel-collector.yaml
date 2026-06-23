@@ -15,14 +15,6 @@ data:
             scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
             evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
           scrape_configs:
-            - job_name: "network-latency-agent"
-              kubernetes_sd_configs:
-                - role: "service"
-              relabel_configs:
-                - source_labels: [__meta_kubernetes_service_name]
-                  action: keep
-                  regex: network-latency-agent-service
-
             - job_name: "node-exporter"
               kubernetes_sd_configs:
                 - role: "pod"
@@ -32,6 +24,13 @@ data:
                   action: "keep"
                 - source_labels: [__meta_kubernetes_pod_node_name]
                   target_label: node
+            - job_name: "network-latency-agent"
+              kubernetes_sd_configs:
+                - role: "service"
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_service_name]
+                  action: keep
+                  regex: network-latency-agent-service   # e.g. network-latency-agent-service
 
     processors:
       batch:
@@ -103,6 +102,10 @@ spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
+    - name: otlp-grpc
+      protocol: TCP
+      port: 4317
+      targetPort: 4317
     - name: otlp-http
       protocol: TCP
       port: 4318

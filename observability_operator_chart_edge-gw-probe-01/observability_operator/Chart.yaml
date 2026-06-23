@@ -1,6 +1,6 @@
 apiVersion: v2
 name: observability_operator
-description: Observability Operator for edge-gw-probe-01
+setDescription: Observability Operator for edge-gw-probe-01
 type: application
 version: 0.1.0
 dependencies:
@@ -13,3 +13,4 @@ dependencies:
   - name: prometheus-node-exporter
     version: 4.55.0
     repository: "https://prometheus-community.github.io/helm-charts"
+
