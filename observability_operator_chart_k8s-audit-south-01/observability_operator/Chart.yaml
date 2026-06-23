@@ -7,8 +7,6 @@ dependencies:
   - name: otel-collector
     version: 0.1.0
     repository: "file://../otel_collector"
-  # Add only signal-required external dependencies below.
-  # Use exact versions from the table in section 4.
   - name: kube-state-metrics
     version: 7.4.0
     repository: "https://prometheus-community.github.io/helm-charts"

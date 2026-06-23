@@ -56,13 +56,13 @@ data:
       pipelines:
         # metrics: include when any metrics signal is requested
         metrics:
-          receivers: [prometheus]   # add otlp here too if applicationMetrics requested
+          receivers: [prometheus]
           processors: [resource, batch]
           exporters: [otlp]
 
         # logs: include when applicationLogs, systemLogs, or kubernetesEvents requested
         logs:
-          receivers: [otlp, k8s_events]         # add k8s_events here if kubernetesEvents requested
+          receivers: [otlp, k8s_events]
           processors: [resource, batch]
           exporters: [otlp]
 
