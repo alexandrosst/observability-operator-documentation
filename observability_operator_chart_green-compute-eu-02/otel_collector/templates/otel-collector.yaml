@@ -1,8 +1,7 @@
----
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: otel-collector-config
+  name: {{ .Values.otelCollector.configMapName }}
 data:
   otel-agent-config.yaml: |
     extensions:
@@ -10,11 +9,12 @@ data:
         endpoint: 0.0.0.0:13133
 
     receivers:
+      # prometheus: include if any scrape-based signal is requested
       prometheus:
         config:
           global:
-            scrape_interval: 20s
-            evaluation_interval: 20s
+            scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
+            evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
           scrape_configs:
             - job_name: "kepler"
               kubernetes_sd_configs:
@@ -42,48 +42,74 @@ data:
                   replacement: "/api/v1/nodes/$${1}/proxy/metrics/cadvisor"
                   action: "replace"
 
+      # otlp: include if applicationMetrics, applicationLogs, traces, or systemLogs requested
+      # otlp:
+      #   protocols:
+      #     grpc:
+      #       endpoint: 0.0.0.0:4317
+      #     http:
+      #       endpoint: 0.0.0.0:4318
+
+      # k8s_events: include only if kubernetesEvents requested
+      # k8s_events:
+      #   auth_type: serviceAccount
+      #   namespaces: []
+
     processors:
       batch:
       resource:
         attributes:
           - key: cluster
-            value: green-compute-eu-02
+            value: {{ .Values.otelCollector.clusterName }}
             action: insert
 
     exporters:
       otlp:
-        endpoint: energy-collector.infra.local:4318
+        endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
         tls:
-          insecure: true
+          insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure }}
 
     service:
       extensions: [health_check]
       pipelines:
+        # metrics: include when any metrics signal is requested
         metrics:
           receivers: [prometheus]
           processors: [resource, batch]
           exporters: [otlp]
+
+        # logs: include when applicationLogs, systemLogs, or kubernetesEvents requested
+        # logs:
+        #   receivers: [otlp]
+        #   processors: [resource, batch]
+        #   exporters: [otlp]
+
+        # traces: include only when traces requested
+        # traces:
+        #   receivers: [otlp]
+        #   processors: [resource, batch]
+        #   exporters: [otlp]
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: otel-collector
+  name: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.otelCollector.replicas }}
   selector:
     matchLabels:
-      app: otel-collector
+      app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   template:
     metadata:
       labels:
-        app: otel-collector
+        app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
       annotations:
         checksum/config: {{ .Values.otelCollector.configChecksum }}
     spec:
-      serviceAccountName: otel-collector
+      serviceAccountName: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
       containers:
-        - name: otel-collector
-          image: "otel/opentelemetry-collector-contrib:0.98.0"
+        - name: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
+          image: "{{ .Values.otelCollector.image.registry }}/{{ .Values.otelCollector.image.name }}:{{ .Values.otelCollector.image.tag }}"
           imagePullPolicy: Always
           args: ["--config=/conf/otel-agent-config.yaml"]
           volumeMounts:
@@ -102,7 +128,7 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: otel-collector-config
+            name: {{ .Values.otelCollector.configMapName }}
 ---
 apiVersion: v1
 kind: Service
@@ -110,8 +136,10 @@ metadata:
   name: {{ .Values.otelCollector.serviceName }}
 spec:
   selector:
-    app: otel-collector
+    app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
+    # Include otlp-grpc and otlp-http only when the otlp receiver is defined.
+    # Omit entirely if no otlp receiver.
     - name: otlp-http
       protocol: TCP
       port: 4318
