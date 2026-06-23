@@ -1,6 +1,6 @@
 apiVersion: v2
 name: observability_operator
-setDescription: Observability Operator for cluster-metrics-only-cluster-02
+description: Observability Operator for cluster-metrics-only-cluster-02
 type: application
 version: 0.1.0
 dependencies:
