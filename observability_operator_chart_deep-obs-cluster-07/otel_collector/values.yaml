@@ -4,7 +4,7 @@ otelCollector:
   evaluationInterval: 5s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "a5c7a7cca08ddaa28e69f50a66b01ed52c132e61ee7568a5b56d187ecb39c0d1"
+  configChecksum: "5e502a352c585201b1d585b127b9249905fc20448a73e7e66a83f4799b6efc08"
   serviceName: otel-collector
   replicas: 1
   image:
@@ -17,3 +17,10 @@ otelCollector:
       port: 4318
       tls:
         insecure: true
+  processors:
+    batch:
+    resource:
+      attributes:
+        - key: cluster
+          value: deep-obs-cluster-07
+          action: insert
