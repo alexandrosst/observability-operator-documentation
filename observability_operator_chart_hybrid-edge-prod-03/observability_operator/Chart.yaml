@@ -1,6 +1,6 @@
 apiVersion: v2
 name: observability_operator
-description: Observability Operator for hybrid-edge-prod-03
+setDescription: Observability Operator for hybrid-edge-prod-03
 type: application
 version: 0.1.0
 dependencies:

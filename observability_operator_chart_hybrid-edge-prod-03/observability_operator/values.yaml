@@ -1,19 +1,10 @@
-kepler:
-  fullnameOverride: kepler
-
-prometheus-node-exporter:
-  fullnameOverride: node-exporter
-
-kube-state-metrics:
-  fullnameOverride: kube-state-metrics
-
 network-latency:
-  name: network-latency-agent
+  name: network-latency-agent   # determines the Kubernetes Service name: <name>-service
   target_hosts:
     - cluster: "hybrid-edge-prod-03"
       host_ip: ["172.20.0.10", "172.20.0.20"]
   parameters:
-    interval: 10
+    interval: 10                 # scrape interval in seconds (integer, no 's' suffix)
 
 fluent-bit:
   fullnameOverride: fluent-bit

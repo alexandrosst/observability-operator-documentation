@@ -9,6 +9,7 @@ data:
         endpoint: 0.0.0.0:13133
 
     receivers:
+      # prometheus: include if any scrape-based signal is requested
       prometheus:
         config:
           global:
@@ -45,7 +46,7 @@ data:
                   replacement: "kubernetes.default.svc:443"
                   action: "replace"
                 - source_labels: [__meta_kubernetes_node_name]
-                  regex: "^(.+)"
+                  regex: "(.+)"
                   target_label: "__metrics_path__"
                   replacement: "/api/v1/nodes/$${1}/proxy/metrics/cadvisor"
                   action: "replace"
@@ -68,7 +69,7 @@ data:
                   replacement: "kubernetes.default.svc:443"
                   action: "replace"
                 - source_labels: [__meta_kubernetes_node_name]
-                  regex: "^(.+)"
+                  regex: "(.+)"
                   target_label: "__metrics_path__"
                   replacement: "/api/v1/nodes/$${1}/proxy/metrics"
                   action: "replace"
@@ -79,12 +80,16 @@ data:
                 - source_labels: [__meta_kubernetes_service_name]
                   action: keep
                   regex: network-latency-agent-service
+
+      # otlp: include if applicationMetrics, applicationLogs, traces, or systemLogs requested
       otlp:
         protocols:
           grpc:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
+
+      # k8s_events: include only if kubernetesEvents requested
       k8s_events:
         auth_type: serviceAccount
         namespaces: []
@@ -106,18 +111,23 @@ data:
     service:
       extensions: [health_check]
       pipelines:
+        # metrics: include when any metrics signal is requested
         metrics:
-          receivers: [prometheus]
+          receivers: [prometheus, otlp]
           processors: [resource, batch]
           exporters: [otlp]
+
+        # logs: include when applicationLogs, systemLogs, or kubernetesEvents requested
         logs:
           receivers: [otlp, k8s_events]
           processors: [resource, batch]
           exporters: [otlp]
-        traces:
-          receivers: [otlp]
-          processors: [resource, batch]
-          exporters: [otlp]
+
+        # traces: include only when traces requested
+        # traces:
+        #   receivers: [otlp]
+        #   processors: [resource, batch]
+        #   exporters: [otlp]
 ---
 apiVersion: apps/v1
 kind: Deployment
