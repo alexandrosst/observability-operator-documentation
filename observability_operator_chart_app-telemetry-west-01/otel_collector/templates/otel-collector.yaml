@@ -115,6 +115,7 @@ spec:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
     # Include otlp-grpc and otlp-http only when the otlp receiver is defined.
+    # Omit entirely if no otlp receiver.
     - name: otlp-grpc
       protocol: TCP
       port: 4317
