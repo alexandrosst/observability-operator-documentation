@@ -1,7 +1,7 @@
 otelCollector:
   clusterName: "datacenter-south-02"
   scrapeInterval: 10s
-  evaluationInterval: 5s
+  evaluationInterval: 10s
   deploymentName: otel-collector
   configMapName: otel-collector-config
   configChecksum: "bcbf19a8727d1b0bb0b82224aa85e7c58fe6b4731bbf7485f56a6558574acc65"
