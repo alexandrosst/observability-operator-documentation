@@ -56,7 +56,7 @@ data:
 
         # logs: include when applicationLogs, systemLogs, or kubernetesEvents requested
         logs:
-          receivers: [otlp]
+          receivers: [otlp]         # add k8s_events here if kubernetesEvents requested
           processors: [resource, batch]
           exporters: [otlp]
 
