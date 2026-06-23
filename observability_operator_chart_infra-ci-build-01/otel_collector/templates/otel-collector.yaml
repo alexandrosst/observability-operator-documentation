@@ -9,6 +9,22 @@ data:
         endpoint: 0.0.0.0:13133
 
     receivers:
+      # prometheus: include if any scrape-based signal is requested
+      prometheus:
+        config:
+          global:
+            scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
+            evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
+          scrape_configs:
+            - job_name: "kube-state-metrics"
+              kubernetes_sd_configs:
+                - role: "endpoints"
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_service_name]
+                  action: keep
+                  regex: kube-state-metrics
+
+      # otlp: include if applicationMetrics, applicationLogs, traces, or systemLogs requested
       otlp:
         protocols:
           grpc:
@@ -16,6 +32,7 @@ data:
           http:
             endpoint: 0.0.0.0:4318
 
+      # k8s_events: include only if kubernetesEvents requested
       k8s_events:
         auth_type: serviceAccount
         namespaces: []
@@ -25,26 +42,31 @@ data:
       resource:
         attributes:
           - key: cluster
-            value: infra-ci-build-01
+            value: {{ .Values.otelCollector.clusterName }}
             action: insert
 
     exporters:
       otlp:
-        endpoint: audit-collector.ci-infra.svc:4318
+        endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
         tls:
-          insecure: true
+          insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure }}
 
     service:
       extensions: [health_check]
       pipelines:
+        # metrics: include when any metrics signal is requested
         metrics:
-          receivers: [otlp]
+          receivers: [prometheus, otlp]
           processors: [resource, batch]
           exporters: [otlp]
+
+        # logs: include when applicationLogs, systemLogs, or kubernetesEvents requested
         logs:
-          receivers: [k8s_events, otlp]
+          receivers: [otlp, k8s_events]
           processors: [resource, batch]
           exporters: [otlp]
+
+        # traces: include only when traces requested
         traces:
           receivers: [otlp]
           processors: [resource, batch]
@@ -98,6 +120,7 @@ spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
+    # Include otlp-grpc and otlp-http only when the otlp receiver is defined.
     - name: otlp-grpc
       protocol: TCP
       port: 4317

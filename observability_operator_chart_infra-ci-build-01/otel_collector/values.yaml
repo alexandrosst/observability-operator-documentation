@@ -1,19 +1,19 @@
 otelCollector:
-  clusterName: infra-ci-build-01
+  clusterName: "infra-ci-build-01"
   scrapeInterval: 60s
-  evaluationInterval: 60s
+  evaluationInterval: 5s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "0eaea1b894a06f10c7b22ad39c569b056409cf94764594e7f3122fcfef3af9e2"
+  configChecksum: "89b80293add75277ba8afc312630d4fa0e9e55c99fb54c015fdc2513e1facaec"
   serviceName: otel-collector
   replicas: 1
   image:
     registry: otel
     name: opentelemetry-collector-contrib
-    tag: 0.98.0
+    tag: "0.98.0"
   exporters:
     otlp:
-      host: audit-collector.ci-infra.svc
+      host: "audit-collector.ci-infra.svc"
       port: 4318
       tls:
         insecure: true
