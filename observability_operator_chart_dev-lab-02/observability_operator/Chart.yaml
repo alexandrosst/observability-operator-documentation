@@ -1,14 +1,12 @@
 apiVersion: v2
 name: observability_operator
-description: Observability Operator for dev-lab-02
+setDescription: Observability Operator for dev-lab-02
 type: application
 version: 0.1.0
 dependencies:
   - name: otel-collector
     version: 0.1.0
     repository: "file://../otel_collector"
-  # Add only signal-required external dependencies below.
-  # Use exact versions from the table in section 4.
   - name: kepler
     version: 0.6.1
     repository: "https://sustainable-computing-io.github.io/kepler-helm-chart"
