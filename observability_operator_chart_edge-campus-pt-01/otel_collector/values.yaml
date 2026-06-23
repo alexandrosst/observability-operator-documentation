@@ -1,10 +1,10 @@
 otelCollector:
   clusterName: "edge-campus-pt-01"
   scrapeInterval: 20s
-  evaluationInterval: 20s
+  evaluationInterval: 5s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "23fb3f9f2c4d122af2c18124ff18419cb054d32b233c222410fbbf6e2b38ee20"
+  configChecksum: "74306b7f042df3467b84a48f4d221ef58345e1b85be265f3fb227ab66bbf7fa1"
   serviceName: otel-collector
   replicas: 1
   image:
