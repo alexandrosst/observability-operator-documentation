@@ -50,6 +50,13 @@ data:
                   target_label: "__metrics_path__"
                   replacement: "/api/v1/nodes/$${1}/proxy/metrics/cadvisor"
                   action: "replace"
+            - job_name: "kube-state-metrics"
+              kubernetes_sd_configs:
+                - role: "endpoints"
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_service_name]
+                  action: keep
+                  regex: kube-state-metrics
 
       # otlp: include if applicationMetrics, applicationLogs, traces, or systemLogs requested
       otlp:
