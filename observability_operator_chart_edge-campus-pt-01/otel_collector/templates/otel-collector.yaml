@@ -16,7 +16,6 @@ data:
             scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
             evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
           scrape_configs:
-            # node-exporter
             - job_name: "node-exporter"
               kubernetes_sd_configs:
                 - role: "pod"
