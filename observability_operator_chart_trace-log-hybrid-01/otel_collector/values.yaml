@@ -1,10 +1,10 @@
 otelCollector:
   clusterName: "trace-log-hybrid-01"
   scrapeInterval: 10s
-  evaluationInterval: 10s
+  evaluationInterval: 5s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "1baf161516fae7a58fd530775e2dd16e8cd03268d93ec8ca382276c6eb187ed6"
+  configChecksum: "f661aea8097d89600c5c6c638798242a61da80d7959b316355aff69e1a56edd2"
   serviceName: otel-collector
   replicas: 1
   image:
