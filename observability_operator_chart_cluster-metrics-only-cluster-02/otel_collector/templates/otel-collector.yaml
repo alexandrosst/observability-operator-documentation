@@ -106,7 +106,7 @@ data:
       pipelines:
         # metrics: include when any metrics signal is requested
         metrics:
-          receivers: [prometheus]   # add otlp here too if applicationMetrics requested
+          receivers: [prometheus]
           processors: [resource, batch]
           exporters: [otlp]
 
