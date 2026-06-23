@@ -1,10 +1,10 @@
 otelCollector:
   clusterName: "multi-probe-datacenter-01"
   scrapeInterval: 10s
-  evaluationInterval: 10s
+  evaluationInterval: 5s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "3e8f52b18dd092c2e3e28aa8a964646dc9f8f00a863e544ea9d7373f4bca0672"
+  configChecksum: "f96b3fb76c8f4d2ea749e92e0768bbf2e18e1e68e598547e2b26985b3e66f328"
   serviceName: otel-collector
   replicas: 1
   image:

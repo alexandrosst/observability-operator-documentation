@@ -24,6 +24,13 @@ data:
                   action: "keep"
                 - source_labels: [__meta_kubernetes_pod_node_name]
                   target_label: node
+            - job_name: "kube-state-metrics"
+              kubernetes_sd_configs:
+                - role: "endpoints"
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_service_name]
+                  action: keep
+                  regex: kube-state-metrics
             - job_name: "network-latency-agent"
               kubernetes_sd_configs:
                 - role: "service"
@@ -31,6 +38,7 @@ data:
                 - source_labels: [__meta_kubernetes_service_name]
                   action: keep
                   regex: network-latency-agent-service
+
       k8s_events:
         auth_type: serviceAccount
         namespaces: []
@@ -56,10 +64,12 @@ data:
           receivers: [prometheus]
           processors: [resource, batch]
           exporters: [otlp]
+
         logs:
           receivers: [k8s_events]
           processors: [resource, batch]
           exporters: [otlp]
+
 ---
 apiVersion: apps/v1
 kind: Deployment
