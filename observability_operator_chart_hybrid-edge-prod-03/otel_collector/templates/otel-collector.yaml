@@ -124,10 +124,10 @@ data:
           exporters: [otlp]
 
         # traces: include only when traces requested
-        # traces:
-        #   receivers: [otlp]
-        #   processors: [resource, batch]
-        #   exporters: [otlp]
+        traces:
+          receivers: [otlp]
+          processors: [resource, batch]
+          exporters: [otlp]
 ---
 apiVersion: apps/v1
 kind: Deployment
