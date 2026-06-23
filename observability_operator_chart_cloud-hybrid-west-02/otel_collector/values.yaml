@@ -1,10 +1,10 @@
 otelCollector:
   clusterName: "cloud-hybrid-west-02"
   scrapeInterval: 10s
-  evaluationInterval: 10s
+  evaluationInterval: 5s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "012bd1af442a0f2f21a59db14f3f559e7bbbc426a251c11f0148f8657fb7ab56"
+  configChecksum: "3be193afddfb52de86712b3e4482bc6ae315ee7bdc7d17046c90c3a25748e8bd"
   serviceName: otel-collector
   replicas: 1
   image:
