@@ -9,6 +9,7 @@ data:
         endpoint: 0.0.0.0:13133
 
     receivers:
+      # prometheus: include if any scrape-based signal is requested
       prometheus:
         config:
           global:
@@ -57,6 +58,7 @@ data:
                   action: keep
                   regex: kube-state-metrics
 
+      # otlp: include if applicationMetrics, applicationLogs, traces, or systemLogs requested
       otlp:
         protocols:
           grpc:
@@ -64,6 +66,7 @@ data:
           http:
             endpoint: 0.0.0.0:4318
 
+      # k8s_events: include only if kubernetesEvents requested
       k8s_events:
         auth_type: serviceAccount
         namespaces: []
@@ -85,10 +88,13 @@ data:
     service:
       extensions: [health_check]
       pipelines:
+        # metrics: include when any metrics signal is requested
         metrics:
           receivers: [prometheus]
           processors: [resource, batch]
           exporters: [otlp]
+
+        # logs: include when applicationLogs, systemLogs, or kubernetesEvents requested
         logs:
           receivers: [otlp, k8s_events]
           processors: [resource, batch]

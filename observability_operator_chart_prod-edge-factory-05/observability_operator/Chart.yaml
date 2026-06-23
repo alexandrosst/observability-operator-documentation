@@ -1,6 +1,6 @@
 apiVersion: v2
 name: observability_operator
-description: Observability Operator for prod-edge-factory-05
+setDescription: Observability Operator for prod-edge-factory-05
 type: application
 version: 0.1.0
 dependencies:
