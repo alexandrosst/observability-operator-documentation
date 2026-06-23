@@ -1,6 +1,6 @@
 apiVersion: v2
 name: observability_operator
-setDescription: Observability Operator for cloud-prod-eu-1
+description: Observability Operator for cloud-prod-eu-1
 type: application
 version: 0.1.0
 dependencies:
