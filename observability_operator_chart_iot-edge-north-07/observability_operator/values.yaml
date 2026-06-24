@@ -1,22 +1,16 @@
-# Uncomment and fill in only the blocks for included dependencies.
-
 kepler:
   fullnameOverride: kepler
-
 prometheus-node-exporter:
   fullnameOverride: node-exporter
-
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
-
 network-latency:
-  name: network-latency-agent   # determines the Kubernetes Service name: <name>-service
+  name: network-latency-agent
   target_hosts:
     - cluster: "iot-edge-north-07"
       host_ip: ["192.168.10.5", "192.168.10.20", "192.168.10.50", "10.10.0.100", "10.10.0.101", "10.10.0.50"]
   parameters:
-    interval: 5                 # scrape interval in seconds (integer, no 's' suffix)
-
+    interval: 5
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
@@ -62,7 +56,7 @@ fluent-bit:
       [OUTPUT]
           Name            opentelemetry
           Match           *
-          Host            otel-collector
+          Host            "otel-collector"
           Port            4318
           Logs_URI        /v1/logs
           Tls             Off

@@ -1,15 +1,14 @@
 otelCollector:
   clusterName: "iot-edge-north-07"
-  scrapeInterval: 5s
-  evaluationInterval: 5s
-  deploymentName: otel-collector
-  configMapName: otel-collector-config
-  configChecksum: "3be193afddfb52de86712b3e4482bc6ae315ee7bdc7d17046c90c3a25748e8bd"
-  serviceName: otel-collector
+  scrapeInterval: "5s"
+  evaluationInterval: "5s"
+  configChecksum: "1689ecd11edb0dceec51156046d8180cfdf34a0f82cac0d6276f1d67b62d8e64"
+  deploymentName: "otel-collector"
+  serviceName: "otel-collector"
   replicas: 1
   image:
-    registry: otel
-    name: opentelemetry-collector-contrib
+    registry: "otel"
+    name: "opentelemetry-collector-contrib"
     tag: "0.98.0"
   exporters:
     otlp:
