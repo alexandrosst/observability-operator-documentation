@@ -1,5 +1,7 @@
 apiVersion: v2
 name: observability_operator
+description: Observability Operator for green-compute-eu-02
+type: application
 version: 0.1.0
 dependencies:
   - name: otel-collector

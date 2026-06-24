@@ -1,10 +1,10 @@
 otelCollector:
   clusterName: "green-compute-eu-02"
   scrapeInterval: 20s
-  evaluationInterval: 20s
+  evaluationInterval: 5s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "88abf34f144dca6b832694cfaeff8dcb3e4d4673a0b396de633981bb4ba3d53e"
+  configChecksum: "5897028aeeead6f6d62c5f67fca12b3cdfa202143c46d0e267d05720f119bd2f"
   serviceName: otel-collector
   replicas: 1
   image:
