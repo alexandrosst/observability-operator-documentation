@@ -1,5 +1,5 @@
-kepler:
-  fullnameOverride: kepler
+# kepler:
+#   fullnameOverride: kepler
 
-prometheus-node-exporter:
-  fullnameOverride: node-exporter
+# prometheus-node-exporter:
+#   fullnameOverride: node-exporter
