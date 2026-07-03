@@ -1,0 +1,7 @@
+# Uncomment and fill in only the blocks for included dependencies.
+
+kepler:
+  fullnameOverride: kepler
+
+prometheus-node-exporter:
+  fullnameOverride: node-exporter
