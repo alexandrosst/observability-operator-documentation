@@ -1,3 +1,5 @@
+# Uncomment and fill in only the blocks for included dependencies.
+
 kepler:
   fullnameOverride: kepler
 
@@ -8,16 +10,20 @@ kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
 network-latency:
-  name: network-latency-agent
+  name: network-latency-agent   # determines the Kubernetes Service name: <name>-service
   target_hosts:
     - cluster: "greg_k8s_cluster"
-      host_ip: ["147.102.13.108"]
+      host_ip:
+        - "147.102.13.108"
     - cluster: "greg_k8s_cluster"
-      host_ip: ["147.102.13.108"]
+      host_ip:
+        - "147.102.13.108"
     - cluster: "greg_k8s_cluster"
-      host_ip: ["147.102.13.108"]
+      host_ip:
+        - "147.102.13.108"
     - cluster: "greg_k8s_cluster"
-      host_ip: ["147.102.13.109"]
+      host_ip:
+        - "147.102.13.109"
   parameters:
     interval: 15
 
@@ -32,7 +38,7 @@ fluent-bit:
       mountPath: /run/systemd/journal
       readOnly: true
   config:
-    inputs: |
+    inputs: |-
       [INPUT]
           Name           tail
           Tag            k3s.*
@@ -46,7 +52,7 @@ fluent-bit:
           Tag            node.system.*
           Path           /run/systemd/journal
           Systemd_Filter _SYSTEMD_UNIT=containerd
-    filters: |
+    filters: |-
       [FILTER]
           Name          modify
           Match         k3s.*
@@ -62,7 +68,7 @@ fluent-bit:
           Match         node.system.*
           Add           log_source containerd
           Add           service_name container-runtime
-    outputs: |
+    outputs: |-
       [OUTPUT]
           Name            opentelemetry
           Match           *
