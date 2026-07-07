@@ -88,11 +88,9 @@ data:
             endpoint: 0.0.0.0:4318
 
       k8s_events:
-        auth_type: serviceAccount
-        namespaces: []
 
     processors:
-      batch: {}
+      batch:
       resource:
         attributes:
           - key: cluster
