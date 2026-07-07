@@ -13,8 +13,14 @@ network-latency:
     - cluster: "alex_k8s_cluster"
       host_ip:
         - "147.102.13.108"
+    - cluster: "alex_k8s_cluster"
+      host_ip:
         - "147.102.13.108"
+    - cluster: "alex_k8s_cluster"
+      host_ip:
         - "147.102.13.108"
+    - cluster: "alex_k8s_cluster"
+      host_ip:
         - "147.102.13.109"
   parameters:
     interval: 5
