@@ -1,9 +1,9 @@
 otelCollector:
   clusterName: greg_k8s_cluster
-  configChecksum: "226271d4f0d75672e5c78e9e4645b6fa33568835cbd48350160ed9011802eb93"
+  configChecksum: "42df54b7d4f912d2bbe5c8c33965cb9dec0a66553b1167f72fb922b52f8880c1"
   configMapName: otel-collector-config
   deploymentName: otel-collector
-  evaluationInterval: 5s
+  evaluationInterval: 7s
   exporters:
     otlp:
       host: 147.102.7.110
@@ -15,5 +15,5 @@ otelCollector:
     registry: otel
     tag: 0.98.0
   replicas: 1
-  scrapeInterval: 5s
+  scrapeInterval: 7s
   serviceName: otel-collector
