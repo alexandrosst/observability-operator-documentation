@@ -13,9 +13,17 @@ network-latency:
     - cluster: "greg_k8s_cluster"
       host_ip:
         - "147.102.13.108"
-        - "147.Set ..."
+    - cluster: "greg_k8s_cluster"
+      host_ip:
+        - "147.102.13.108"
+    - cluster: "greg_k8s_cluster"
+      host_ip:
+        - "147.102.13.108"
+    - cluster: "greg_k8s_cluster"
+      host_ip:
+        - "147.102.13.109"
   parameters:
-    interval: 5
+    interval: 15
 
 fluent-bit:
   fullnameOverride: fluent-bit
