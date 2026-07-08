@@ -3,7 +3,7 @@ otelCollector:
   configChecksum: "6879dd454f0ebe57a5257243e03bb7854a647b29e17440054d9e4c26fe28f2c9"
   configMapName: otel-collector-config
   deploymentName: otel-collector
-  evaluationInterval: 60s
+  evaluationInterval: 15s
   exporters:
     otlp:
       host: 147.102.7.110
@@ -15,5 +15,5 @@ otelCollector:
     registry: otel
     tag: 0.98.0
   replicas: 1
-  scrapeInterval: 60s
+  scrapeInterval: 15s
   serviceName: otel-collector
