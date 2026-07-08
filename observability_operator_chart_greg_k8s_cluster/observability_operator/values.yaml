@@ -23,7 +23,10 @@ network-latency:
       host_ip:
         - "147.102.13.109"
   parameters:
-    interval: 15
+    interval: 5
+
+networkLatency:
+  name: network-latency-agent
 
 fluent-bit:
   fullnameOverride: fluent-bit
@@ -73,7 +76,7 @@ fluent-bit:
           Host            otel-collector
           Port            4318
           Logs_URI        /v1/logs
-          Tls             Off
+          Tls            Off
           Logs_body_key   log
           Logs_body_key_attributes true
           Logs_attributes_metadata_key attributes
