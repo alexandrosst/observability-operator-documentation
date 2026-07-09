@@ -1,19 +1,19 @@
 otelCollector:
-  clusterName: greg_k8s_cluster
-  configChecksum: "42df54b7d4f912d2bbe5c8c33965cb9dec0a66553b1167f72fb922b52f8880c1"
-  configMapName: otel-collector-config
+  clusterName: "greg_k8s_cluster"
+  scrapeInterval: 7s
+  evaluationInterval: 5s
   deploymentName: otel-collector
-  evaluationInterval: 7s
+  configMapName: otel-collector-config
+  configChecksum: "b58021dca2bfa45b5ba72247e1c467b60f68d70bf5a916a44ae38e197de77085"
+  serviceName: otel-collector
+  replicas: 1
+  image:
+    registry: otel
+    name: opentelemetry-collector-contrib
+    tag: "0.98.0"
   exporters:
     otlp:
-      host: 147.102.7.110
+      host: "147.102.7.110"
       port: 4318
       tls:
         insecure: true
-  image:
-    name: opentelemetry-collector-contrib
-    registry: otel
-    tag: 0.98.0
-  replicas: 1
-  scrapeInterval: 7s
-  serviceName: otel-collector
