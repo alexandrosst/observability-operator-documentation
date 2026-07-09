@@ -9,7 +9,27 @@ data:
         endpoint: 0.0.0.0:13133
 
     receivers:
-      # No receivers as no signals requested
+      # prometheus: include if any scrape-based signal is requested
+      # prometheus:
+      #   config:
+      #     global:
+      #       scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
+      #       evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
+      #     scrape_configs:
+      #       <paste only the scrape jobs for requested signals — see section 6>
+
+      # otlp: include if applicationMetrics, applicationLogs, traces, or systemLogs requested
+      # otlp:
+      #   protocols:
+      #     grpc:
+      #       endpoint: 0.0.0.0:4317
+      #     http:
+      #       endpoint: 0.0.0.0:4318
+
+      # k8s_events: include if kubernetesEvents requested
+      # k8s_events:
+      #   auth_type: serviceAccount
+      #   namespaces: []
 
     processors:
       batch:
@@ -28,7 +48,23 @@ data:
     service:
       extensions: [health_check]
       pipelines:
-        # No pipelines as no signals requested
+        # metrics: include when any metrics signal is requested
+        # metrics:
+        #   receivers: [prometheus]   # add otlp here too if applicationMetrics requested
+        #   processors: [resource, batch]
+        #   exporters: [otlp]
+
+        # logs: include when applicationLogs, systemLogs, or kubernetesEvents requested
+        # logs:
+        #   receivers: [otlp]         # add k8s_events here if kubernetesEvents requested
+        #   processors: [resource, batch]
+        #   exporters: [otlp]
+
+        # traces: include only when traces requested
+        # traces:
+        #   receivers: [otlp]
+        #   processors: [resource, batch]
+        #   exporters: [otlp]
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -77,4 +113,14 @@ metadata:
 spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
-  # No ports block because no otlp receiver
+  ports:
+    # Include otlp-grpc and otlp-http only when the otlp receiver is defined.
+    # Omit entirely if no otlp receiver.
+    # - name: otlp-grpc
+    #   protocol: TCP
+    #   port: 4317
+    #   targetPort: 4317
+    # - name: otlp-http
+    #   protocol: TCP
+    #   port: 4318
+    #   targetPort: 4318
