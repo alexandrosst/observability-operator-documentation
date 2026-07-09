@@ -9,30 +9,90 @@ data:
         endpoint: 0.0.0.0:13133
 
     receivers:
-      # prometheus: include if any scrape-based signal is requested
-      # prometheus:
-      #   config:
-      #     global:
-      #       scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
-      #       evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
-      #     scrape_configs:
-      #       <paste only the scrape jobs for requested signals — see section 6>
+      prometheus:
+        config:
+          global:
+            scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
+            evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
+          scrape_configs:
+            - job_name: "kepler"
+              kubernetes_sd_configs:
+                - role: "pod"
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+                  regex: "kepler"
+                  action: "keep"
+                - source_labels: [__meta_kubernetes_pod_node_name]
+                  target_label: node
+            - job_name: "node-exporter"
+              kubernetes_sd_configs:
+                - role: "pod"
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+                  regex: "prometheus-node-exporter"
+                  action: "keep"
+                - source_labels: [__meta_kubernetes_pod_node_name]
+                  target_label: node
+            - job_name: "cadvisor"
+              scheme: "https"
+              tls_config:
+                ca_file: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+              bearer_token_file: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+              kubernetes_sd_configs:
+                - role: "node"
+              relabel_configs:
+                - target_label: "__address__"
+                  replacement: "kubernetes.default.svc:443"
+                  action: "replace"
+                - source_labels: [__meta_kubernetes_node_name]
+                  regex: "(.+)"
+                  target_label: "__metrics_path__"
+                  replacement: "/api/v1/nodes/$${1}/proxy/metrics/cadvisor"
+                  action: "replace"
+            - job_name: "kube-state-metrics"
+              kubernetes_sd_configs:
+                - role: "endpoints"
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_service_name]
+                  action: keep
+                  regex: kube-state-metrics
+            - job_name: "kubelet"
+              scheme: "https"
+              tls_config:
+                ca_file: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+              bearer_token_file: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+              kubernetes_sd_configs:
+                - role: "node"
+              relabel_configs:
+                - target_label: "__address__"
+                  replacement: "kubernetes.default.svc:443"
+                  action: "replace"
+                - source_labels: [__meta_kubernetes_node_name]
+                  regex: "(.+)"
+                  target_label: "__metrics_path__"
+                  replacement: "/api/v1/nodes/$${1}/proxy/metrics"
+                  action: "replace"
+            - job_name: "network-latency-agent"
+              kubernetes_sd_configs:
+                - role: "service"
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_service_name]
+                  action: keep
+                  regex: network-latency-agent-service
 
-      # otlp: include if applicationMetrics, applicationLogs, traces, or systemLogs requested
-      # otlp:
-      #   protocols:
-      #     grpc:
-      #       endpoint: 0.0.0.0:4317
-      #     http:
-      #       endpoint: 0.0.0.0:4318
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
 
-      # k8s_events: include if kubernetesEvents requested
-      # k8s_events:
-      #   auth_type: serviceAccount
-      #   namespaces: []
+      k8s_events:
+        auth_type: serviceAccount
+        namespaces: []
 
     processors:
-      batch:
+      batch: {}
       resource:
         attributes:
           - key: cluster
@@ -48,23 +108,18 @@ data:
     service:
       extensions: [health_check]
       pipelines:
-        # metrics: include when any metrics signal is requested
-        # metrics:
-        #   receivers: [prometheus]   # add otlp here too if applicationMetrics requested
-        #   processors: [resource, batch]
-        #   exporters: [otlp]
-
-        # logs: include when applicationLogs, systemLogs, or kubernetesEvents requested
-        # logs:
-        #   receivers: [otlp]         # add k8s_events here if kubernetesEvents requested
-        #   processors: [resource, batch]
-        #   exporters: [otlp]
-
-        # traces: include only when traces requested
-        # traces:
-        #   receivers: [otlp]
-        #   processors: [resource, batch]
-        #   exporters: [otlp]
+        metrics:
+          receivers: [prometheus, otlp]
+          processors: [resource, batch]
+          exporters: [otlp]
+        logs:
+          receivers: [otlp, k8s_events]
+          processors: [resource, batch]
+          exporters: [otlp]
+        traces:
+          receivers: [otlp]
+          processors: [resource, batch]
+          exporters: [otlp]
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -114,13 +169,11 @@ spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
-    # Include otlp-grpc and otlp-http only when the otlp receiver is defined.
-    # Omit entirely if no otlp receiver.
-    # - name: otlp-grpc
-    #   protocol: TCP
-    #   port: 4317
-    #   targetPort: 4317
-    # - name: otlp-http
-    #   protocol: TCP
-    #   port: 4318
-    #   targetPort: 4318
+    - name: otlp-grpc
+      protocol: TCP
+      port: 4317
+      targetPort: 4317
+    - name: otlp-http
+      protocol: TCP
+      port: 4318
+      targetPort: 4318
