@@ -79,20 +79,18 @@ data:
                 - source_labels: [__meta_kubernetes_service_name]
                   action: keep
                   regex: network-latency-agent-service
-
       otlp:
         protocols:
           grpc:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
-
       k8s_events:
         auth_type: serviceAccount
         namespaces: []
 
     processors:
-      batch:
+      batch: {}
       resource:
         attributes:
           - key: cluster
