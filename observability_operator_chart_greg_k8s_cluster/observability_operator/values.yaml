@@ -28,7 +28,7 @@ fluent-bit:
 network-latency:
   name: network-latency-agent
   parameters:
-    interval: 60
+    interval: 30
   target_hosts:
   - cluster: greg_k8s_cluster
     host_ip:
