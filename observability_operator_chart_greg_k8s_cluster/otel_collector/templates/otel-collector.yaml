@@ -146,7 +146,7 @@ spec:
               mountPath: /conf
           readinessProbe:
             httpGet:
-              path: /"
+              path: /
               port: 13133
               scheme: HTTP
             initialDelaySeconds: 1
