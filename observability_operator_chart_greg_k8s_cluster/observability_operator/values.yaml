@@ -15,11 +15,13 @@ network-latency:
   name: network-latency-agent
   target_hosts:
     - cluster: "greg_k8s_cluster"
-      host_ip:
-        - "147.102.13.108"
-        - "147.102.13.108"
-        - "147.102.13.108"
-        - "147.102.13.109"
+      host_ip: ["147.102.13.108"]
+    - cluster: "greg_k8s_cluster"
+      host_ip: ["147.102.13.108"]
+    - cluster: "greg_k8s_cluster"
+      host_ip: ["147.102.13.108"]
+    - cluster: "greg_k8s_cluster"
+      host_ip: ["147.102.13.109"]
   parameters:
     interval: 5
 
@@ -77,4 +79,6 @@ fluent-bit:
           Logs_body_key_attributes true
           Logs_attributes_metadata_key attributes
           Logs_resource_metadata_key resource
+          Logs_instrumentation_scope_metadata_key scope
+          Logs_instrumentation_scope_metadata_key scope
           Logs_instrumentation_scope_metadata_key scope
