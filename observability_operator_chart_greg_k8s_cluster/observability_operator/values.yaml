@@ -32,7 +32,7 @@ kube-state-metrics:
 network-latency:
   name: network-latency-agent
   parameters:
-    interval: 15
+    interval: 50
   target_hosts:
   - cluster: greg_k8s_cluster
     host_ip:
