@@ -90,7 +90,7 @@ data:
         namespaces: []
 
     processors:
-      batch:
+      batch: {}
       resource:
         attributes:
           - key: cluster
@@ -107,7 +107,7 @@ data:
       extensions: [health_check]
       pipelines:
         metrics:
-          receivers: [prometheus, otlp]
+          receivers: [prometheus]
           processors: [resource, batch]
           exporters: [otlp]
         logs:
