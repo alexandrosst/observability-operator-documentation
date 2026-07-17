@@ -49,6 +49,7 @@ data:
                   target_label: "__metrics_path__"
                   replacement: "/api/v1/nodes/$${1}/proxy/metrics/cadvisor"
                   action: "replace"
+
       otlp:
         protocols:
           grpc:
@@ -133,7 +134,7 @@ spec:
     - name: metrics
       protocol: TCP
       port: 8888
-      targetPort: 8888
+      targetPort: 13133
     - name: otlp-grpc
       protocol: TCP
       port: 4317
