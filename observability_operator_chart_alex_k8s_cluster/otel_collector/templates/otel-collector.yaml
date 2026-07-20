@@ -85,19 +85,24 @@ data:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
-      k8s_events: {}
+      k8s_events:
+        auth_type: serviceAccount
+        namespaces: []
+
     processors:
-      batch: {}
+      batch:
       resource:
         attributes:
           - key: cluster
             value: {{ .Values.otelCollector.clusterName }}
             action: insert
+
     exporters:
       otlp:
         endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
         tls:
           insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure }}
+
     service:
       extensions: [health_check]
       pipelines:
@@ -162,6 +167,10 @@ spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
+    - name: metrics
+      protocol: TCP
+      port: 8888
+      targetPort: 13133
     - name: otlp-grpc
       protocol: TCP
       port: 4317
