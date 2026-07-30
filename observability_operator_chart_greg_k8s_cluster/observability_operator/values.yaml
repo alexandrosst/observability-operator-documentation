@@ -1,27 +1,26 @@
-# kepler:
 kepler:
   fullnameOverride: kepler
-
-# prometheus-node-exporter:
 prometheus-node-exporter:
   fullnameOverride: node-exporter
-
-# kube-state-metrics:
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
-
-# network-latency:
 network-latency:
   name: network-latency-agent
   target_hosts:
     - cluster: "greg_k8s_cluster"
-      host_ip: ["147.102.13.108"]
+      host_ip:
+        - "147.102.7.110"
     - cluster: "greg_k8s_cluster"
-      host_ip: ["147.102.13.108"]
+      host_ip:
+        - "147.102.13.108"
+    - cluster: "greg_k8s_cluster"
+      host_ip:
+        - "147.102.13.108"
+    - cluster: "greg_k8s_cluster"
+      host_ip:
+        - "147.102.7.110"
   parameters:
-    interval: 10
-
-# fluent-bit:
+    interval: 5
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
@@ -33,7 +32,7 @@ fluent-bit:
       mountPath: /run/systemd/journal
       readOnly: true
   config:
-    inputs: |
+    inputs: |-
       [INPUT]
           Name           tail
           Tag            k3s.*
@@ -47,7 +46,7 @@ fluent-bit:
           Tag            node.system.*
           Path           /run/systemd/journal
           Systemd_Filter _SYSTEMD_UNIT=containerd
-    filters: |
+    filters: |-
       [FILTER]
           Name          modify
           Match         k3s.*
@@ -63,7 +62,7 @@ fluent-bit:
           Match         node.system.*
           Add           log_source containerd
           Add           service_name container-runtime
-    outputs: |
+    outputs: |-
       [OUTPUT]
           Name            opentelemetry
           Match           *
