@@ -24,6 +24,15 @@ data:
                   action: "keep"
                 - source_labels: [__meta_kubernetes_pod_node_name]
                   target_label: node
+            - job_name: "node-exporter"
+              kubernetes_sd_configs:
+                - role: "pod"
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+                  regex: "prometheus-node-exporter"
+                  action: "keep"
+                - source_labels: [__meta_kubernetes_pod_node_name]
+                  target_label: node
             - job_name: "cadvisor"
               scheme: "https"
               tls_config:
@@ -48,7 +57,7 @@ data:
             endpoint: 0.0.0.0:4318
 
     processors:
-      batch:
+      batch: {}
       resource:
         attributes:
           - key: cluster
@@ -65,7 +74,11 @@ data:
       extensions: [health_check]
       pipelines:
         metrics:
-          receivers: [prometheus, otlp]
+          receivers: [prometheus]
+          processors: [resource, batch]
+          exporters: [otlp]
+        logs:
+          receivers: [otlp]
           processors: [resource, batch]
           exporters: [otlp]
 ---
@@ -117,10 +130,10 @@ spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
-    - name: metrics
+    - name: health-check
       protocol: TCP
-      port: 8888
-      targetPort: 8888
+      port: 13133
+      targetPort: 13133
     - name: otlp-grpc
       protocol: TCP
       port: 4317
