@@ -7,6 +7,9 @@ dependencies:
   - name: otel-collector
     version: 0.1.0
     repository: "file://../otel_collector"
+  - name: kepler
+    version: 0.6.1
+    repository: "https://sustainable-computing-io.github.io/kepler-helm-chart"
   - name: prometheus-node-exporter
     version: 4.55.0
     repository: "https://prometheus-community.github.io/helm-charts"
