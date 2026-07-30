@@ -1,16 +1,17 @@
-# kepler:
 kepler:
   fullnameOverride: kepler
-
-# prometheus-node-exporter:
 prometheus-node-exporter:
   fullnameOverride: node-exporter
-
-# kube-state-metrics:
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
-
-# fluent-bit:
+network-latency:
+  name: network-latency-agent
+  target_hosts:
+    - cluster: "greg_k8s_cluster"
+      host_ip:
+        - "147.102.7.110"
+  parameters:
+    interval: 20
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
@@ -64,4 +65,5 @@ fluent-bit:
           Logs_body_key_attributes true
           Logs_attributes_metadata_key attributes
           Logs_resource_metadata_key resource
+          Logs_instrumentation_scope_metadata_key scope
           Logs_instrumentation_scope_metadata_key scope
