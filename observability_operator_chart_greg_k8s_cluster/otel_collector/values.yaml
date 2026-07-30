@@ -1,10 +1,10 @@
 otelCollector:
   clusterName: "greg_k8s_cluster"
-  scrapeInterval: 60s
-  evaluationInterval: 60s
+  scrapeInterval: 20s
+  evaluationInterval: 5s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "6f3dc82ee136907f238aee3ed62a1f82462854d77c1a7d4a9b3ad586e74a4283"
+  configChecksum: "a0bb9831a832fc16bfc7cd8b426dc93ceabeb4a088d6ee42e8bfd1e5a51836b5"
   serviceName: otel-collector
   replicas: 1
   image:
