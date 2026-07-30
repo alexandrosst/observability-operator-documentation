@@ -15,15 +15,22 @@ data:
             scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
             evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
           scrape_configs:
-            - job_name: "node-exporter"
+            - job_name: "cadvisor"
+              scheme: "https"
+              tls_config:
+                ca_file: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+              bearer_token_file: "/var/run/secrets/kubernetes.io/serviceaccount/token"
               kubernetes_sd_configs:
-                - role: "pod"
+                - role: "node"
               relabel_configs:
-                - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
-                  regex: "prometheus-node-exporter"
-                  action: "keep"
-                - source_labels: [__meta_kubernetes_pod_node_name]
-                  target_label: node
+                - target_label: "__address__"
+                  replacement: "kubernetes.default.svc:443"
+                  action: "replace"
+                - source_labels: [__meta_kubernetes_node_name]
+                  regex: "(.+)"
+                  target_label: "__metrics_path__"
+                  replacement: "/api/v1/nodes/$${1}/proxy/metrics/cadvisor"
+                  action: "replace"
             - job_name: "kepler"
               kubernetes_sd_configs:
                 - role: "pod"
@@ -33,9 +40,15 @@ data:
                   action: "keep"
                 - source_labels: [__meta_kubernetes_pod_node_name]
                   target_label: node
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
 
     processors:
-      batch: {}
+      batch:
       resource:
         attributes:
           - key: cluster
@@ -52,7 +65,7 @@ data:
       extensions: [health_check]
       pipelines:
         metrics:
-          receivers: [prometheus]
+          receivers: [prometheus, otlp]
           processors: [resource, batch]
           exporters: [otlp]
 ---
@@ -108,3 +121,11 @@ spec:
       protocol: TCP
       port: 8888
       targetPort: 8888
+    - name: otlp-grpc
+      protocol: TCP
+      port: 4317
+      targetPort: 4317
+    - name: otlp-http
+      protocol: TCP
+      port: 4318
+      targetPort: 4318
