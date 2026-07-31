@@ -1,4 +1,71 @@
 kepler:
   fullnameOverride: kepler
+
 prometheus-node-exporter:
   fullnameOverride: node-exporter
+
+# kube-state-metrics:
+#   fullnameOverride: kube-state-metrics
+
+# network-latency:
+#   name: network-latency-agent
+#   target_hosts:
+#     - cluster: "greg_k8s_cluster"
+#       host_ip: ["147.102.13.108", "147.102.7.110"]
+#   parameters:
+#     interval: 60
+
+# fluent-bit:
+#   fullnameOverride: fluent-bit
+#   extraVolumes:
+#     - name: systemd-journal
+#       hostPath:
+#         path: /run/systemd/journal
+#   extraVolumeMounts:
+#     - name: systemd-journal
+#       mountPath: /run/systemd/journal
+#       readOnly: true
+#   config:
+#     inputs: |
+#       [INPUT]
+#           Name           tail
+#           Tag            k3s.*
+#           Path           /var/log/k3s.log
+#       [INPUT]
+#           Name           tail
+#           Tag            syslog.*
+#           Path           /var/log/syslog
+#       [INPUT]
+#           Name           systemd
+#           Tag            node.system.*
+#           Path           /run/systemd/journal
+#           Systemd_Filter _SYSTEMD_UNIT=containerd
+#     filters: |
+#       [FILTER]
+#           Name          modify
+#           Match         k3s.*
+#           Add           log_source k3s
+#           Add           service_name k3s-cluster
+#       [FILTER]
+#           Name          modify
+#           Match         syslog.*
+#           Add           log_source syslog
+#           Add           service_name os-systemd
+#       [FILTER]
+#           Name          modify
+#           Match         node.system.*
+#           Add           log_source containerd
+#           Add           service_name container-runtime
+#     outputs: |
+#       [OUTPUT]
+#           Name            opentelemetry
+#           Match           *
+#           Host            otel-collector
+#           Port            4318
+#           Logs_URI        /v1/logs
+#           Tls             Off
+#           Logs_body_key   log
+#           Logs_body_key_attributes true
+#           Logs_attributes_metadata_key attributes
+#           Logs_resource_metadata_key resource
+#           Logs_instrumentation_scope_metadata_key scope
