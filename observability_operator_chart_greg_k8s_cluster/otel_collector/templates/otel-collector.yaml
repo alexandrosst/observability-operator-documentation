@@ -90,7 +90,7 @@ data:
         namespaces: []
 
     processors:
-      batch: {}
+      batch:
       resource:
         attributes:
           - key: cluster
@@ -112,6 +112,10 @@ data:
           exporters: [otlp]
         logs:
           receivers: [otlp, k8s_events]
+          processors: [resource, batch]
+          exporters: [otlp]
+        traces:
+          receivers: [otlp]
           processors: [resource, batch]
           exporters: [otlp]
 ---
