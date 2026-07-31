@@ -148,7 +148,7 @@ spec:
               mountPath: /conf
           readinessProbe:
             httpGet:
-              path: "/"
+              path: /
               port: 13133
               scheme: HTTP
             initialDelaySeconds: 1
@@ -172,7 +172,7 @@ spec:
     - name: metrics
       protocol: TCP
       port: 8888
-      targetPort: 13133
+      targetPort: 8888
     - name: otlp-grpc
       protocol: TCP
       port: 4317
