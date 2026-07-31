@@ -1,26 +1,24 @@
-# kepler:
+# Include only blocks for present dependencies.
+
 kepler:
   fullnameOverride: kepler
 
-# prometheus-node-exporter:
 prometheus-node-exporter:
   fullnameOverride: node-exporter
 
-# kube-state-metrics:
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
-# network-latency:
 network-latency:
   name: network-latency-agent
   target_hosts:
     - cluster: "greg_k8s_cluster"
-      host_ip:
-        - "147.102.7.110"
+      host_ip: ["147.102.13.108"]
+    - cluster: "greg_k8s_cluster"
+      host_ip: ["147.102.13.108"]
   parameters:
-    interval: 20
+    interval: 10
 
-# fluent-bit:
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
@@ -48,17 +46,17 @@ fluent-bit:
           Systemd_Filter _SYSTEMD_UNIT=containerd
     filters: |
       [FILTER]
-          Name           modify
+          Name          modify
           Match         k3s.*
           Add           log_source k3s
           Add           service_name k3s-cluster
       [FILTER]
-          Name           modify
+          Name          modify
           Match         syslog.*
           Add           log_source syslog
           Add           service_name os-systemd
       [FILTER]
-          Name           modify
+          Name          modify
           Match         node.system.*
           Add           log_source containerd
           Add           service_name container-runtime
