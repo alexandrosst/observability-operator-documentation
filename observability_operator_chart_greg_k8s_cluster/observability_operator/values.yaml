@@ -7,6 +7,16 @@ prometheus-node-exporter:
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
+network-latency:
+  name: network-latency-agent
+  podAnnotations:
+    "checksum/config": "2fa077e7f71548f7cc41201e69822a2c4d442bd19067d4ae682b47b0b83021b9"
+  target_hosts:
+    - cluster: "greg_k8s_cluster"
+      host_ip: ["147.102.13.108", "147.102.7.110"]
+  parameters:
+    interval: 60
+
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
