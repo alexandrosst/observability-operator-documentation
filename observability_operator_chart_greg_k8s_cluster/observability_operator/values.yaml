@@ -1,12 +1,16 @@
+# kepler configuration
 kepler:
   fullnameOverride: kepler
 
+# prometheus-node-exporter configuration
 prometheus-node-exporter:
   fullnameOverride: node-exporter
 
+# kube-state-metrics configuration
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
+# fluent-bit configuration (systemLogs)
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
@@ -34,20 +38,20 @@ fluent-bit:
           Systemd_Filter _SYSTEMD_UNIT=containerd
     filters: |
       [FILTER]
-          Name          modify
-          Match         k3s.*
-          Add           log_source k3s
-          Add           service_name k3s-cluster
+          Name           modify
+          Match          k3s.*
+          Add            log_source k3s
+          Add            service_name k3s-cluster
       [FILTER]
-          Name          modify
-          Match         syslog.*
-          Add           log_source syslog
-          Add           service_name os-systemd
+          Name           modify
+          Match          syslog.*
+          Add            log_source syslog
+          Add            service_name os-systemd
       [FILTER]
-          Name          modify
-          Match         node.system.*
-          Add           log_source containerd
-          Add           service_name container-runtime
+          Name           modify
+          Match          node.system.*
+          Add            log_source containerd
+          Add            service_name container-runtime
     outputs: |
       [OUTPUT]
           Name            opentelemetry
@@ -61,3 +65,13 @@ fluent-bit:
           Logs_attributes_metadata_key attributes
           Logs_resource_metadata_key resource
           Logs_instrumentation_scope_metadata_key scope
+
+# network-latency configuration
+network-latency:
+  name: network-latency-agent
+  target_hosts:
+    - cluster: "greg_k8s_cluster"
+      host_ip:
+        - "147.102.7.110"
+  parameters:
+    interval: 20
