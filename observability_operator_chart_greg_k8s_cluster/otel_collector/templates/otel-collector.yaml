@@ -92,7 +92,7 @@ data:
         namespaces: []
 
     processors:
-      batch:
+      batch: {}
       resource:
         attributes:
           - key: cluster
@@ -114,10 +114,6 @@ data:
           exporters: [otlp]
         logs:
           receivers: [otlp, k8s_events]
-          processors: [resource, batch]
-          exporters: [otlp]
-        traces:
-          receivers: [otlp]
           processors: [resource, batch]
           exporters: [otlp]
 ---
@@ -169,6 +165,10 @@ spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
+    - name: metrics
+      protocol: TCP
+      port: 8888
+      targetPort: 8888
     - name: otlp-grpc
       protocol: TCP
       port: 4317
@@ -177,7 +177,3 @@ spec:
       protocol: TCP
       port: 4318
       targetPort: 4318
-    - name: metrics
-      protocol: TCP
-      port: 8888
-      targetPort: 8888
