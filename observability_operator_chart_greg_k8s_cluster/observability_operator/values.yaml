@@ -10,12 +10,16 @@ kube-state-metrics:
 network-latency:
   name: network-latency-agent
   target_hosts:
-    - cluster: "greg_k8s_cluster"
-      host_ip: ["147.102.7.110"]
+    - cluster: "frame-resizer"
+      host_ip:
+        - "147.102.13.108"
+    - cluster: "frame-sampler"
+      host_ip:
+        - "147.102.13.108"
   parameters:
-    interval: 20
+    interval: 10
   podAnnotations:
-    "checksum/config": "b9bf7dfe89e90c1696fe1cf58eeb0b7ce8b161165c5a3f5c0b6d89b7f96b8aca"
+    "checksum/config": "5fac478c71b22c1d3fb8c9e8f8a8715789ed57d9bbe73e8f3e47cac39feae6cc"
 
 fluent-bit:
   fullnameOverride: fluent-bit
