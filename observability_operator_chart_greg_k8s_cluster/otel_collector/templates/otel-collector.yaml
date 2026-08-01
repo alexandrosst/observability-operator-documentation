@@ -116,6 +116,10 @@ data:
           receivers: [otlp, k8s_events]
           processors: [resource, batch]
           exporters: [otlp]
+        traces:
+          receivers: [otlp]
+          processors: [resource, batch]
+          exporters: [otlp]
 ---
 apiVersion: apps/v1
 kind: Deployment
