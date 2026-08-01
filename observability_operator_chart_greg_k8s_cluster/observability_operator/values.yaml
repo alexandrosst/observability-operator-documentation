@@ -15,7 +15,7 @@ network-latency:
     - cluster: "greg_k8s_cluster"
       host_ip: ["147.102.13.108", "147.102.7.110"]
   parameters:
-    interval: 60
+    interval: 5
 
 fluent-bit:
   fullnameOverride: fluent-bit
