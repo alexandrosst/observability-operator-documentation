@@ -12,8 +12,8 @@ data:
       prometheus:
         config:
           global:
-            scrape_interval: 30s
-            evaluation_interval: 5s
+            scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
+            evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
           scrape_configs:
             - job_name: "kepler"
               kubernetes_sd_configs:
@@ -49,13 +49,6 @@ data:
                   target_label: "__metrics_path__"
                   replacement: "/api/v1/nodes/$${1}/proxy/metrics/cadvisor"
                   action: "replace"
-            - job_name: "kube-state-metrics"
-              kubernetes_sd_configs:
-                - role: "endpoints"
-              relabel_configs:
-                - source_labels: [__meta_kubernetes_service_name]
-                  action: keep
-                  regex: kube-state-metrics
 
       otlp:
         protocols:
@@ -64,23 +57,19 @@ data:
           http:
             endpoint: 0.0.0.0:4318
 
-      k8s_events:
-        auth_type: serviceAccount
-        namespaces: []
-
     processors:
       batch: {}
       resource:
         attributes:
           - key: cluster
-            value: greg_k8s_cluster
+            value: {{ .Values.otelCollector.clusterName }}
             action: insert
 
     exporters:
       otlp:
-        endpoint: 147.102.7.110:4318
+        endpoint: {{ .Values.otelCollector.exporters.otlp.host }}:{{ .Values.otelCollector.exporters.otlp.port }}
         tls:
-          insecure: true
+          insecure: {{ .Values.otelCollector.exporters.otlp.tls.insecure }}
 
     service:
       extensions: [health_check]
@@ -90,10 +79,9 @@ data:
           processors: [resource, batch]
           exporters: [otlp]
         logs:
-          receivers: [otlp, k8s_events]
+          receivers: [otlp]
           processors: [resource, batch]
           exporters: [otlp]
-
 ---
 apiVersion: apps/v1
 kind: Deployment
