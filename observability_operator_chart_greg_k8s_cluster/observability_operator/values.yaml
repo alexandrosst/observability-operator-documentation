@@ -8,13 +8,15 @@ network-latency:
   name: network-latency-agent
   target_hosts:
     - cluster: "greg_k8s_cluster"
-      host_ip: ["147.102.13.108"]
+      host_ip:
+        - "147.102.7.110"
     - cluster: "greg_k8s_cluster"
-      host_ip: ["147.102.13.108"]
+      host_ip:
+        - "147.102.13.108"
   parameters:
-    interval: 10
+    interval: 5
   podAnnotations:
-    "checksum/config": "01c2e67798e93806a12a8d1b8342d50f10c84c3bdaf76e70c757bad820ccfb6f"
+    "checksum/config": "1d1d5f76e2e65777ebdbfa51b80bde2cfaab954025e93983ab0e98c7f0d8b373"
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
@@ -63,10 +65,9 @@ fluent-bit:
           Host            otel-collector
           Port            4318
           Logs_URI        /v1/logs
-          Ttls             Off
+          Tls             Off
           Logs_body_key   log
           Logs_body_key_attributes true
           Logs_attributes_metadata_key attributes
           Logs_resource_metadata_key resource
-          Logs_instrumentation_scope_metadata_key scope
           Logs_instrumentation_scope_metadata_key scope
