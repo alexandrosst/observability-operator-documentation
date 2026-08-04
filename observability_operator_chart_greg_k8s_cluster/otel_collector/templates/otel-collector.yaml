@@ -61,7 +61,6 @@ data:
               tls_config:
                 ca_file: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
               bearer_token_file: "/var/run/secrets/kubernetes.io/serviceaccount/token"
-                
               kubernetes_sd_configs:
                 - role: "node"
               relabel_configs:
@@ -91,7 +90,7 @@ data:
         namespaces: []
 
     processors:
-      batch:
+      batch: {}
       resource:
         attributes:
           - key: cluster

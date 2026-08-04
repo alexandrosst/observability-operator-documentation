@@ -16,12 +16,14 @@ network-latency:
   target_hosts:
     - cluster: "greg_k8s_cluster"
       host_ip:
+        - "147.102.7.110"
         - "147.102.13.108"
         - "147.102.13.108"
+        - "147.102.7.110"
   parameters:
-    interval: 10
+    interval: 5
   podAnnotations:
-    "checksum/config": "c607968015629443d580345e99bcfca2bf33f43e8ce4b3a95782f723a9f5a377"
+    "checksum/config": "afbf0e39a20fa27ba5a2d9d08278f22f2e6558464914a22ca9c5f84fd8757cff"
 
 # fluent-bit:
 fluent-bit:
@@ -35,7 +37,7 @@ fluent-bit:
       mountPath: /run/systemd/journal
       readOnly: true
   config:
-    inputs: |-
+    inputs: |
       [INPUT]
           Name           tail
           Tag            k3s.*
@@ -49,7 +51,7 @@ fluent-bit:
           Tag            node.system.*
           Path           /run/systemd/journal
           Systemd_Filter _SYSTEMD_UNIT=containerd
-    filters: |-
+    filters: |
       [FILTER]
           Name          modify
           Match         k3s.*
@@ -65,7 +67,7 @@ fluent-bit:
           Match         node.system.*
           Add           log_source containerd
           Add           service_name container-runtime
-    outputs: |-
+    outputs: |
       [OUTPUT]
           Name            opentelemetry
           Match           *
