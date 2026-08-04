@@ -2,6 +2,15 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Values.otelCollector.configMapName }}
+  # NOTE: no labels needed
+  # Namespaces are inherited from the deployment
+  # The ConfigMap contains the collector configuration
+  # as a single YAML block under the key otel-agent-config.yaml
+  # that the collector reads via the --config flag.
+  #
+  # The collector will be deployed in the same namespace as the
+  # ServiceAccount defined in permission.yaml.
+
 data:
   otel-agent-config.yaml: |
     extensions:
@@ -49,13 +58,22 @@ data:
                   target_label: "__metrics_path__"
                   replacement: "/api/v1/nodes/$${1}/proxy/metrics/cadvisor"
                   action: "replace"
-
+            - job_name: "kube-state-metrics"
+              kubernetes_sd_configs:
+                - role: "endpoints"
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_service_name]
+                  action: keep
+                  regex: kube-state-metrics
       otlp:
         protocols:
           grpc:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
+      k8s_events:
+        auth_type: serviceAccount
+        namespaces: []
 
     processors:
       batch:
@@ -79,7 +97,7 @@ data:
           processors: [resource, batch]
           exporters: [otlp]
         logs:
-          receivers: [otlp]
+          receivers: [otlp, k8s_events]
           processors: [resource, batch]
           exporters: [otlp]
 ---
