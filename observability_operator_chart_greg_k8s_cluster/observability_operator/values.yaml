@@ -1,12 +1,29 @@
+# kepler:
 kepler:
   fullnameOverride: kepler
 
+# prometheus-node-exporter:
 prometheus-node-exporter:
   fullnameOverride: node-exporter
 
+# kube-state-metrics:
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
+# network-latency:
+network-latency:
+  name: network-latency-agent
+  target_hosts:
+    - cluster: "frame-resizer"
+      host_ip: ["147.102.13.108"]
+    - cluster: "frame-sampler"
+      host_ip: ["147.102.13.108"]
+  parameters:
+    interval: 10
+  podAnnotations:
+    "checksum/config": "e19c13d3b8b1f8e94caa1542c03a0c226bdd9a2a83c562aab1c29fcdd6b2dcc4"
+
+# fluent-bit:
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
