@@ -1,48 +1,71 @@
-fluent-bit:
-  config:
-    filters: "[FILTER]\n    Name          modify\n    Match         k3s.*\n    Add\
-      \           log_source k3s\n    Add           service_name k3s-cluster\n[FILTER]\n\
-      \    Name          modify\n    Match         syslog.*\n    Add           log_source\
-      \ syslog\n    Add           service_name os-systemd\n[FILTER]\n    Name    \
-      \      modify\n    Match         node.system.*\n    Add           log_source\
-      \ containerd\n    Add           service_name container-runtime\n"
-    inputs: "[INPUT]\n    Name           tail\n    Tag            k3s.*\n    Path\
-      \           /var/log/k3s.log\n[INPUT]\n    Name           tail\n    Tag    \
-      \        syslog.*\n    Path           /var/log/syslog\n[INPUT]\n    Name   \
-      \        systemd\n    Tag            node.system.*\n    Path           /run/systemd/journal\n\
-      \    Systemd_Filter _SYSTEMD_UNIT=containerd\n"
-    outputs: "[OUTPUT]\n    Name            opentelemetry\n    Match           *\n\
-      \    Host            otel-collector\n    Port            4318\n    Logs_URI\
-      \        /v1/logs\n    Tls             Off\n    Logs_body_key   log\n    Logs_body_key_attributes\
-      \ true\n    Logs_attributes_metadata_key attributes\n    Logs_resource_metadata_key\
-      \ resource\n    Logs_instrumentation_scope_metadata_key scope"
-  extraVolumeMounts:
-  - mountPath: /run/systemd/journal
-    name: systemd-journal
-    readOnly: true
-  extraVolumes:
-  - hostPath:
-      path: /run/systemd/journal
-    name: systemd-journal
-  fullnameOverride: fluent-bit
 kepler:
   fullnameOverride: kepler
-kube-state-metrics:
-  fullnameOverride: kube-state-metrics
-network-latency:
-  name: network-latency-agent
-  podAnnotations:
-    "checksum/config": "4bb7298190ee37375c335808b9e1191609e6cefd24414d137215bb41b1f68b05"
-  parameters:
-    interval: 5
-  podAnnotations:
-    checksum/config: 74cdbbd2b6ab7e6848a2675c179dc2799e0ce48495fba49a12035955742235f8
-  target_hosts:
-  - cluster: alex_k8s_cluster
-    host_ip:
-    - 147.102.13.108
-  - cluster: alex_k8s_cluster
-    host_ip:
-    - 147.102.13.108
+
 prometheus-node-exporter:
   fullnameOverride: node-exporter
+
+# kube-state-metrics:
+#   fullnameOverride: kube-state-metrics
+
+# network-latency:
+#   name: network-latency-agent
+#   target_hosts:
+#     - cluster: "alex_k8s_cluster"
+#       host_ip: ["147.102.13.108", "147.102.7.110"]
+#   parameters:
+#     interval: 60
+
+# fluent-bit:
+#   fullnameOverride: fluent-bit
+#   extraVolumes:
+#     - name: systemd-journal
+#       hostPath:
+#         path: /run/systemd/journal
+#   extraVolumeMounts:
+#     - name: systemd-journal
+#       mountPath: /run/systemd/journal
+#       readOnly: true
+#   config:
+#     inputs: |
+#       [INPUT]
+#           Name           tail
+#           Tag            k3s.*
+#           Path           /var/log/k3s.log
+#       [INPUT]
+#           Name           tail
+#           Tag            syslog.*
+#           Path           /var/log/syslog
+#       [INPUT]
+#           Name           systemd
+#           Tag            node.system.*
+#           Path           /run/systemd/journal
+#           Systemd_Filter _SYSTEMD_UNIT=containerd
+#     filters: |
+#       [FILTER]
+#           Name          modify
+#           Match         k3s.*
+#           Add           log_source k3s
+#           Add           service_name k3s-cluster
+#       [FILTER]
+#           Name          modify
+#           Match         syslog.*
+#           Add           log_source syslog
+#           Add           service_name os-systemd
+#       [FILTER]
+#           Name          modify
+#           Match         node.system.*
+#           Add           log_source containerd
+#           Add           service_name container-runtime
+#     outputs: |
+#       [OUTPUT]
+#           Name            opentelemetry
+#           Match           *
+#           Host            otel-collector
+#           Port            4318
+#           Logs_URI        /v1/logs
+#           Tls             Off
+#           Logs_body_key   log
+#           Logs_body_key_attributes true
+#           Logs_attributes_metadata_key attributes
+#           Logs_resource_metadata_key resource
+#           Logs_instrumentation_scope_metadata_key scope
