@@ -116,6 +116,10 @@ data:
           receivers: [otlp, k8s_events]
           processors: [resource, batch]
           exporters: [otlp]
+        traces:
+          receivers: [otlp]
+          processors: [resource, batch]
+          exporters: [otlp]
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -169,7 +173,15 @@ spec:
       protocol: TCP
       port: 8888
       targetPort: 8888
+    - name: otlp-grpc
+      protocol: TCP
+      port: 4317
+      targetPort: 4317
     - name: otlp-http
       protocol: TCP
       port: 4318
       targetPort: 4318
+    - name: health
+      protocol: TCP
+      port: 13133
+      targetPort: 13133
