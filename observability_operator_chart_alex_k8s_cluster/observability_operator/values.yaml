@@ -1,28 +1,30 @@
-# kepler configuration
+# kepler:
 kepler:
   fullnameOverride: kepler
 
-# prometheus-node-exporter configuration
+# prometheus-node-exporter:
 prometheus-node-exporter:
   fullnameOverride: node-exporter
 
-# kube-state-metrics configuration
+# kube-state-metrics:
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
-# network-latency configuration
+# network-latency:
 network-latency:
   name: network-latency-agent
   target_hosts:
     - cluster: "alex_k8s_cluster"
       host_ip:
+        - "147.102.13.108"
         - "147.102.7.110"
   parameters:
-    interval: 10
-  podAnnotations:
-    "checksum/config": "c71ec07f1f9f350244f638c509d46a3aef69c0b87ccd84fe0853c576303eb92e"
+    interval: 5
+    # placeholder checksum for pod restart on target change
+    podAnnotations:
+      "checksum/config": "cba186b3995484d241b59c1406a18d0bad047652ce7c305ac9949f03465d924d"
 
-# fluent-bit configuration
+# fluent-bit:
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:

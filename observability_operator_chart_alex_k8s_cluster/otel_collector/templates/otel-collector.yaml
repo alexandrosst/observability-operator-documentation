@@ -181,7 +181,3 @@ spec:
       protocol: TCP
       port: 4318
       targetPort: 4318
-    - name: health
-      protocol: TCP
-      port: 13133
-      targetPort: 13133
