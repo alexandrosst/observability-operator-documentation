@@ -1,29 +1,24 @@
-# kepler:
 kepler:
   fullnameOverride: kepler
 
-# prometheus-node-exporter:
 prometheus-node-exporter:
   fullnameOverride: node-exporter
 
-# kube-state-metrics:
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
-# network-latency:
 network-latency:
   name: network-latency-agent
   target_hosts:
     - cluster: "greg_k8s_cluster"
       host_ip:
-        - "147.102.7.110"
+        - "147.102.13.108"
+        - "147.102.13.108"
   parameters:
-    interval: 20
-    # checksum placeholder injected automatically
-    podAnnotations:
-      "checksum/config": "59cc8834a730a58a6b8819512fd26739d9909bcdb255868917ad14a1e07268ab"
+    interval: 10
+  podAnnotations:
+    "checksum/config": "c607968015629443d580345e99bcfca2bf33f43e8ce4b3a95782f723a9f5a377"
 
-# fluent-bit:
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
