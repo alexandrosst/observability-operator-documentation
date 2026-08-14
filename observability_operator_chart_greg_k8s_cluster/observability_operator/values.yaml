@@ -1,16 +1,22 @@
-# kepler:
 kepler:
   fullnameOverride: kepler
 
-# prometheus-node-exporter:
 prometheus-node-exporter:
   fullnameOverride: node-exporter
 
-# kube-state-metrics:
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
-# fluent-bit:
+network-latency:
+  name: network-latency-agent
+  target_hosts:
+    - cluster: "greg_k8s_cluster"
+      host_ip: ["147.102.13.108","147.102.13.108"]
+  parameters:
+    interval: 10
+  podAnnotations:
+    "checksum/config": "2d8f971e32fb4ab53ee4409db72f8f09e5ef5326e4acf21783c73c9d4dcc2fcc"
+
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
@@ -34,7 +40,7 @@ fluent-bit:
       [INPUT]
           Name           systemd
           Tag            node.system.*
-          Path           /run/systemd/journal
+          Path            /run/systemd/journal
           Systemd_Filter _SYSTEMD_UNIT=containerd
     filters: |
       [FILTER]
