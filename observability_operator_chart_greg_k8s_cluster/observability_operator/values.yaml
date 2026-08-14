@@ -12,12 +12,20 @@ network-latency:
   target_hosts:
     - cluster: "greg_k8s_cluster"
       host_ip:
+        - "147.102.7.110"
+    - cluster: "greg_k8s_cluster"
+      host_ip:
         - "147.102.13.108"
+    - cluster: "greg_k8s_cluster"
+      host_ip:
         - "147.102.13.108"
+    - cluster: "greg_k8s_cluster"
+      host_ip:
+        - "147.102.7.110"
   parameters:
-    interval: 10
+    interval: 5
   podAnnotations:
-    "checksum/config": "c607968015629443d580345e99bcfca2bf33f43e8ce4b3a95782f723a9f5a377"
+    "checksum/config": "85d199201ec73a3e44ff83e84d0679907970a46e78067b762a62f89780b5a7bc"
 
 fluent-bit:
   fullnameOverride: fluent-bit
