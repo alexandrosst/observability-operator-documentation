@@ -12,7 +12,6 @@ rules:
   - apiGroups: [""]
     resources: [pods, nodes, services, endpoints, events]
     verbs: [get, list, watch]
-  # Adding nodes/proxy because containerResources is true
   - apiGroups: [""]
     resources: [nodes/proxy]
     verbs: [get, list, watch]
