@@ -49,6 +49,13 @@ data:
                   target_label: "__metrics_path__"
                   replacement: "/api/v1/nodes/$${1}/proxy/metrics/cadvisor"
                   action: "replace"
+            - job_name: "kube-state-metrics"
+              kubernetes_sd_configs:
+                - role: "endpoints"
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_service_name]
+                  action: keep
+                  regex: kube-state-metrics
       otlp:
         protocols:
           grpc:
@@ -57,7 +64,7 @@ data:
             endpoint: 0.0.0.0:4318
 
     processors:
-      batch: {}
+      batch:
       resource:
         attributes:
           - key: cluster
@@ -130,10 +137,10 @@ spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
-    - name: health
+    - name: metrics
       protocol: TCP
-      port: 13133
-      targetPort: 13133
+      port: 8888
+      targetPort: 8888
     - name: otlp-grpc
       protocol: TCP
       port: 4317
