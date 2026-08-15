@@ -49,6 +49,16 @@ data:
                   target_label: "__metrics_path__"
                   replacement: "/api/v1/nodes/$${1}/proxy/metrics/cadvisor"
                   action: "replace"
+            - job_name: "kube-state-metrics"
+              kubernetes_sd_configs:
+                - role: "endpoints"
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_service_name]
+                  action: keep
+                  regex: kube-state-metrics
+            - job_name: "k8s_events"
+              # k8s_events receiver does not use scrape configs, placeholder to keep list order
+              # actual receiver defined below
 
       otlp:
         protocols:
@@ -57,8 +67,12 @@ data:
           http:
             endpoint: 0.0.0.0:4318
 
+      k8s_events:
+        auth_type: serviceAccount
+        namespaces: []
+
     processors:
-      batch:
+      batch: {}
       resource:
         attributes:
           - key: cluster
@@ -79,7 +93,7 @@ data:
           processors: [resource, batch]
           exporters: [otlp]
         logs:
-          receivers: [otlp]
+          receivers: [otlp, k8s_events]
           processors: [resource, batch]
           exporters: [otlp]
 ---
@@ -132,18 +146,14 @@ spec:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
     - name: metrics
+      protocol: TCP
       port: 8888
       targetPort: 8888
-      protocol: TCP
     - name: otlp-grpc
+      protocol: TCP
       port: 4317
       targetPort: 4317
-      protocol: TCP
     - name: otlp-http
+      protocol: TCP
       port: 4318
       targetPort: 4318
-      protocol: TCP
-    - name: health
-      port: 13133
-      targetPort: 13133
-      protocol: TCP

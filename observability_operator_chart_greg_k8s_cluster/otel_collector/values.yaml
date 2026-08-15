@@ -1,10 +1,10 @@
 otelCollector:
   clusterName: "greg_k8s_cluster"
-  scrapeInterval: 40s
-  evaluationInterval: 40s
+  scrapeInterval: 30s
+  evaluationInterval: 5s
   deploymentName: otel-collector
   configMapName: otel-collector-config
-  configChecksum: "9ee57aef2eff9665b82f4236850047bfadbfd70e5380b478c967309806d590a7"
+  configChecksum: "d37329389788fa09e4c66b4b9d522b237169db6e49b284517accf399e4ffdc69"
   serviceName: otel-collector
   replicas: 1
   image:
@@ -13,7 +13,7 @@ otelCollector:
     tag: "0.98.0"
   exporters:
     otlp:
-      host: "147.102.7.110"
+      host: "147.102.110"
       port: 4318
       tls:
         insecure: true

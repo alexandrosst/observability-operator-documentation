@@ -13,3 +13,9 @@ dependencies:
   - name: prometheus-node-exporter
     version: 4.55.0
     repository: "https://prometheus-community.github.io/helm-charts"
+  - name: kube-state-metrics
+    version: 7.4.0
+    repository: "https://prometheus-community.github.io/helm-charts"
+  - name: fluent-bit
+    version: 0.57.6
+    repository: "https://fluent.github.io/helm-charts"
