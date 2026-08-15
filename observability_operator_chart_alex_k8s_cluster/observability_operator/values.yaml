@@ -1,24 +1,28 @@
+# kepler:
 kepler:
   fullnameOverride: kepler
 
+# prometheus-node-exporter:
 prometheus-node-exporter:
   fullnameOverride: node-exporter
 
+# kube-state-metrics:
 kube-state-metrics:
   fullnameOverride: kube-state-metrics
 
+# network-latency:
 network-latency:
   name: network-latency-agent
   target_hosts:
     - cluster: "alex_k8s_cluster"
       host_ip:
-        - "147.102.13.108"
-        - "147.102.13.108"
+        - "147.102.7.110"
   parameters:
-    interval: 20
+    interval: 10
   podAnnotations:
-    "checksum/config": "3dfa3987c7166abb129a663d2b0a6a6368d27fa08cbd1d1fee1c775260429aca"
+    "checksum/config": "c71ec07f1f9f350244f638c509d46a3aef69c0b87ccd84fe0853c576303eb92e"
 
+# fluent-bit:
 fluent-bit:
   fullnameOverride: fluent-bit
   extraVolumes:
@@ -72,5 +76,4 @@ fluent-bit:
           Logs_body_key_attributes true
           Logs_attributes_metadata_key attributes
           Logs_resource_metadata_key resource
-          Logs_instrumentation_scope_metadata_key scope
           Logs_instrumentation_scope_metadata_key scope
