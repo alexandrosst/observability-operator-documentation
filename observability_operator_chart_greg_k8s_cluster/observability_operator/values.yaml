@@ -16,12 +16,21 @@ network-latency:
   target_hosts:
     - cluster: "greg_k8s_cluster"
       host_ip:
+        - "147.102.7.110"
+    - cluster: "greg_k8s_cluster"
+      host_ip:
         - "147.102.13.108"
+    - cluster: "greg_k8s_cluster"
+      host_ip:
         - "147.102.13.108"
+    - cluster: "greg_k8s_cluster"
+      host_ip:
+        - "147.102.7.110"
   parameters:
-    interval: 10
-  podAnnotations:
-    "checksum/config": "c607968015629443d580345e99bcfca2bf33f43e8ce4b3a95782f723a9f5a377"
+    interval: 5
+    # checksum placeholder – will be injected automatically
+    podAnnotations:
+      "checksum/config": "29b91dff91a5c25ad8d93df101ecb46e364852bcc8c4fecf998a82044850decd"
 
 # fluent-bit:
 fluent-bit:
