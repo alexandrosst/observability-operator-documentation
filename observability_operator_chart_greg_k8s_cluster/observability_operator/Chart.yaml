@@ -1,3 +1,4 @@
+# Generated Chart.yaml for observability_operator
 apiVersion: v2
 name: observability_operator
 description: Observability Operator for greg_k8s_cluster
@@ -19,3 +20,6 @@ dependencies:
   - name: fluent-bit
     version: 0.57.6
     repository: "https://fluent.github.io/helm-charts"
+  - name: network-latency
+    version: 0.1.0
+    repository: "https://gitlab.com/api/v4/projects/44429468/packages/helm/stable"
