@@ -49,6 +49,14 @@ data:
                   target_label: "__metrics_path__"
                   replacement: "/api/v1/nodes/$${1}/proxy/metrics/cadvisor"
                   action: "replace"
+            - job_name: "kube-state-metrics"
+              kubernetes_sd_configs:
+                - role: "endpoints"
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_service_name]
+                  action: keep
+                  regex: kube-state-metrics
+
       otlp:
         protocols:
           grpc:
@@ -56,8 +64,12 @@ data:
           http:
             endpoint: 0.0.0.0:4318
 
+      k8s_events:
+        auth_type: serviceAccount
+        namespaces: []
+
     processors:
-      batch: {}
+      batch:
       resource:
         attributes:
           - key: cluster
@@ -78,7 +90,7 @@ data:
           processors: [resource, batch]
           exporters: [otlp]
         logs:
-          receivers: [otlp]
+          receivers: [otlp, k8s_events]
           processors: [resource, batch]
           exporters: [otlp]
 ---

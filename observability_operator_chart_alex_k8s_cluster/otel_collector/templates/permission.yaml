@@ -9,10 +9,10 @@ kind: ClusterRole
 metadata:
   name: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
 rules:
-  - apiGroups: [""]
+  - apiGroups: ["" ]
     resources: [pods, nodes, services, endpoints, events]
     verbs: [get, list, watch]
-  - apiGroups: [""]
+  - apiGroups: ["" ]
     resources: [nodes/proxy]
     verbs: [get, list, watch]
 ---
