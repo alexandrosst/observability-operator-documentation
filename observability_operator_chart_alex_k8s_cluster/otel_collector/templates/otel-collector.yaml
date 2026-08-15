@@ -56,6 +56,29 @@ data:
                 - source_labels: [__meta_kubernetes_service_name]
                   action: keep
                   regex: kube-state-metrics
+            - job_name: "kubelet"
+              scheme: "https"
+              tls_config:
+                ca_file: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+              bearer_token_file: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+              kubernetes_sd_configs:
+                - role: "node"
+              relabel_configs:
+                - target_label: "__address__"
+                  replacement: "kubernetes.default.svc:443"
+                  action: "replace"
+                - source_labels: [__meta_kubernetes_node_name]
+                  regex: "(.+)"
+                  target_label: "__metrics_path__"
+                  replacement: "/api/v1/nodes/$${1}/proxy/metrics"
+                  action: "replace"
+            - job_name: "network-latency-agent"
+              kubernetes_sd_configs:
+                - role: "service"
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_service_name]
+                  action: keep
+                  regex: network-latency-agent-service
 
       otlp:
         protocols:
@@ -86,7 +109,7 @@ data:
       extensions: [health_check]
       pipelines:
         metrics:
-          receivers: [prometheus]
+          receivers: [prometheus, otlp]
           processors: [resource, batch]
           exporters: [otlp]
         logs:
@@ -142,7 +165,7 @@ spec:
   selector:
     app: {{ .Values.otelCollector.deploymentName | default "otel-collector" }}
   ports:
-    - name: prometheus-metrics
+    - name: metrics
       protocol: TCP
       port: 8888
       targetPort: 8888
