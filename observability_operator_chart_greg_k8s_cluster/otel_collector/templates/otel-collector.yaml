@@ -15,7 +15,6 @@ data:
             scrape_interval: {{ .Values.otelCollector.scrapeInterval }}
             evaluation_interval: {{ .Values.otelCollector.evaluationInterval }}
           scrape_configs:
-            # kepler
             - job_name: "kepler"
               kubernetes_sd_configs:
                 - role: "pod"
@@ -25,7 +24,6 @@ data:
                   action: "keep"
                 - source_labels: [__meta_kubernetes_pod_node_name]
                   target_label: node
-            # node-exporter
             - job_name: "node-exporter"
               kubernetes_sd_configs:
                 - role: "pod"
@@ -35,7 +33,6 @@ data:
                   action: "keep"
                 - source_labels: [__meta_kubernetes_pod_node_name]
                   target_label: node
-            # cadvisor
             - job_name: "cadvisor"
               scheme: "https"
               tls_config:
@@ -52,6 +49,13 @@ data:
                   target_label: "__metrics_path__"
                   replacement: "/api/v1/nodes/$${1}/proxy/metrics/cadvisor"
                   action: "replace"
+            - job_name: "kube-state-metrics"
+              kubernetes_sd_configs:
+                - role: "endpoints"
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_service_name]
+                  action: keep
+                  regex: kube-state-metrics
 
       otlp:
         protocols:
@@ -59,6 +63,10 @@ data:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
+
+      k8s_events:
+        auth_type: serviceAccount
+        namespaces: []
 
     processors:
       batch:
@@ -82,7 +90,7 @@ data:
           processors: [resource, batch]
           exporters: [otlp]
         logs:
-          receivers: [otlp]
+          receivers: [otlp, k8s_events]
           processors: [resource, batch]
           exporters: [otlp]
 ---
